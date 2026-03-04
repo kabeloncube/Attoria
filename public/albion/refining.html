@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Refining Calculator — Ættoria Clash</title>
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/favicon.png" />
+  <link rel="stylesheet" href="/assets/css/albion.css">
+  <link rel="stylesheet" href="/assets/css/refining.css">
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand"><a href="/">Albion — Ættoria</a></div>
+      <nav>
+        <ul>
+          <li><a href="/albion/index.html">Home</a></li>
+          <li><a href="/albion/index.html#markets">Markets</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="tool-container">
+    <div class="page-header">
+      <h1>⚒️ Refining Calculator</h1>
+      <p>Calculate refining profits with accurate resource returns, city bonuses, and market fees.</p>
+    </div>
+
+    <!-- City Bonus Reference (Collapsible) -->
+    <div class="collapsible-header" id="city-bonus-toggle">
+      <div class="collapsible-title"> City Refining Bonuses (36.7% Return)</div>
+      <div class="collapsible-icon">▼</div>
+    </div>
+    <div class="collapsible-content" id="city-bonus-content">
+      <table class="bonus-table">
+        <thead>
+          <tr>
+            <th>City</th>
+            <th>Resource</th>
+            <th>Refined Into</th>
+            <th>Return Bonus</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Lymhurst</td>
+            <td>Fiber</td>
+            <td>Cloth</td>
+            <td>36.7%</td>
+          </tr>
+          <tr>
+            <td>Thetford</td>
+            <td>Ore</td>
+            <td>Metal Bars</td>
+            <td>36.7%</td>
+          </tr>
+          <tr>
+            <td>Martlock</td>
+            <td>Hide</td>
+            <td>Leather</td>
+            <td>36.7%</td>
+          </tr>
+          <tr>
+            <td>Fort Sterling</td>
+            <td>Wood</td>
+            <td>Planks</td>
+            <td>36.7%</td>
+          </tr>
+          <tr>
+            <td>Bridgewatch</td>
+            <td>Rock</td>
+            <td>Stone Blocks</td>
+            <td>36.7%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Calculator Grid -->
+    <div class="calculator-grid">
+      <!-- Section 1: Setup -->
+      <div class="section">
+        <div class="section-header">
+          <h2><span class="section-number">1</span>Setup</h2>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Resource Type</label>
+            <select id="resource-type">
+              <option value="ore">Ore → Metal Bars</option>
+              <option value="fiber">Fiber → Cloth</option>
+              <option value="hide">Hide → Leather</option>
+              <option value="wood">Wood → Planks</option>
+              <option value="rock">Rock → Stone Blocks</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Tier</label>
+            <select id="tier">
+              <option value="2">Tier 2</option>
+              <option value="3">Tier 3</option>
+              <option value="4" selected>Tier 4</option>
+              <option value="5">Tier 5</option>
+              <option value="6">Tier 6</option>
+              <option value="7">Tier 7</option>
+              <option value="8">Tier 8</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>City</label>
+            <select id="city">
+              <option value="Thetford">Thetford</option>
+              <option value="Lymhurst">Lymhurst</option>
+              <option value="Martlock">Martlock</option>
+              <option value="Fort Sterling">Fort Sterling</option>
+              <option value="Bridgewatch">Bridgewatch</option>
+              <option value="Caerleon">Caerleon (Non-Bonus)</option>
+              <option value="Personal Island">Personal Island</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Quantity to Refine</label>
+            <input type="number" id="quantity" value="1000" min="1" step="1" placeholder="1000">
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Market Data -->
+      <div class="section">
+        <div class="section-header">
+          <h2><span class="section-number">2</span>Market Data</h2>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Raw Material Price</label>
+            <input type="number" id="raw-price" value="0" min="0" step="1" placeholder="Per unit (silver)">
+          </div>
+          <div class="form-group">
+            <label>Previous Tier Price</label>
+            <input type="number" id="prev-tier-price" value="0" min="0" step="1" placeholder="Per unit (silver)">
+          </div>
+          <div class="form-group">
+            <label>Refined Sell Price</label>
+            <input type="number" id="refined-price" value="0" min="0" step="1" placeholder="Per unit (silver)">
+          </div>
+          <div class="form-group">
+            <label>Station Silver Cost</label>
+            <input type="number" id="station-cost" value="0" min="0" step="1" placeholder="Flat cost (silver)">
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Refining Settings -->
+      <div class="section" style="grid-column: 1 / -1;">
+        <div class="section-header">
+          <h2><span class="section-number">3</span>Refining Settings</h2>
+        </div>
+        <div class="toggle-group">
+          <div class="toggle-item">
+            <label class="toggle-switch">
+              <input type="checkbox" id="premium">
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="toggle-label">Premium (4% tax instead of 8%)</span>
+          </div>
+          <div class="toggle-item">
+            <label class="toggle-switch">
+              <input type="checkbox" id="focus">
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="toggle-label">Use Focus (+17.2% to +28.3% return)</span>
+          </div>
+        </div>
+
+        <button class="calculate-button" id="calculate-btn">
+          🧮 Calculate Profit
+        </button>
+      </div>
+
+      <!-- Results Container -->
+      <div class="results-container" id="results-container">
+        <!-- Profit Highlight -->
+        <div class="profit-highlight" id="profit-highlight">
+          <div class="profit-highlight-label">Net Profit</div>
+          <div class="profit-highlight-value" id="profit-value">+0 silver</div>
+        </div>
+
+        <!-- Batch Scaling -->
+        <div class="batch-scaling">
+          <div class="scaling-card">
+            <div class="scaling-card-label">Profit per 1</div>
+            <div class="scaling-card-value" id="profit-per-1">0</div>
+          </div>
+          <div class="scaling-card">
+            <div class="scaling-card-label">Profit per 1,000</div>
+            <div class="scaling-card-value" id="profit-per-1000">0</div>
+          </div>
+          <div class="scaling-card">
+            <div class="scaling-card-label">Profit per 10,000</div>
+            <div class="scaling-card-value" id="profit-per-10000">0</div>
+          </div>
+        </div>
+
+        <!-- Detailed Breakdown -->
+        <div class="section">
+          <h2>📋 Detailed Breakdown</h2>
+          
+          <div class="breakdown-section-title">Material Requirements</div>
+          <table class="breakdown-table">
+            <tbody id="materials-breakdown">
+            </tbody>
+          </table>
+
+          <div class="breakdown-section-title">Cost Breakdown</div>
+          <table class="breakdown-table">
+            <tbody id="costs-breakdown">
+            </tbody>
+          </table>
+
+          <div class="breakdown-section-title">Revenue & Profit</div>
+          <table class="breakdown-table">
+            <tbody id="revenue-breakdown">
+            </tbody>
+          </table>
+
+          <div class="breakdown-section-title">Break-Even Analysis</div>
+          <table class="breakdown-table">
+            <tbody id="breakeven-breakdown">
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Advanced Features -->
+      <div class="section advanced-section">
+        <h2>🔧 Advanced Features</h2>
+        
+        <div class="feature-tabs">
+          <button class="feature-tab active" data-tab="presets">Saved Presets</button>
+          <button class="feature-tab" data-tab="history">Profit History</button>
+          <button class="feature-tab" data-tab="comparison">City Comparison</button>
+          <button class="feature-tab" data-tab="reinvestment">Reinvestment Simulator</button>
+        </div>
+
+        <!-- Presets Tab -->
+        <div class="feature-content active" id="presets-content">
+          <div class="save-preset-form">
+            <input type="text" id="preset-name" placeholder="Preset name (e.g., T4 Ore - Thetford)">
+            <button class="btn-primary" id="save-preset-btn">💾 Save Current Setup</button>
+          </div>
+          <div class="preset-grid" id="preset-grid">
+            <!-- Presets will be dynamically added here -->
+          </div>
+        </div>
+
+        <!-- History Tab -->
+        <div class="feature-content" id="history-content">
+          <div style="margin-bottom: var(--spacing-4);">
+            <button class="btn-secondary" id="clear-history-btn">🗑️ Clear History</button>
+          </div>
+          <div id="history-list">
+            <!-- History items will be dynamically added here -->
+          </div>
+        </div>
+
+        <!-- Comparison Tab -->
+        <div class="feature-content" id="comparison-content">
+          <div class="comparison-controls">
+            <div class="form-group">
+              <label>Compare City 1</label>
+              <select id="comp-city1">
+                <option value="Thetford">Thetford</option>
+                <option value="Lymhurst">Lymhurst</option>
+                <option value="Martlock">Martlock</option>
+                <option value="Fort Sterling">Fort Sterling</option>
+                <option value="Bridgewatch">Bridgewatch</option>
+                <option value="Caerleon">Caerleon</option>
+                <option value="Personal Island">Personal Island</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Compare City 2</label>
+              <select id="comp-city2">
+                <option value="Caerleon" selected>Caerleon</option>
+                <option value="Thetford">Thetford</option>
+                <option value="Lymhurst">Lymhurst</option>
+                <option value="Martlock">Martlock</option>
+                <option value="Fort Sterling">Fort Sterling</option>
+                <option value="Bridgewatch">Bridgewatch</option>
+                <option value="Personal Island">Personal Island</option>
+              </select>
+            </div>
+            <button class="btn-primary" id="compare-cities-btn">🔄 Compare</button>
+          </div>
+          <div class="comparison-results" id="comparison-results">
+            <!-- Comparison cards will be dynamically added here -->
+          </div>
+        </div>
+
+        <!-- Reinvestment Tab -->
+        <div class="feature-content" id="reinvestment-content">
+          <p style="color: var(--color-text-secondary); margin-bottom: var(--spacing-4);">
+            This simulator shows how resource returns can be reinvested to create additional refined materials, 
+            effectively reducing your final cost per unit.
+          </p>
+          <button class="btn-primary" id="simulate-reinvestment-btn">🔄 Simulate Reinvestment</button>
+          <div id="reinvestment-results">
+            <!-- Reinvestment results will be shown here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="/assets/js/refining-calculator.js"></script>
+</body>
+</html>

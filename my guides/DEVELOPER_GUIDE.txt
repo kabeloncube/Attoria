@@ -1,0 +1,188 @@
+# 🚀 Developer Guide - CoC Dashboard
+
+## 📁 File Structure & What Each File Does
+
+```
+coc-backend/
+├── server.js          # Main backend server (Express + API routes)
+├── .env               # Secret API key storage (NEVER commit to git)
+├── package.json       # Project dependencies and scripts
+├── users.db          # SQLite database file (auto-created)
+├── public/           # Frontend files served to browser
+│   ├── index.html    # Main webpage with styling
+│   └── app.js        # Frontend JavaScript (handles UI interactions)
+```
+
+## 🔧 Key Files Explained
+
+### **server.js** - Backend Server
+```javascript
+// IMPORTANT SECTIONS:
+
+// 1. DEPENDENCIES - What libraries we use
+const express = require('express');     // Web server framework
+const cors = require('cors');          // Allows frontend to talk to backend
+const bcrypt = require('bcryptjs');     // Password encryption
+const jwt = require('jsonwebtoken');    // User login tokens
+const sqlite3 = require('sqlite3');    // Database
+
+// 2. API KEY - Your CoC API token (from .env file)
+const COC_API_KEY = process.env.COC_API_KEY;  // NEVER hardcode this!
+
+// 3. DATABASE SETUP - Creates user accounts table
+db.run(`CREATE TABLE IF NOT EXISTS users (...)`);  // Only runs first time
+
+// 4. AUTHENTICATION MIDDLEWARE - Checks if user is logged in
+const authenticateToken = (req, res, next) => { ... }
+
+// 5. API ROUTES - What URLs the server responds to:
+// POST /api/register        - Create new user account  
+// POST /api/login          - User login
+// GET /api/clan/:tag       - Get clan info
+// GET /api/clan/:tag/members    - Get clan members (YOUR FEATURE!)
+// GET /api/clan/:tag/warlog     - Get war history
+// GET /api/clan/:tag/capitalraidseasons - Get clan capital stats
+// GET /api/leagues/legend  - Get leaderboard
+
+// 6. CoC API HELPER FUNCTION - Talks to Clash of Clans servers
+async function fetchCoCAPI(endpoint) {
+  // Sends your API key in header: Authorization: Bearer YOUR_KEY
+  // Returns JSON data from CoC servers
+}
+```
+
+### **public/app.js** - Frontend JavaScript  
+```javascript
+// IMPORTANT SECTIONS:
+
+// 1. DOM ELEMENTS - HTML elements we interact with
+const searchForm = document.getElementById('searchForm');    // Search box
+const resultsDiv = document.getElementById('results');       // Where results show
+
+// 2. AUTHENTICATION - User login system
+let currentUser = null;                    // Currently logged in user
+let authToken = localStorage.getItem('authToken');  // Saved login token
+
+// 3. MAIN SEARCH FUNCTION - When user searches
+async function fetchData(searchType, searchValue) {
+  // Makes HTTP request to your server
+  // Server then calls CoC API
+  // Results displayed in browser
+}
+
+// 4. CLAN TABS SYSTEM - Your member display feature
+function createClanCardWithTabs(clan, currentTag) {
+  // Creates HTML with Overview/Members/War Log/Capital tabs
+  // Each clan gets unique IDs to avoid conflicts
+}
+
+function showTab(tabName, button, cardId) {
+  // Switches between tabs (Overview -> Members -> etc)
+  // Loads data when tab is clicked for first time
+}
+
+// 5. MEMBER LIST CREATION - Displays clan members
+function createMembersList(members) {
+  // Takes clan member data from API
+  // Creates HTML table with roles, TH levels, donations
+  // Color codes roles: Leader=red, Co-Leader=orange, etc.
+}
+
+// 6. API CALLS - Frontend talking to your backend
+await fetch(`${API_BASE_URL}/api/clan/${clanTag}/members`)  // Get members
+```
+
+### **public/index.html** - Webpage Structure
+```html
+<!-- IMPORTANT SECTIONS: -->
+
+<!-- 1. CSS STYLES - How everything looks -->
+<style>
+  .clan-card { ... }          /* Clan info box styling */
+  .member-item { ... }        /* Individual member row styling */
+  .tab-button { ... }         /* Tab switching buttons */
+  .role-leader { ... }        /* Role color coding */
+</style>
+
+<!-- 2. AUTHENTICATION BAR - Login/Register buttons -->
+<div class="auth-bar">
+  <!-- Shows login buttons OR welcome message -->
+</div>
+
+<!-- 3. SEARCH INTERFACE -->
+<form id="searchForm">
+  <!-- Dropdown: Clan/Player/Clan Search -->
+  <!-- Input box for tag/name -->
+  <!-- Search button -->
+</form>
+
+<!-- 4. RESULTS AREA - Where clan data appears -->
+<div id="results"></div>
+
+<!-- 5. MODALS - Login/Register popups -->
+<div id="loginModal" class="modal">...</div>
+```
+
+## ⚠️ CRITICAL - Don't Break These!
+
+### **🔴 NEVER TOUCH THESE:**
+1. `.env` file - Contains your API key
+2. `users.db` - Your user database  
+3. `node_modules/` folder - Installed packages
+
+### **🟡 BE CAREFUL WITH:**
+1. **API Endpoints** in server.js - URLs must match frontend calls
+2. **HTML IDs** - JavaScript looks for specific element IDs
+3. **Function Names** - Called from other parts of code
+
+### **🟢 SAFE TO MODIFY:**
+1. **CSS Styles** - Colors, fonts, spacing
+2. **HTML Content** - Text, headings, descriptions
+3. **Console.log()** statements - For debugging
+
+## 🛠️ Common Edits You Might Want:
+
+### **Change Colors:**
+```css
+/* In index.html <style> section */
+.clan-card { background: #your-color; }
+.role-leader { background: #ff6b6b; }  /* Leader = red */
+```
+
+### **Add New API Endpoint:**
+```javascript
+// In server.js, add after existing routes:
+app.get('/api/your-new-endpoint', async (req, res) => {
+  try {
+    const data = await fetchCoCAPI('/your-coc-api-path');
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed', message: error.message });
+  }
+});
+```
+
+### **Modify Member Display:**
+```javascript
+// In app.js, find createMembersList() function
+// Add new columns by modifying the member-item div structure
+```
+
+## 🐛 Debugging Tips:
+
+1. **Check Browser Console** - F12 -> Console tab
+2. **Check Server Logs** - Terminal where npm start is running  
+3. **Test API Directly** - `curl http://localhost:3000/api/health`
+
+## 📚 Learning Resources:
+- **Express.js**: Web server framework
+- **SQLite**: Simple database  
+- **JWT**: User authentication tokens
+- **Fetch API**: Making HTTP requests from browser
+- **DOM Manipulation**: Changing webpage content with JavaScript
+
+## 🚨 Emergency Recovery:
+If you break something, you can always:
+1. Stop server: `pkill -f "node server.js"`
+2. Restart: `npm start`
+3. Check this guide for what each part does!

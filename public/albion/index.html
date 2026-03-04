@@ -1,0 +1,975 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Albion Online — Ættoria Clash</title>
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/favicon.png" />
+  <link rel="stylesheet" href="/assets/css/albion.css">
+</head>
+
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand"><a href="/">Albion — Ættoria</a></div>
+      <nav>
+        <ul>
+          <li><a href="/albion/index.html">Home</a></li>
+          <li><a href="#builds">Builds</a></li>
+          <li><a href="#markets">Markets</a></li>
+          <li class="nav-dropdown">
+            <a href="#" id="tools-toggle" aria-haspopup="true" aria-expanded="false">Tools ▾</a>
+            <ul class="dropdown-menu" id="tools-dropdown" aria-label="Tools submenu">
+              <li><a href="/albion/refining.html">Refining</a></li>
+            </ul>
+          </li>
+          <li><a href="#guides">Guides</a></li>
+          <li><a href="#region">Region</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="slider" id="slider">
+      <div class="slides" id="slides">
+        <!-- Slides populated by JS -->
+      </div>
+      <div class="controls">
+        <button class="ctrl" id="prev">◀</button>
+        <button class="ctrl" id="next">▶</button>
+      </div>
+    </div>
+
+    <section class="content" id="main-content">
+      <h2>Market Place</h2>
+
+      <!-- Search Bar -->
+      <div class="market-search">
+        <div class="search-group">
+          <label for="tier-select">Tier</label>
+          <select id="tier-select">
+            <option value="T1">T1</option>
+            <option value="T2">T2</option>
+            <option value="T3">T3</option>
+            <option value="T4">T4</option>
+            <option value="T5">T5</option>
+            <option value="T6">T6</option>
+            <option value="T7">T7</option>
+            <option value="T8">T8</option>
+          </select>
+        </div>
+
+        <!-- Enchantment selector temporarily disabled due to known issue
+        <div class="search-group">
+          <label for="enchantment-select">Enchantment</label>
+          <select id="enchantment-select">
+            <option value="0">None</option>
+            <option value="1">Uncommon</option>
+            <option value="2">Rare</option>
+            <option value="3">Epic</option>
+            <option value="4">Legendary</option>
+          </select>
+        </div>
+        -->
+
+        <div class="search-group autocomplete-container">
+          <label for="item-type">Item Type</label>
+          <input id="item-type" type="text" placeholder='e.g., "bag", "cloth armor", "fiber"'
+            autocomplete="off">
+          <div id="item-autocomplete" class="autocomplete-dropdown" style="display: none;"></div>
+        </div>
+
+        <!-- Quality selector temporarily disabled due to known issue
+        <div class="search-group">
+          <label for="quality-select">Quality</label>
+          <select id="quality-select">
+            <option value="1">Normal</option>
+            <option value="2">Good</option>
+            <option value="3">Outstanding</option>
+            <option value="4">Excellent</option>
+            <option value="5">Masterpiece</option>
+          </select>
+        </div>
+        -->
+
+        <div class="search-group">
+          <label for="region">Region</label>
+          <select id="region">
+            <option value="west">West</option>
+            <option value="europe">Europe</option>
+            <option value="east">East</option>
+          </select>
+        </div>
+
+        <div class="search-actions">
+          <button id="fetch-prices" class="btn-primary">
+            Search
+          </button>
+        </div>
+      </div>
+
+
+
+      <div id="market-status" class="status-message"></div>
+
+      <!-- Item Preview Card -->
+      <div id="item-preview-card" class="item-preview-card" style="display: none;">
+        <div class="item-preview-header">
+          <div class="item-icon-wrapper">
+            <img id="render-img" alt="item icon" class="item-icon" />
+          </div>
+          <div class="item-info">
+            <h3 id="item-name">Item Name</h3>
+            <p id="item-tier" class="item-tier">Tier</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Market Recommendations -->
+      <div id="market-recommendations" class="market-recommendations" style="display: none;">
+        <h3>Market Recommendations</h3>
+        <div class="recommendations-grid">
+          <div class="recommendation-card sell-recommendation">
+            <h4>Best Cities to Sell</h4>
+            <div class="recommendation-list" id="sell-recommendations">
+              <!-- Best sell cities populated by JS -->
+            </div>
+          </div>
+          <div class="recommendation-card buy-recommendation">
+            <h4>Best Cities to Buy</h4>
+            <div class="recommendation-list" id="buy-recommendations">
+              <!-- Best buy cities populated by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Market Grid - All 5 Cities -->
+      <div id="market-grid" class="market-grid" style="display: none;">
+        <div class="city-card" data-city="Caerleon">
+          <div class="city-header">
+            <h3>Caerleon</h3>
+            <span class="city-label">Black Market</span>
+          </div>
+          <div class="price-display">
+            <div class="sell-price">
+              <label>Sell Orders</label>
+              <div class="price" data-price="sell-caerleon">---</div>
+            </div>
+            <div class="buy-price">
+              <label>Buy Orders</label>
+              <div class="price" data-price="buy-caerleon">---</div>
+            </div>
+          </div>
+          <div class="market-meta">
+            <span class="updated" data-updated="caerleon">Updated: ---</span>
+          </div>
+        </div>
+
+        <div class="city-card" data-city="Bridgewatch">
+          <div class="city-header">
+            <h3>Bridgewatch</h3>
+            <span class="city-label">Steppe</span>
+          </div>
+          <div class="price-display">
+            <div class="sell-price">
+              <label>Sell Orders</label>
+              <div class="price" data-price="sell-bridgewatch">---</div>
+            </div>
+            <div class="buy-price">
+              <label>Buy Orders</label>
+              <div class="price" data-price="buy-bridgewatch">---</div>
+            </div>
+          </div>
+          <div class="market-meta">
+            <span class="updated" data-updated="bridgewatch">Updated: ---</span>
+          </div>
+        </div>
+
+        <div class="city-card" data-city="Fort Sterling">
+          <div class="city-header">
+            <h3>Fort Sterling</h3>
+            <span class="city-label">Highland</span>
+          </div>
+          <div class="price-display">
+            <div class="sell-price">
+              <label>Sell Orders</label>
+              <div class="price" data-price="sell-fortsterling">---</div>
+            </div>
+            <div class="buy-price">
+              <label>Buy Orders</label>
+              <div class="price" data-price="buy-fortsterling">---</div>
+            </div>
+          </div>
+          <div class="market-meta">
+            <span class="updated" data-updated="fortsterling">Updated: ---</span>
+          </div>
+        </div>
+
+        <div class="city-card" data-city="Lymhurst">
+          <div class="city-header">
+            <h3>Lymhurst</h3>
+            <span class="city-label">Forest</span>
+          </div>
+          <div class="price-display">
+            <div class="sell-price">
+              <label>Sell Orders</label>
+              <div class="price" data-price="sell-lymhurst">---</div>
+            </div>
+            <div class="buy-price">
+              <label>Buy Orders</label>
+              <div class="price" data-price="buy-lymhurst">---</div>
+            </div>
+          </div>
+          <div class="market-meta">
+            <span class="updated" data-updated="lymhurst">Updated: ---</span>
+          </div>
+        </div>
+
+        <div class="city-card" data-city="Martlock">
+          <div class="city-header">
+            <h3>Martlock</h3>
+            <span class="city-label">Mountain</span>
+          </div>
+          <div class="price-display">
+            <div class="sell-price">
+              <label>Sell Orders</label>
+              <div class="price" data-price="sell-martlock">---</div>
+            </div>
+            <div class="buy-price">
+              <label>Buy Orders</label>
+              <div class="price" data-price="buy-martlock">---</div>
+            </div>
+          </div>
+          <div class="market-meta">
+            <span class="updated" data-updated="martlock">Updated: ---</span>
+          </div>
+        </div>
+
+        <div class="city-card" data-city="Thetford">
+          <div class="city-header">
+            <h3>Thetford</h3>
+            <span class="city-label">Swamp</span>
+          </div>
+          <div class="price-display">
+            <div class="sell-price">
+              <label>Sell Orders</label>
+              <div class="price" data-price="sell-thetford">---</div>
+            </div>
+            <div class="buy-price">
+              <label>Buy Orders</label>
+              <div class="price" data-price="buy-thetford">---</div>
+            </div>
+          </div>
+          <div class="market-meta">
+            <span class="updated" data-updated="thetford">Updated: ---</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/assets/js/albion-apis.js"></script>
+  <script src="/assets/js/itemMappings.js"></script>
+  <script>
+    // Image slider initialization - runs immediately (safe for images)
+    (function () {
+      const imageFolder = '/assets/images/albion-images/';
+      // List of images present in the folder (kept in sync with repo).
+      const images = [
+        'albion-arena.jpeg',
+        'albion-ava.jpeg',
+        'albion-merlyn.jpeg',
+        'albion-mists.jpeg',
+        'albion-morgana.jpeg',
+        'albion-ox.jpg'
+      ];
+
+      // Defer slider initialization to ensure DOM is ready
+      function initSlider() {
+        const slidesEl = document.getElementById('slides');
+        if (!slidesEl) {
+          console.warn('Slider element not found, retrying...');
+          setTimeout(initSlider, 100);
+          return;
+        }
+
+        images.forEach(src => {
+          const div = document.createElement('div');
+          div.className = 'slide';
+          div.style.backgroundImage = `url('${imageFolder}${src}')`;
+          slidesEl.appendChild(div);
+        });
+
+        let index = 0;
+        const total = images.length;
+        const update = () => {
+          slidesEl.style.transform = `translateX(-${index * 100}%)`;
+        };
+
+        const prevBtn = document.getElementById('prev');
+        const nextBtn = document.getElementById('next');
+        const slider = document.getElementById('slider');
+
+        if (prevBtn && nextBtn) {
+          prevBtn.addEventListener('click', () => {
+            index = (index - 1 + total) % total; update();
+          });
+          nextBtn.addEventListener('click', () => {
+            index = (index + 1) % total; update();
+          });
+        }
+
+        // Auto-rotate with cleanup
+        let timer = setInterval(() => { index = (index + 1) % total; update(); }, 4500);
+
+        if (slider) {
+          slider.addEventListener('mouseenter', () => clearInterval(timer));
+          slider.addEventListener('mouseleave', () => { timer = setInterval(() => { index = (index + 1) % total; update(); }, 4500); });
+        }
+
+        // Store timer reference for cleanup
+        window.albionSliderTimer = timer;
+
+        // initialize
+        update();
+      }
+
+      // Initialize slider when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initSlider);
+      } else {
+        initSlider();
+      }
+    })();
+  </script>
+
+  <script>
+    // Albion Market Interface - Redesigned to match in-game experience
+    document.addEventListener('DOMContentLoaded', function () {
+      (function () {
+        const $ = id => document.getElementById(id);
+        const statusEl = $('market-status');
+        const marketGrid = $('market-grid');
+        const itemPreviewCard = $('item-preview-card');
+        const renderImg = $('render-img');
+
+        // Item search functionality
+
+        // Map API city names to our display names
+        const cityMapping = {
+          'Caerleon': 'caerleon',
+          'Bridgewatch': 'bridgewatch',
+          'Fort Sterling': 'fortsterling',
+          'Lymhurst': 'lymhurst',
+          'Martlock': 'martlock',
+          'Thetford': 'thetford'
+        };
+
+        function setStatus(msg, type = 'info') {
+          statusEl.textContent = msg;
+          statusEl.className = 'status-message ' + type;
+          statusEl.style.display = msg ? 'block' : 'none';
+        }
+
+        function formatItemName(itemId) {
+          // Convert T4_BAG to "Tier 4 Bag" etc.
+          return itemId.replace(/_/g, ' ').replace(/T(\d+)/g, 'Tier $1');
+        }
+
+        function formatTime(dateString) {
+          if (!dateString) return 'Unknown';
+          const date = new Date(dateString);
+          const now = new Date();
+          const diffMs = now - date;
+          const diffMins = Math.floor(diffMs / 60000);
+
+          if (diffMins < 1) return 'Just now';
+          if (diffMins < 60) return `${diffMins}m ago`;
+          const diffHours = Math.floor(diffMins / 60);
+          if (diffHours < 24) return `${diffHours}h ago`;
+          return `${Math.floor(diffHours / 24)}d ago`;
+        }
+
+        // Smart text processing for natural language item input
+        function processItemInput(input) {
+          if (!input || typeof input !== 'string') return '';
+
+          // Trim and normalize
+          let processed = input.trim().toUpperCase();
+
+          // If it already looks like an API format (has underscores), return as-is
+          if (processed.includes('_')) {
+            return processed;
+          }
+
+          // Convert natural language to API format
+          // Handle "tier X" or "tX" patterns
+          processed = processed.replace(/\btier\s*(\d+)\b/gi, 'T$1');
+          processed = processed.replace(/\bt(\d+)\b/gi, 'T$1');
+
+          // Replace spaces with underscores
+          processed = processed.replace(/\s+/g, '_');
+
+          // Common item name mappings (expand as needed) are defined in ITEM_MAPPINGS
+          for (const [key, value] of Object.entries(ITEM_MAPPINGS)) {
+            processed = processed.replace(new RegExp(`\\b${key}\\b`, 'g'), value);
+          }
+
+          return processed;
+        }
+
+        async function fetchPrices(itemId, region) {
+          // Fetch prices for ALL cities at once
+          const cities = 'Caerleon,Bridgewatch,Fort Sterling,Lymhurst,Martlock,Thetford';
+          // Enchantment and quality UI disabled temporarily — use safe defaults
+          const enchantment = '0'; // 0 = none
+          const quality = '1'; // 1 = normal
+
+          // Append enchantment to item ID if not 0 (e.g., T4_BAG@1)
+          let finalItemId = itemId;
+          if (enchantment !== '0') {
+            finalItemId = `${itemId}@${enchantment}`;
+          }
+
+          const qs = new URLSearchParams({
+            region,
+            item: finalItemId,
+            locations: cities,
+            qualities: quality
+          });
+
+          const url = `/api/proxy/albion/prices?${qs.toString()}`;
+
+          setStatus('Fetching market prices from all cities...', 'loading');
+          marketGrid.style.display = 'none';
+          itemPreviewCard.style.display = 'none';
+          const recommendationsEl = document.getElementById('market-recommendations');
+          if (recommendationsEl) {
+            recommendationsEl.style.display = 'none';
+          }
+
+          try {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(res.statusText || 'Failed to fetch prices');
+            const response = await res.json();
+            const data = response.data || response;
+
+            if (!data || (Array.isArray(data) && data.length === 0)) {
+              setStatus('No market data found for this item', 'error');
+              return;
+            }
+
+            console.log('API Response for', itemId, ':', data);
+            setStatus(response.cached ? 'Prices loaded (cached)' : 'Live market prices loaded', 'success');
+            renderMarketData(data, itemId);
+          } catch (err) {
+            console.error('Market fetch error:', err);
+
+            // Handle specific error types with user-friendly messages
+            if (err.message && err.message.includes('Failed to fetch')) {
+              setStatus('Network error - check your connection and try again', 'error');
+            } else if (err.message && err.message.includes('Too Many Requests')) {
+              setStatus('Rate limit exceeded - please wait a moment before trying again', 'error');
+            } else {
+              setStatus('Error loading market data: ' + (err.message || 'Unknown error'), 'error');
+            }
+
+            // Clear any partial data
+            marketGrid.style.display = 'none';
+            itemPreviewCard.style.display = 'none';
+            const recommendationsEl = document.getElementById('market-recommendations');
+            if (recommendationsEl) {
+              recommendationsEl.style.display = 'none';
+            }
+          }
+        }
+
+        function renderMarketData(data, itemId) {
+          // Show item preview
+          itemPreviewCard.style.display = 'flex';
+          document.getElementById('item-name').textContent = formatItemName(itemId);
+          document.getElementById('item-tier').textContent = itemId;
+
+          // Load item icon
+          const imgUrl = `https://render.albiononline.com/v1/item/${encodeURIComponent(itemId)}.png?size=128`;
+          renderImg.src = imgUrl;
+          renderImg.onerror = () => {
+            renderImg.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect fill="%23333" width="100" height="100"%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%23999" font-size="12"%3ENo Image%3C/text%3E%3C/svg%3E';
+          };
+
+          // Reset all city displays
+          Object.values(cityMapping).forEach(city => {
+            document.querySelector(`[data-price="sell-${city}"]`).textContent = '---';
+            document.querySelector(`[data-price="buy-${city}"]`).textContent = '---';
+            document.querySelector(`[data-updated="${city}"]`).textContent = 'Updated: ---';
+          });
+
+          // Process market data and calculate recommendations
+          let sellCities = [];
+          let buyCities = [];
+          let hasAnyMarketData = false;
+
+          if (Array.isArray(data)) {
+            // Collect all cities with valid market data
+            data.forEach(cityData => {
+              const cityName = cityData.city || cityData.location;
+              const sellPrice = cityData.sell_price_min;
+              const buyPrice = cityData.buy_price_max;
+
+              if (sellPrice != null) {
+                sellCities.push({ name: cityName, price: sellPrice });
+                hasAnyMarketData = true;
+              }
+              if (buyPrice != null) {
+                buyCities.push({ name: cityName, price: buyPrice });
+                hasAnyMarketData = true;
+              }
+            });
+
+            // Sort for recommendations
+            // Best to sell: highest sell prices
+            sellCities.sort((a, b) => b.price - a.price);
+            // Best to buy: lowest buy prices
+            buyCities.sort((a, b) => a.price - b.price);
+
+            // Display recommendations only if there's actual market data
+            if (hasAnyMarketData) {
+              renderRecommendations(sellCities.slice(0, 2), buyCities.slice(0, 2));
+            } else {
+              // Show message that item has no market activity
+              const recommendationsEl = document.getElementById('market-recommendations');
+              if (recommendationsEl) {
+                recommendationsEl.innerHTML = `
+              <h3>Market Status</h3>
+              <div class="recommendations-grid">
+                <div class="recommendation-card" style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+                  <h4 style="color: var(--muted);">No Recent Market Activity</h4>
+                  <p style="color: var(--muted); margin: 10px 0;">This item hasn't been traded recently, so no market data is available.</p>
+                  <p style="color: var(--muted); font-size: 14px;">Try searching for different items or check back later.</p>
+                </div>
+              </div>
+            `;
+                recommendationsEl.style.display = 'block';
+              }
+            }
+          }
+
+          // Populate detailed city data
+          if (Array.isArray(data)) {
+            data.forEach(cityData => {
+              const cityName = cityData.city || cityData.location;
+              const cityKey = cityMapping[cityName];
+
+              if (cityKey) {
+                const sellPrice = cityData.sell_price_min;
+                const buyPrice = cityData.buy_price_max;
+                const sellDate = cityData.sell_price_min_date;
+                const buyDate = cityData.buy_price_max_date;
+
+                // Check for actual market activity (price > 0 AND valid date)
+                const hasSellData = sellPrice > 0 && sellDate && sellDate !== '0001-01-01T00:00:00';
+                const hasBuyData = buyPrice > 0 && buyDate && buyDate !== '0001-01-01T00:00:00';
+
+                if (hasSellData) {
+                  document.querySelector(`[data-price="sell-${cityKey}"]`).textContent = '$' + sellPrice.toLocaleString();
+                } else {
+                  document.querySelector(`[data-price="sell-${cityKey}"]`).textContent = 'No data';
+                }
+
+                if (hasBuyData) {
+                  document.querySelector(`[data-price="buy-${cityKey}"]`).textContent = '$' + buyPrice.toLocaleString();
+                } else {
+                  document.querySelector(`[data-price="buy-${cityKey}"]`).textContent = 'No data';
+                }
+
+
+
+                document.querySelector(`[data-updated="${cityKey}"]`).textContent =
+                  `Updated: ${formatTime(cityData.sell_price_min_date || cityData.buy_price_max_date)}`;
+              }
+            });
+          }
+
+          marketGrid.style.display = 'grid';
+          const finalRecommendationsEl = document.getElementById('market-recommendations');
+          if (finalRecommendationsEl) {
+            finalRecommendationsEl.style.display = 'block';
+          }
+        }
+
+        function renderRecommendations(bestSellCities, bestBuyCities) {
+          const sellContainer = document.getElementById('sell-recommendations');
+          const buyContainer = document.getElementById('buy-recommendations');
+
+          if (!sellContainer || !buyContainer) {
+            console.warn('Recommendation containers not found');
+            return;
+          }
+
+          // Render best cities to sell
+          sellContainer.innerHTML = '';
+          bestSellCities.forEach((city, index) => {
+            const cityEl = document.createElement('div');
+            cityEl.className = 'recommendation-item';
+            cityEl.innerHTML = `
+          <span class="rank">#${index + 1}</span>
+          <span class="city-name">${city.name}</span>
+          <span class="price">$${city.price.toLocaleString()}</span>
+        `;
+            sellContainer.appendChild(cityEl);
+          });
+
+          // Render best cities to buy
+          buyContainer.innerHTML = '';
+          bestBuyCities.forEach((city, index) => {
+            const cityEl = document.createElement('div');
+            cityEl.className = 'recommendation-item';
+            cityEl.innerHTML = `
+          <span class="rank">#${index + 1}</span>
+          <span class="city-name">${city.name}</span>
+          <span class="price">$${city.price.toLocaleString()}</span>
+        `;
+            buyContainer.appendChild(cityEl);
+          });
+        }
+
+
+
+        // Event listeners
+        $('fetch-prices').addEventListener('click', () => {
+          const tier = $('tier-select').value;
+          let itemType = $('item-type').value.trim();
+
+          if (!itemType) {
+            setStatus('Please enter an item type', 'warning');
+            return;
+          }
+
+          // Process natural language input for item type
+          itemType = processItemInput(itemType);
+
+          if (!itemType) {
+            setStatus('Could not process item input. Try selecting from the dropdown suggestions or use API format like "FIBER" or "T4_FIBER"', 'error');
+            return;
+          }
+
+          // Combine tier and item type
+          const itemId = `${tier}_${itemType}`;
+
+          const region = $('region').value || 'west';
+          fetchPrices(itemId, region);
+        });
+
+
+
+
+
+        // Allow Enter key to search
+        $('item-type').addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') $('fetch-prices').click();
+        });
+
+        // =====================
+        // AUTOCOMPLETE FUNCTIONALITY
+        // =====================
+        (function() {
+          const itemInput = document.getElementById('item-type');
+          const autocompleteDropdown = document.getElementById('item-autocomplete');
+          let debounceTimer = null;
+          let selectedIndex = -1;
+
+          // Popular items for quick suggestions
+          const popularItems = [
+            { name: 'Bag', apiId: 'T4_BAG', category: 'Resource' },
+            { name: 'Cape', apiId: 'T4_CAPE', category: 'Equipment' },
+            { name: 'Horse', apiId: 'T4_HORSE', category: 'Mount' },
+            { name: 'Potion', apiId: 'T4_POTION_HEAL', category: 'Consumable' },
+            { name: 'Ore', apiId: 'T4_ORE', category: 'Resource' },
+            { name: 'Fiber', apiId: 'T4_FIBER', category: 'Resource' },
+            { name: 'Wood', apiId: 'T4_WOOD', category: 'Resource' },
+            { name: 'Hide', apiId: 'T4_HIDE', category: 'Resource' },
+            { name: 'Sword', apiId: 'T4_MAIN_SWORD', category: 'Weapon' },
+            { name: 'Axe', apiId: 'T4_MAIN_AXE', category: 'Weapon' },
+            { name: 'Bow', apiId: 'T4_2H_BOW', category: 'Weapon' },
+            { name: 'Staff', apiId: 'T4_MAIN_FIRESTAFF', category: 'Weapon' },
+            { name: 'Plate Armor', apiId: 'T4_ARMOR_PLATE_SET1', category: 'Armor' },
+            { name: 'Leather Armor', apiId: 'T4_ARMOR_LEATHER_SET1', category: 'Armor' },
+            { name: 'Cloth Armor', apiId: 'T4_ARMOR_CLOTH_SET1', category: 'Armor' }
+          ];
+
+          // Search API for items
+          async function searchItems(query) {
+            if (!query || query.length < 2) return [];
+
+            try {
+              const res = await fetch(`/api/proxy/albion/items/search?q=${encodeURIComponent(query)}&limit=10`);
+              if (!res.ok) return [];
+              const data = await res.json();
+              return data.items || [];
+            } catch (err) {
+              console.warn('Item search failed:', err);
+              // Fallback to popular items
+              return popularItems.filter(item => 
+                item.name.toLowerCase().includes(query.toLowerCase())
+              );
+            }
+          }
+
+          // Show dropdown with suggestions
+          function showSuggestions(items, query) {
+            if (!items || items.length === 0) {
+              // Show popular items if no search results
+              const popular = popularItems.slice(0, 5);
+              renderSuggestions(popular, query, true);
+              return;
+            }
+            renderSuggestions(items, query, false);
+          }
+
+          // Render suggestions in dropdown
+          function renderSuggestions(items, query, isPopular) {
+            autocompleteDropdown.innerHTML = '';
+            selectedIndex = -1;
+
+            if (items.length === 0) {
+              autocompleteDropdown.style.display = 'none';
+              return;
+            }
+
+            // Add header
+            if (isPopular) {
+              const header = document.createElement('div');
+              header.className = 'autocomplete-header';
+              header.style.cssText = 'padding: 8px 12px; font-size: 11px; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--color-border);';
+              header.textContent = 'Popular Items';
+              autocompleteDropdown.appendChild(header);
+            }
+
+            items.forEach((item, index) => {
+              const div = document.createElement('div');
+              div.className = 'autocomplete-item';
+              div.dataset.index = index;
+
+              // Highlight matching text
+              const name = item.name || item;
+              const nameHtml = query 
+                ? name.replace(new RegExp(`(${query})`, 'gi'), '<strong>$1</strong>')
+                : name;
+
+              div.innerHTML = `
+                <span class="autocomplete-item-name">${nameHtml}</span>
+                <span class="autocomplete-item-id">${item.id || ''}</span>
+              `;
+
+              div.addEventListener('click', () => selectItem(item));
+              div.addEventListener('mouseenter', () => {
+                document.querySelectorAll('.autocomplete-item').forEach((el, i) => {
+                  el.classList.toggle('active', i === index);
+                });
+              });
+
+              autocompleteDropdown.appendChild(div);
+            });
+
+            autocompleteDropdown.style.display = 'block';
+          }
+
+          // Select an item from suggestions
+          function selectItem(item) {
+            const itemId = item.id || item;
+            const tier = document.getElementById('tier-select').value;
+
+            // If item already has tier prefix, use as-is
+            if (itemId.includes('T')) {
+              // Extract tier from item if present
+              const tierMatch = itemId.match(/T(\d+)_/);
+              if (tierMatch) {
+                document.getElementById('tier-select').value = 'T' + tierMatch[1];
+              }
+              // Extract item type (everything after T4_)
+              const typeMatch = itemId.match(/T\d+_(.+)/);
+              if (typeMatch) {
+                itemInput.value = typeMatch[1].replace(/_/g, ' ').toLowerCase();
+              } else {
+                itemInput.value = itemId;
+              }
+            } else {
+              itemInput.value = item.name || item;
+            }
+
+            autocompleteDropdown.style.display = 'none';
+            itemInput.focus();
+          }
+
+          // Close dropdown
+          function closeDropdown() {
+            autocompleteDropdown.style.display = 'none';
+            selectedIndex = -1;
+          }
+
+          // Handle keyboard navigation
+          function handleKeyboard(e) {
+            const items = autocompleteDropdown.querySelectorAll('.autocomplete-item');
+            if (items.length === 0) return;
+
+            switch (e.key) {
+              case 'ArrowDown':
+                e.preventDefault();
+                selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+                updateSelection(items);
+                break;
+              case 'ArrowUp':
+                e.preventDefault();
+                selectedIndex = Math.max(selectedIndex - 1, 0);
+                updateSelection(items);
+                break;
+              case 'Enter':
+                e.preventDefault();
+                if (selectedIndex >= 0 && items[selectedIndex]) {
+                  items[selectedIndex].click();
+                }
+                break;
+              case 'Escape':
+                closeDropdown();
+                break;
+            }
+          }
+
+          // Update visual selection
+          function updateSelection(items) {
+            items.forEach((el, i) => {
+              el.classList.toggle('active', i === selectedIndex);
+              if (i === selectedIndex) {
+                el.scrollIntoView({ block: 'nearest' });
+              }
+            });
+          }
+
+          // Input handler with debounce
+          itemInput.addEventListener('input', (e) => {
+            clearTimeout(debounceTimer);
+            const query = e.target.value.trim();
+
+            if (query.length < 2) {
+              // Show popular items when input is empty or too short
+              showSuggestions(popularItems.slice(0, 5), query, true);
+              return;
+            }
+
+            debounceTimer = setTimeout(async () => {
+              const items = await searchItems(query);
+              showSuggestions(items, query, false);
+            }, 200);
+          });
+
+          // Keyboard handler
+          itemInput.addEventListener('keydown', handleKeyboard);
+
+          // Focus handler - show suggestions
+          itemInput.addEventListener('focus', () => {
+            if (itemInput.value.trim().length < 2) {
+              showSuggestions(popularItems.slice(0, 5), '', true);
+            }
+          });
+
+          // Close dropdown when clicking outside
+          document.addEventListener('click', (e) => {
+            if (!itemInput.contains(e.target) && !autocompleteDropdown.contains(e.target)) {
+              closeDropdown();
+            }
+          });
+
+          // Add hover styles for autocomplete items
+          const style = document.createElement('style');
+          style.textContent = `
+            .autocomplete-dropdown {
+              max-height: 300px;
+              overflow-y: auto;
+            }
+            .autocomplete-item {
+              padding: 10px 12px;
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 12px;
+              border-bottom: 1px solid var(--color-border);
+              transition: background 0.15s;
+            }
+            .autocomplete-item:hover,
+            .autocomplete-item.active {
+              background: var(--color-surface-hover);
+            }
+            .autocomplete-item:last-child {
+              border-bottom: none;
+            }
+            .autocomplete-item-name {
+              flex: 1;
+              font-size: 14px;
+              color: var(--color-text-primary);
+            }
+            .autocomplete-item-id {
+              font-size: 11px;
+              color: var(--color-text-tertiary);
+              font-family: var(--font-family-mono);
+            }
+            .autocomplete-item strong {
+              color: var(--color-primary);
+              font-weight: 600;
+            }
+          `;
+          document.head.appendChild(style);
+        })();
+        // =====================
+        // END AUTOCOMPLETE
+        // =====================
+
+
+
+      })();
+    });
+  </script>
+
+  <script>
+    // Simple nav dropdown toggle for Tools
+    (function () {
+      function $(sel) { return document.querySelector(sel); }
+      const toggle = $('#tools-toggle');
+      const menu = $('#tools-dropdown');
+
+      if (!toggle || !menu) return;
+
+      // Close initially
+      menu.style.display = 'none';
+
+      toggle.addEventListener('click', function (e) {
+        e.preventDefault();
+        const visible = menu.style.display === 'block';
+        menu.style.display = visible ? 'none' : 'block';
+        toggle.setAttribute('aria-expanded', (!visible).toString());
+      });
+
+      // Close when clicking outside
+      document.addEventListener('click', function (e) {
+        if (!toggle.contains(e.target) && !menu.contains(e.target)) {
+          menu.style.display = 'none';
+          toggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      // Basic keyboard accessibility (Esc to close)
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          menu.style.display = 'none';
+          toggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    })();
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,70 @@
+:root {
+  --bg: #0f1724;
+  --card: #0b1220;
+  --accent: #ffcc00;
+  --muted: #9aa7bf;
+}
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial;
+}
+body {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(180deg, #071020 0%, #0b1320 100%);
+  color: #e6eef8;
+}
+.card {
+  width: min(720px, 94vw);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.02),
+    rgba(0, 0, 0, 0.02)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 36px;
+  border-radius: 12px;
+  box-shadow: 0 6px 30px rgba(2, 6, 23, 0.6);
+}
+h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+}
+p {
+  margin: 0 0 20px;
+  color: var(--muted);
+}
+.actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.btn {
+  display: inline-block;
+  padding: 12px 18px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  color: #071020;
+  background: #fff;
+}
+.btn.secondary {
+  background: transparent;
+  color: #e6eef8;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+footer {
+  margin-top: 18px;
+  color: var(--muted);
+  font-size: 13px;
+}
