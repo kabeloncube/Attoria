@@ -1,0 +1,79 @@
+/*
+=============================================================================
+THEME CSS - Colors, Typography, and Brand-Specific Styles
+=============================================================================
+*/
+
+:root {
+    /* Primary Brand Colors */
+    --primary-dark: #000047;
+    --primary-blue: #184287;
+    --primary-purple: #42109D;
+    --primary-magenta: #91207E;
+    --primary-color: #42109D;
+    --primary-color-dark: #2d0b6b;
+    
+    /* Text Colors */
+    --text-primary: #ffffff;
+    --text-secondary: #e0e0e0;
+    --text-muted: #b0b0b0;
+    
+    /* Background Colors */
+    --bg-card: rgba(255, 255, 255, 0.1);
+    --bg-secondary: rgba(255, 255, 255, 0.05);
+    --card-background: rgba(255, 255, 255, 0.08);
+    --surface-light: rgba(255, 255, 255, 0.1);
+    
+    /* UI Colors */
+    --border-color: rgba(255, 255, 255, 0.2);
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --accent-color: #3498db;
+    --accent-hover: #2980b9;
+    
+    /* Status Colors */
+    --success-color: #2ecc71;
+    --error-color: #e74c3c;
+    --warning-color: #f39c12;
+    
+    /* Icon Colors */
+    --icon-color: #42109D;
+}
+
+/* Typography */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-primary);
+}
+
+/* Brand Background Gradient */
+body {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-blue) 30%, var(--primary-purple) 70%, var(--primary-magenta) 100%);
+    min-height: 100vh;
+}
+
+/* Brand Header Gradient */
+.header {
+    background: linear-gradient(45deg, var(--primary-purple), var(--primary-magenta));
+    color: var(--text-primary);
+}
+
+/* Brand Button Gradients */
+button {
+    background: linear-gradient(45deg, var(--primary-purple), var(--primary-magenta));
+    color: var(--text-primary);
+}
+
+.btn-icon,
+button.btn-icon,
+button[type="submit"].btn-icon,
+#searchPlayerButton,
+#loadLeaderboardButton {
+    background: linear-gradient(45deg, var(--primary-purple), var(--primary-magenta)) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Auth Bar Theme */
+.auth-bar {
+    background: var(--primary-dark);
+    color: var(--text-primary);
+}

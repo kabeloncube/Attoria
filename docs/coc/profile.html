@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Ættoria</title>
+    <link rel="icon" type="image/png" href="/assets/images/icons/logo.png">
+    <link rel="shortcut icon" type="image/png" href="/assets/images/icons/logo.png">
+    <!-- Organized CSS -->
+    <link rel="stylesheet" href="/assets/css/theme.css">
+    <link rel="stylesheet" href="/assets/css/layout.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+    <link rel="stylesheet" href="/assets/css/dropdowns.css">
+    <link rel="stylesheet" href="/assets/css/enhanced-styles.css">
+    <link rel="stylesheet" href="/assets/css/events-tracker.css">
+    <link rel="stylesheet" href="/assets/css/war-management.css">
+    <link rel="stylesheet" href="/assets/css/clan-analytics.css">
+    <link rel="stylesheet" href="/assets/css/flaticon-icons.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="auth-bar">
+        <div class="brand">
+            <a href="/" style="text-decoration: none; color: inherit;">
+                <img src="/assets/images/icons/logo.png" alt="Ættoria" class="brand-logo">
+            </a>
+        </div>
+        <div class="user-info" id="userInfo">
+            <div class="auth-buttons" id="authButtons">
+                <a href="/" style="text-decoration: none;">
+                    <button>← Back to Dashboard</button>
+                </a>
+                <button id="loginButton">Login</button>
+                <button id="registerButton">Register</button>
+            </div>
+            <div class="logged-in" id="loggedInUser" style="display: none;">
+                <span id="welcomeMessage"></span>
+                <a href="/" style="text-decoration: none;">
+                    <button>← Back to Dashboard</button>
+                </a>
+                <button id="logoutButton">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🎮 My Player Profile</h1>
+            <p>Manage your Clash of Clans accounts and view detailed analytics</p>
+        </div>
+
+        <!-- Profile content goes here (kept structure same as original) -->
+    </div>
+
+    <script src="/assets/js/profile.js"></script>
+</body>
+</html>

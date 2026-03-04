@@ -1,0 +1,1208 @@
+/*
+=============================================================================
+CLASH OF CLANS DASHBOARD - CLAN ANALYTICS STYLES
+=============================================================================
+Styles for Phase 4: Clan Analytics system including:
+- Clan overview with badge and statistics
+- Member management with detailed cards
+- Performance analytics and charts
+- Activity tracking and indicators
+- Clan-themed design with purple/gold color scheme
+*/
+
+/* 
+=============================================================================
+CLAN ANALYTICS LAYOUT
+=============================================================================
+*/
+
+.clan-analytics {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 20px 0;
+}
+
+.clan-section {
+    background: linear-gradient(135deg, var(--card-background), rgba(255, 255, 255, 0.05));
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 12px;
+}
+
+.section-header h3 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.section-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.section-btn:hover {
+    background: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+}
+
+/* 
+=============================================================================
+CLAN OVERVIEW SECTION
+=============================================================================
+*/
+
+.current-clan-section {
+    background: linear-gradient(135deg, rgba(155, 89, 182, 0.1), var(--card-background));
+    border-left: 4px solid #9b59b6;
+}
+
+.current-clan-card {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid var(--border-color);
+}
+
+.clan-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.clan-info {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.clan-badge-large {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    border: 2px solid rgba(155, 89, 182, 0.3);
+    box-shadow: 0 4px 12px rgba(155, 89, 182, 0.2);
+}
+
+.clan-details {
+    flex: 1;
+}
+
+.clan-name {
+    font-size: 28px;
+    font-weight: bold;
+    color: var(--text-primary);
+    margin: 0 0 4px 0;
+}
+
+.clan-tag {
+    font-size: 16px;
+    color: #9b59b6;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+}
+
+.clan-description {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0 0 12px 0;
+    line-height: 1.4;
+}
+
+.clan-meta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.clan-level,
+.clan-type,
+.clan-location {
+    background: rgba(155, 89, 182, 0.1);
+    border: 1px solid #9b59b6;
+    color: #9b59b6;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.clan-war-info {
+    text-align: right;
+}
+
+.war-league {
+    font-size: 16px;
+    font-weight: bold;
+    color: #f1c40f;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.war-record {
+    display: flex;
+    gap: 16px;
+    justify-content: flex-end;
+}
+
+.war-stat {
+    text-align: center;
+}
+
+.war-stat .number {
+    display: block;
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+.war-stat .label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}
+
+.clan-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.stat-card {
+    background: rgba(155, 89, 182, 0.05);
+    border: 1px solid rgba(155, 89, 182, 0.2);
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    background: rgba(155, 89, 182, 0.1);
+    border-color: #9b59b6;
+    transform: translateY(-2px);
+}
+
+.stat-icon {
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-number {
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--text-primary);
+    display: block;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}
+
+/* 
+=============================================================================
+CLAN WIDGET (DASHBOARD)
+=============================================================================
+*/
+
+.clan-widget {
+    background: linear-gradient(135deg, var(--card-background), rgba(255, 255, 255, 0.05));
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    max-height: 350px;
+    overflow: hidden;
+}
+
+.widget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 12px;
+}
+
+.widget-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.widget-expand {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.widget-expand:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--accent-color);
+    transform: scale(1.1);
+}
+
+.clan-widget-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.clan-overview {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.clan-badge {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.clan-badge img {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    border: 2px solid rgba(155, 89, 182, 0.3);
+}
+
+.clan-level {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 10px;
+    border: 2px solid var(--card-background);
+}
+
+.clan-stats {
+    display: flex;
+    flex: 1;
+    justify-content: space-around;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    display: block;
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+.stat-label {
+    display: block;
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+.clan-activity {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.activity-bar {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.activity-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #9b59b6, #8e44ad);
+    border-radius: 4px;
+    transition: width 1s ease;
+    position: relative;
+}
+
+.activity-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: activityShimmer 2s ease-in-out infinite;
+}
+
+.activity-text {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.widget-actions {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+}
+
+.widget-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.widget-btn:hover {
+    background: #9b59b6;
+    color: white;
+    border-color: #9b59b6;
+}
+
+/* 
+=============================================================================
+MEMBERS SECTION
+=============================================================================
+*/
+
+.members-section {
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), var(--card-background));
+    border-left: 4px solid #3498db;
+}
+
+.members-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.members-count {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.members-count .count {
+    color: #3498db;
+}
+
+.members-filters {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.members-filters select {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.members-filters select:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+.members-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+}
+
+.member-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.member-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: #3498db;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+}
+
+.member-card.active {
+    border-left: 4px solid #27ae60;
+    background: linear-gradient(135deg, rgba(39, 174, 96, 0.1), rgba(255, 255, 255, 0.05));
+}
+
+.member-card.recently-active {
+    border-left: 4px solid #f39c12;
+    background: linear-gradient(135deg, rgba(243, 156, 18, 0.1), rgba(255, 255, 255, 0.05));
+}
+
+.member-card.inactive {
+    border-left: 4px solid #e67e22;
+    background: linear-gradient(135deg, rgba(230, 126, 34, 0.1), rgba(255, 255, 255, 0.05));
+}
+
+.member-card.very-inactive {
+    border-left: 4px solid #e74c3c;
+    background: linear-gradient(135deg, rgba(231, 76, 60, 0.1), rgba(255, 255, 255, 0.05));
+    opacity: 0.7;
+}
+
+.member-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.member-basic {
+    flex: 1;
+}
+
+.member-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.member-role {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+.member-role.leader {
+    background: rgba(231, 76, 60, 0.2);
+    color: #e74c3c;
+    border: 1px solid #e74c3c;
+}
+
+.member-role.co-leader {
+    background: rgba(230, 126, 34, 0.2);
+    color: #e67e22;
+    border: 1px solid #e67e22;
+}
+
+.member-role.elder {
+    background: rgba(241, 196, 15, 0.2);
+    color: #f1c40f;
+    border: 1px solid #f1c40f;
+}
+
+.member-role.member {
+    background: rgba(149, 165, 166, 0.2);
+    color: #95a5a6;
+    border: 1px solid #95a5a6;
+}
+
+.member-rank {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.rank-number {
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+.rank-change {
+    font-size: 12px;
+}
+
+.rank-change.up {
+    color: #27ae60;
+}
+
+.rank-change.down {
+    color: #e74c3c;
+}
+
+.member-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.stat-group {
+    display: flex;
+    gap: 12px;
+}
+
+.stat-group .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.stat-group .stat-item i {
+    width: 14px;
+    text-align: center;
+}
+
+.donation-stats {
+    text-align: right;
+    font-size: 11px;
+}
+
+.donation-item {
+    display: flex;
+    gap: 4px;
+    justify-content: flex-end;
+    margin-bottom: 2px;
+}
+
+.donation-given {
+    color: #27ae60;
+    font-weight: 600;
+}
+
+.donation-received {
+    color: #e67e22;
+    font-weight: 600;
+}
+
+.donation-label {
+    color: var(--text-secondary);
+}
+
+.donation-ratio {
+    color: var(--text-secondary);
+    font-size: 10px;
+    margin-top: 4px;
+}
+
+.member-activity {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-size: 12px;
+}
+
+.activity-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.activity-indicator.online {
+    background: #27ae60;
+    box-shadow: 0 0 8px rgba(39, 174, 96, 0.5);
+}
+
+.activity-indicator.recent {
+    background: #f39c12;
+    box-shadow: 0 0 8px rgba(243, 156, 18, 0.5);
+}
+
+.activity-indicator.away {
+    background: #e67e22;
+    box-shadow: 0 0 8px rgba(230, 126, 34, 0.5);
+}
+
+.activity-indicator.offline {
+    background: #95a5a6;
+}
+
+.activity-text {
+    color: var(--text-secondary);
+    flex: 1;
+}
+
+.war-performance {
+    display: flex;
+    gap: 8px;
+    font-size: 11px;
+}
+
+.war-stars {
+    color: #f1c40f;
+    font-weight: 600;
+}
+
+.war-destruction {
+    color: #e67e22;
+    font-weight: 600;
+}
+
+.member-actions {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.member-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.member-btn:hover {
+    background: #3498db;
+    color: white;
+    border-color: #3498db;
+    transform: scale(1.1);
+}
+
+/* 
+=============================================================================
+ANALYTICS SECTION
+=============================================================================
+*/
+
+.analytics-section {
+    background: linear-gradient(135deg, rgba(241, 196, 15, 0.1), var(--card-background));
+    border-left: 4px solid #f1c40f;
+}
+
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.analytics-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.analytics-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--accent-color);
+    transform: translateY(-2px);
+}
+
+.analytics-card h3 {
+    margin: 0 0 16px 0;
+    color: var(--text-primary);
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.performance-card {
+    border-left: 4px solid #e74c3c;
+}
+
+.activity-card {
+    border-left: 4px solid #27ae60;
+}
+
+.distribution-card {
+    border-left: 4px solid #9b59b6;
+}
+
+.leaders-card {
+    border-left: 4px solid #f1c40f;
+}
+
+.metrics-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.metric-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.metric-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.metric-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.activity-metrics {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 20px;
+    align-items: center;
+}
+
+.activity-circle {
+    position: relative;
+    width: 100px;
+    height: 100px;
+}
+
+.circle-progress {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: conic-gradient(#27ae60 0deg, #27ae60 calc(var(--progress) * 3.6deg), rgba(255, 255, 255, 0.1) calc(var(--progress) * 3.6deg));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.circle-progress::before {
+    content: '';
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    background: var(--card-background);
+    border-radius: 50%;
+    z-index: 1;
+}
+
+.circle-text,
+.circle-label {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+
+.circle-text {
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+.circle-label {
+    font-size: 10px;
+    color: var(--text-secondary);
+}
+
+.activity-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.activity-stat {
+    text-align: center;
+}
+
+.activity-stat .stat-number {
+    display: block;
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+.activity-stat .stat-label {
+    display: block;
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+.distribution-charts {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.chart-section h4 {
+    margin: 0 0 12px 0;
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.distribution-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.distribution-bar {
+    display: grid;
+    grid-template-columns: 80px 1fr 30px;
+    gap: 8px;
+    align-items: center;
+}
+
+.bar-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.bar-track {
+    height: 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #9b59b6, #8e44ad);
+    border-radius: 8px;
+    transition: width 1s ease;
+}
+
+.bar-fill.th-bar {
+    background: linear-gradient(90deg, #3498db, #2980b9);
+}
+
+.bar-count {
+    font-size: 11px;
+    color: var(--text-primary);
+    font-weight: 600;
+    text-align: center;
+}
+
+.leaders-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.leaders-section h4 {
+    margin: 0 0 8px 0;
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.leaders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.leader-item {
+    display: grid;
+    grid-template-columns: 24px 1fr auto;
+    gap: 8px;
+    align-items: center;
+    padding: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+}
+
+.leader-rank {
+    font-size: 11px;
+    font-weight: bold;
+    color: #f1c40f;
+}
+
+.leader-name {
+    font-size: 12px;
+    color: var(--text-primary);
+}
+
+.leader-stat {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+/* 
+=============================================================================
+RESPONSIVE DESIGN
+=============================================================================
+*/
+
+@media (max-width: 768px) {
+    .clan-analytics {
+        gap: 16px;
+    }
+    
+    .clan-section {
+        padding: 16px;
+    }
+    
+    .clan-header {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        text-align: center;
+    }
+    
+    .clan-info {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+    }
+    
+    .clan-war-info {
+        text-align: center;
+    }
+    
+    .war-league {
+        justify-content: center;
+    }
+    
+    .war-record {
+        justify-content: center;
+    }
+    
+    .clan-stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .members-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .members-filters {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .members-list {
+        grid-template-columns: 1fr;
+    }
+    
+    .member-stats {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .donation-stats {
+        text-align: left;
+    }
+    
+    .analytics-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .activity-metrics {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        text-align: center;
+    }
+    
+    .distribution-bar {
+        grid-template-columns: 60px 1fr 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .clan-overview {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+    }
+    
+    .clan-stats {
+        justify-content: space-around;
+        width: 100%;
+    }
+    
+    .widget-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .widget-btn {
+        justify-content: center;
+        width: 100%;
+    }
+    
+    .member-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .member-actions {
+        justify-content: flex-start;
+    }
+}
+
+/* 
+=============================================================================
+ANIMATIONS & EFFECTS
+=============================================================================
+*/
+
+@keyframes activityShimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+@keyframes memberCardFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.member-card {
+    animation: memberCardFadeIn 0.3s ease forwards;
+}
+
+.member-card:nth-child(1) { animation-delay: 0.1s; }
+.member-card:nth-child(2) { animation-delay: 0.2s; }
+.member-card:nth-child(3) { animation-delay: 0.3s; }
+.member-card:nth-child(4) { animation-delay: 0.4s; }
+.member-card:nth-child(5) { animation-delay: 0.5s; }
+.member-card:nth-child(6) { animation-delay: 0.6s; }
+
+.activity-indicator.online {
+    animation: pulseGreen 2s ease-in-out infinite;
+}
+
+@keyframes pulseGreen {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.bar-fill {
+    animation: barGrow 1.5s ease-out;
+}
+
+@keyframes barGrow {
+    from { width: 0; }
+}
+
+/* 
+=============================================================================
+ACCESSIBILITY
+=============================================================================
+*/
+
+@media (prefers-reduced-motion: reduce) {
+    .activity-fill::after,
+    .member-card,
+    .activity-indicator.online,
+    .bar-fill {
+        animation: none;
+    }
+    
+    .member-card:hover,
+    .analytics-card:hover,
+    .member-btn:hover {
+        transform: none;
+    }
+}
+
+/* 
+=============================================================================
+PRINT STYLES
+=============================================================================
+*/
+
+@media print {
+    .widget-actions,
+    .member-actions,
+    .widget-expand,
+    .section-btn {
+        display: none;
+    }
+    
+    .clan-section {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+    
+    .clan-widget {
+        max-height: none;
+        overflow: visible;
+    }
+    
+    .members-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
