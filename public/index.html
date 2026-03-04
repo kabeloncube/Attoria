@@ -1,222 +1,26 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ættoria</title>
-    <!-- redirect to welcome page so GitHub Pages default opens there -->
-    <meta http-equiv="refresh" content="0; URL=welcome.html">
-    <script>location.replace('welcome.html');</script>
-    <link rel="icon" type="image/png" href="assets/images/icons/logo.png">
-    <link rel="shortcut icon" type="image/png" href="assets/images/icons/logo.png">
-    <!-- New Organized CSS Structure -->
-    <link rel="stylesheet" href="assets/css/theme.css">
-    <link rel="stylesheet" href="assets/css/layout.css">
-    <link rel="stylesheet" href="assets/css/components.css">
-    <link rel="stylesheet" href="assets/css/dropdowns.css">
-    
-    <!-- Specialized CSS Files -->
-    <link rel="stylesheet" href="assets/css/enhanced-styles.css">
-    <link rel="stylesheet" href="assets/css/events-tracker.css">
-    <link rel="stylesheet" href="assets/css/war-management.css">
-    <link rel="stylesheet" href="assets/css/clan-analytics.css">
-    <link rel="stylesheet" href="assets/css/flaticon-icons.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Welcome — Ættoria Clash</title>
+  <link rel="stylesheet" href="assets/css/welcome.css">
 </head>
 <body>
-    <!-- Authentication Bar -->
-    <div class="auth-bar">
-        <div class="brand">
-            <a href="/welcome.html" style="text-decoration: none; color: inherit;">
-                <img src="assets/images/icons/logo.png" alt="Ættoria" class="brand-logo">
-            </a>
-        </div>
-        <div class="user-info" id="userInfo">
-            <div class="auth-buttons" id="authButtons">
-                <button id="loginButton">Login</button>
-                <button id="registerButton">Register</button>
-            </div>
-            <div class="logged-in" id="loggedInUser" style="display: none;">
-                <span id="welcomeMessage"></span>
-                <a href="/coc/profile.html" style="text-decoration: none;">
-                    <button id="profileButton" class="btn-icon">
-                        <i class="fi fi-ts-user-gear icon-primary"></i>
-                        My Profile
-                    </button>
-                </a>
-                <button id="logoutButton">Logout</button>
-            </div>
-        </div>
+  <div class="card">
+    <div style="display:flex;align-items:center;gap:12px">
+      
+      <div style="text-align: center; width: 100%;">
+        <h1>Welcome to Ættoria</h1>
+        <p>Click the button below to open the Clash of Clans dashboard.</p>
+      </div>
     </div>
 
-    <!-- Main Container -->
-    <div class="container">
-        <div class="header">
-            <h1> Ættoria Dashboard</h1>
-            <p>Advanced clan and player analytics with real-time data</p>
-        </div>
-
-        <!-- Dashboard Overview Section -->
-        <div class="dashboard-overview">
-            <div class="overview-grid">
-                <!-- CoC News & Events Section -->
-                <div class="overview-card news-card">
-                    <div class="news-header">
-                        <h3><span class="news-icon" style="display: inline-block; width: 20px; height: 20px; margin-right: 8px; vertical-align: middle; background: var(--icon-color); mask: url('assets/icons/newspaper.png') center/contain no-repeat; -webkit-mask: url('assets/icons/newspaper.png') center/contain no-repeat;"></span> CoC News & Updates</h3>
-                    </div>
-                    <div class="news-content">
-                        <div class="event-slider" id="eventSlider">
-                            <!-- News will be loaded dynamically from the API -->
-                            <div style="text-align: center; padding: 2rem;">
-                                <div class="spinner"></div>
-                                <p>Loading latest news...</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Clan Search Section -->
-        <div class="search-section">
-            <div class="section-header">
-                <h3><i class="fi fi-ts-users icon-primary"></i> Clan Search</h3>
-            </div>
-            <button class="section-close hidden" data-close="clanSearch" title="Clear Clan Search">×</button>
-            <div class="section-content" id="clanSearchContent">
-            <form class="search-form" id="searchForm">
-                <div class="form-group">
-                    <label for="searchType">Search Type</label>
-                    <select id="searchType" name="searchType">
-                        <option value="clan">Clan by Tag</option>
-                        <option value="clanSearch">Search Clans by Name</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="searchValue">Enter Tag/Name</label>
-                    <input type="text" id="searchValue" name="searchValue" 
-                           placeholder="e.g., #j6j225yc or MyAwesomeClan" required>
-                </div>
-                
-                <button type="submit" class="btn-icon">
-                    <i class="fi fi-ts-search"></i>
-                    Search Clan
-                </button>
-            </form>
-            
-            <!-- Clan Search Results -->
-            <div id="clanResults" class="search-results"></div>
-            </div>
-        </div>
-
-        <!-- Player Search Section -->
-        <div class="player-search-section" id="playerSearchSection">
-            <div class="section-header">
-                <h3><i class="fi fi-ts-user icon-primary"></i> Player Search</h3>
-            </div>
-            <button class="section-close hidden" data-close="playerSearch" title="Clear Player Search">×</button>
-            <div class="section-content" id="playerSearchContent">
-            <div class="search-form">
-                <div class="form-group">
-                    <label for="playerTagInput">Player Tag</label>
-                    <input type="text" id="playerTagInput" placeholder="e.g., #p2jldbo2y">
-
-                </div>
-                <button id="searchPlayerButton" class="btn-icon">
-                    <i class="fi fi-ts-search"></i>
-                    Search Player
-                </button>
-            </div>
-            <div id="playerQuickInfo" class="player-quick-info"></div>
-            
-            <!-- Player Search Results -->
-            <div id="playerResults" class="search-results"></div>
-            </div>
-        </div>
-
-
-        <!-- Legend League Leaderboard Dropdown -->
-        <div class="search-section">
-            <button class="collapsible btn-icon" id="leaderboardToggle">
-                <i class="fi fi-ts-trophy icon-gold"></i>
-                Legend League Leaderboard
-            </button>
-            <div class="collapsible-content" id="leaderboardSection">
-            <button class="section-close hidden" data-close="leaderboard" title="Clear Leaderboard">×</button>
-                <div class="search-form" style="margin-bottom: 1rem;">
-                    <div class="form-group">
-                        <label for="locationSelect">Select Location</label>
-                        <select id="locationSelect">
-                            <option value="global">Global</option>
-                        </select>
-                    </div>
-                    <button id="loadLeaderboardButton" class="btn-icon">
-                        <i class="fi fi-ts-download"></i>
-                        Load Leaderboard
-                    </button>
-                </div>
-                <div id="leaderboardContent"></div>
-            </div>
-        </div>
-
-        <!-- Loading and Error States -->
-        <div id="loading" class="loading" style="display: none;">
-            <div class="spinner"></div>
-            <p>Fetching data from Clash of Clans API...</p>
-        </div>
-
-        <div id="error" class="error" style="display: none;"></div>
-
-        <!-- Results Section with Tabs -->
-        <div id="results" class="results"></div>
+    <div class="actions" style="margin-top:20px">
+      <!-- Link to the main dashboard index. This points to index.html in the same `public/` directory -->
+      <a class="btn" href="coc/index.html">Clash of Clans</a>
+      <a class="btn" href="albion/index.html">Albion Online</a>
     </div>
-
-    <!-- Login Modal -->
-    <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <span class="close" data-modal="loginModal">&times;</span>
-            <h2>Login</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="loginUsername">Username</label>
-                    <input type="text" id="loginUsername" required>
-                </div>
-                <div class="form-group">
-                    <label for="loginPassword">Password</label>
-                    <input type="password" id="loginPassword" required>
-                </div>
-                <button type="submit">Login</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Register Modal -->
-    <div id="registerModal" class="modal">
-        <div class="modal-content">
-            <span class="close" data-modal="registerModal">&times;</span>
-            <h2>Register</h2>
-            <form id="registerForm">
-                <div class="form-group">
-                    <label for="registerUsername">Username</label>
-                    <input type="text" id="registerUsername" required>
-                </div>
-                <div class="form-group">
-                    <label for="registerEmail">Email</label>
-                    <input type="email" id="registerEmail" required>
-                </div>
-                <div class="form-group">
-                    <label for="registerPassword">Password</label>
-                    <input type="password" id="registerPassword" required>
-                </div>
-                <button type="submit">Register</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Overlay for modals -->
-    <div id="overlay" class="overlay"></div>
-
-    <script src="assets/js/components.js"></script>
-    <script src="assets/js/app.js"></script>
+  </div>
 </body>
 </html>

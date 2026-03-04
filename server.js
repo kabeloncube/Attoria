@@ -211,8 +211,8 @@ app.use(require('compression')());
 app.use(cors());
 app.use(express.json({ limit: '10mb' })); // Limit JSON payload size
 // Serve static files BEFORE rate limiting to avoid blocking CSS/JS/images
-// Use welcome.html as the default index so visitors see the welcome page first
-app.use(express.static(path.join(__dirname, 'public'), { index: 'welcome.html' }));
+// Serve files normally; root index.html is now the welcome page
+app.use(express.static(path.join(__dirname, 'public')));
 // Apply rate limiting to API routes only
 app.use('/api', generalLimiter);
 app.use(session({

@@ -56,7 +56,7 @@ Market intelligence and crafting calculators:
 attoria/
 ├── public/                    # Frontend static files
 │   ├── index.html            # Main home page
-│   ├── welcome.html          # Welcome/landing page
+│   ├── index.html            # Welcome/landing page (was welcome.html)
 │   ├── albion/
 │   │   ├── index.html        # Market tracker page
 │   │   └── refining.html     # Refining calculator page
