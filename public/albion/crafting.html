@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Albion Forge — Crafting Profit Calculator</title>
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/favicon.png" />
+  <link rel="stylesheet" href="../assets/css/albion.css">
+  <link rel="stylesheet" href="../assets/css/crafting.css">
+</head>
+<body>
+
+  <!-- ====================================================
+       SHARED NAV
+       ==================================================== -->
+  <header>
+    <div class="nav">
+      <div class="brand"><a href="/albion/index.html">⚒ Ættoria · Albion</a></div>
+      <nav>
+        <ul>
+          <li><a href="/albion/index.html">Home</a></li>
+          <li><a href="/albion/index.html#main-content">Markets</a></li>
+          <li class="nav-dropdown">
+            <a href="#" id="tools-toggle" aria-haspopup="true" aria-expanded="false">Tools ▾</a>
+            <ul class="dropdown-menu" id="tools-dropdown" aria-label="Tools submenu">
+              <li><a href="/albion/refining.html">⚗ Refining</a></li>
+              <li><a href="/albion/crafting.html">⚒ Crafting</a></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <a href="/" class="nav-hub-link">← Hub</a>
+    </div>
+  </header>
+
+  <!-- ====================================================
+       PAGE CONTENT
+       ==================================================== -->
+  <div class="crafting-container">
+
+    <div class="crafting-header">
+      <div class="header-emblem">
+        <svg class="emblem-svg" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="30,4 56,18 56,42 30,56 4,42 4,18" stroke="#c8860a" stroke-width="1.5" fill="none" opacity="0.5"/>
+          <polygon points="30,10 50,21 50,39 30,50 10,39 10,21" stroke="#e8a820" stroke-width="1" fill="none"/>
+          <path d="M30 16 L34 26 L44 26 L36 32 L39 42 L30 36 L21 42 L24 32 L16 26 L26 26 Z" fill="#c8860a" opacity="0.9"/>
+          <circle cx="30" cy="30" r="3" fill="#f5d070"/>
+        </svg>
+      </div>
+      <div class="header-rule"><span>⚒ Albion Forge ⚒</span></div>
+      <h1>Crafting Profit<br>Calculator</h1>
+      <p class="subtitle">Know your silver before you strike the anvil</p>
+    </div>
+
+    <div class="crafting-grid">
+
+      <!-- ITEM SELECTION -->
+      <div class="c-panel">
+        <div class="c-panel-title">Item &amp; Tier</div>
+
+        <div class="c-field">
+          <label>Item Category</label>
+          <select id="category" onchange="updateItem()">
+            <option value="armor">Armor</option>
+            <option value="weapon">Weapon</option>
+            <option value="off_hand">Off-Hand</option>
+            <option value="gather">Gathering Gear</option>
+            <option value="bag">Bag</option>
+            <option value="cape">Cape</option>
+          </select>
+        </div>
+
+        <div class="c-field">
+          <label>Item Tier</label>
+          <select id="tier" onchange="updateItem()">
+            <option value="4">Tier 4</option>
+            <option value="5">Tier 5</option>
+            <option value="6" selected>Tier 6</option>
+            <option value="7">Tier 7</option>
+            <option value="8">Tier 8</option>
+          </select>
+        </div>
+
+        <div class="c-field">
+          <label>Enchantment</label>
+          <select id="enchant" onchange="updateItem()">
+            <option value="0">.0 — No Enchantment</option>
+            <option value="1">.1 — Uncommon</option>
+            <option value="2">.2 — Rare</option>
+            <option value="3">.3 — Exceptional</option>
+          </select>
+        </div>
+
+        <div class="c-field">
+          <label>Crafting Station Quality</label>
+          <select id="station">
+            <option value="1">Personal Island (no bonus)</option>
+            <option value="1.05">Guild Island (+5%)</option>
+            <option value="1.08">City (+8%)</option>
+            <option value="1.12">City + Bonus Week (+12%)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- MARKET PRICES -->
+      <div class="c-panel">
+        <div class="c-panel-title">Market Prices</div>
+
+        <div class="c-field">
+          <label>Sell Price (silver)</label>
+          <input type="number" id="sell_price" placeholder="e.g. 450000" value="450000" min="0">
+        </div>
+
+        <div class="c-field">
+          <label>Tax / Setup Fee (%)</label>
+          <div class="slider-wrap">
+            <input type="range" id="tax" min="0" max="15" step="0.5" value="3"
+              oninput="document.getElementById('tax_val').textContent=this.value+'%'">
+            <span class="slider-value" id="tax_val">3%</span>
+          </div>
+        </div>
+
+        <div class="rune-divider"><span>✦</span></div>
+        <div class="c-panel-title" style="margin-bottom:14px">Raw Materials Cost</div>
+
+        <div id="materials-list">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- CRAFTING SETTINGS -->
+      <div class="c-panel">
+        <div class="c-panel-title">Crafting Settings</div>
+
+        <div class="c-field">
+          <label>Crafting Spec Level (0–100)</label>
+          <div class="slider-wrap">
+            <input type="range" id="spec" min="0" max="100" step="1" value="60"
+              oninput="document.getElementById('spec_val').textContent=this.value">
+            <span class="slider-value" id="spec_val">60</span>
+          </div>
+        </div>
+
+        <div class="c-field">
+          <label>Use Focus Points?</label>
+          <select id="use_focus">
+            <option value="0">No — craft without focus</option>
+            <option value="1" selected>Yes — use focus</option>
+          </select>
+        </div>
+
+        <div class="c-field">
+          <label>Batch Size (items to craft)</label>
+          <input type="number" id="batch" value="10" min="1" max="9999">
+        </div>
+
+        <div class="tip-row">
+          <span class="tip-icon">⚠</span>
+          Return rate increases with spec level. At 100 spec + focus, expect ~47% material return.
+        </div>
+      </div>
+
+      <!-- EXTRA COSTS -->
+      <div class="c-panel">
+        <div class="c-panel-title">Extra Costs</div>
+
+        <div class="c-field">
+          <label>Transport Cost (per batch, silver)</label>
+          <input type="number" id="transport" placeholder="0" value="0" min="0">
+        </div>
+
+        <div class="c-field">
+          <label>Repair / Misc Cost (per item, silver)</label>
+          <input type="number" id="misc" placeholder="0" value="0" min="0">
+        </div>
+
+        <div class="c-field">
+          <label>Craft Fee at Station (silver)</label>
+          <input type="number" id="craft_fee" placeholder="0" value="5000" min="0">
+        </div>
+
+        <div class="tip-row">
+          <span class="tip-icon">⚠</span>
+          Don't forget city crafting fees — they can eat into profits on low-margin items.
+        </div>
+
+        <button class="btn-calculate" onclick="calculate()">⚒ Calculate Profit ⚒</button>
+      </div>
+
+      <!-- RESULTS -->
+      <div class="result-panel" id="result-panel">
+        <div class="c-panel-title">Profit Ledger</div>
+
+        <div class="result-grid">
+          <div class="stat">
+            <div class="stat-label">Total Revenue</div>
+            <div class="stat-value" id="res-revenue">—</div>
+            <div class="stat-sub">after tax</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Material Cost</div>
+            <div class="stat-value" id="res-matcost">—</div>
+            <div class="stat-sub">after returns</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Other Costs</div>
+            <div class="stat-value" id="res-othercost">—</div>
+            <div class="stat-sub">fees &amp; transport</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Net Profit</div>
+            <div class="stat-value" id="res-profit">—</div>
+            <div class="stat-sub">for batch</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Per Item</div>
+            <div class="stat-value" id="res-peritem">—</div>
+            <div class="stat-sub">silver each</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Margin</div>
+            <div class="stat-value" id="res-margin">—</div>
+            <div class="stat-sub">profit %</div>
+          </div>
+        </div>
+
+        <div class="profit-bar-wrap">
+          <div class="profit-bar-label">
+            <span>Loss</span>
+            <span id="bar-label">Profit Ratio</span>
+            <span>Gain</span>
+          </div>
+          <div class="profit-bar-track">
+            <div class="profit-bar-fill" id="profit-bar" style="width:0%"></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /crafting-grid -->
+
+    <footer class="crafting-footer">
+      Prices pulled from your own market data — always verify with the Albion Data Project.<br>
+      The forge remembers all who have traded within its walls.
+    </footer>
+  </div><!-- /crafting-container -->
+
+  <!-- Nav dropdown script -->
+  <script>
+    (function () {
+      const toggle = document.getElementById('tools-toggle');
+      const menu   = document.getElementById('tools-dropdown');
+      if (!toggle || !menu) return;
+      menu.style.display = 'none';
+      toggle.addEventListener('click', function (e) {
+        e.preventDefault();
+        const visible = menu.style.display === 'block';
+        menu.style.display = visible ? 'none' : 'block';
+        toggle.setAttribute('aria-expanded', String(!visible));
+      });
+      document.addEventListener('click', function (e) {
+        if (!toggle.contains(e.target) && !menu.contains(e.target)) {
+          menu.style.display = 'none';
+          toggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          menu.style.display = 'none';
+          toggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    })();
+  </script>
+
+  <!-- Crafting calculator logic -->
+  <script>
+    const ITEM_DATA = {
+      armor:    { mats: ['Planks','Cloth','Metal Bars','Leather'], qty: [8,8,0,0] },
+      weapon:   { mats: ['Metal Bars','Planks','Cloth','Crystal'], qty: [12,4,0,0] },
+      off_hand: { mats: ['Planks','Leather','Metal Bars'],         qty: [8,4,4] },
+      gather:   { mats: ['Metal Bars','Cloth','Leather'],          qty: [12,8,4] },
+      bag:      { mats: ['Cloth','Leather','Planks'],              qty: [16,8,4] },
+      cape:     { mats: ['Cloth','Metal Bars'],                    qty: [10,5] },
+    };
+    const TIER_MULT   = { '4':1, '5':1.8, '6':3.2, '7':5.8, '8':10.5 };
+    const ENCHANT_MULT = { '0':1, '1':1.4, '2':2.1, '3':3.5 };
+
+    function getReturnRate(spec, useFocus) {
+      const base = useFocus ? 0.237 : 0.15;
+      return base + (spec / 100) * 0.24;
+    }
+
+    function fmt(n) {
+      if (isNaN(n) || n === null) return '—';
+      const abs = Math.abs(n);
+      if (abs >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+      if (abs >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+      return Math.round(n).toLocaleString();
+    }
+
+    function updateItem() {
+      const cat    = document.getElementById('category').value;
+      const tier   = document.getElementById('tier').value;
+      const enchant = document.getElementById('enchant').value;
+      const data   = ITEM_DATA[cat];
+      const tmul   = TIER_MULT[tier];
+      const emul   = ENCHANT_MULT[enchant];
+
+      const container = document.getElementById('materials-list');
+      container.innerHTML = '';
+
+      data.mats.forEach((mat, i) => {
+        const qty = data.qty[i];
+        if (!qty) return;
+        const suggestedPrice = Math.round(tmul * emul * qty * 850);
+        const row = document.createElement('div');
+        row.className = 'material-row';
+        row.innerHTML = `
+          <div>
+            <div class="material-label">
+              <span class="tier-badge">T${tier}${enchant > 0 ? '.' + enchant : ''}</span>
+              ${mat}
+            </div>
+            <input type="number" id="mat_${i}" placeholder="${suggestedPrice}" value="${suggestedPrice}" min="0">
+          </div>
+          <div>
+            <label style="font-family:var(--font-family-display);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mist);display:block;margin-bottom:5px">Qty</label>
+            <input type="number" id="qty_${i}" value="${Math.round(qty * tmul)}" min="1" style="text-align:center">
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function calculate() {
+      const sellPrice   = parseFloat(document.getElementById('sell_price').value) || 0;
+      const tax         = parseFloat(document.getElementById('tax').value) / 100;
+      const spec        = parseFloat(document.getElementById('spec').value);
+      const useFocus    = parseInt(document.getElementById('use_focus').value);
+      const batch       = parseInt(document.getElementById('batch').value) || 1;
+      const transport   = parseFloat(document.getElementById('transport').value) || 0;
+      const misc        = parseFloat(document.getElementById('misc').value) || 0;
+      const craftFee    = parseFloat(document.getElementById('craft_fee').value) || 0;
+      const stationBonus = parseFloat(document.getElementById('station').value);
+
+      const returnRate    = getReturnRate(spec, useFocus);
+      const effectiveReturn = returnRate * stationBonus;
+
+      const cat  = document.getElementById('category').value;
+      const data = ITEM_DATA[cat];
+      let totalMatCostPerItem = 0;
+
+      data.mats.forEach((mat, i) => {
+        const priceEl = document.getElementById('mat_' + i);
+        const qtyEl   = document.getElementById('qty_' + i);
+        if (!priceEl || !qtyEl) return;
+        const price   = parseFloat(priceEl.value) || 0;
+        const qty     = parseFloat(qtyEl.value) || 0;
+        const rawCost = price * qty;
+        totalMatCostPerItem += rawCost - rawCost * effectiveReturn;
+      });
+
+      const revenuePerItem = sellPrice * (1 - tax);
+      const totalRevenue   = revenuePerItem * batch;
+      const totalMatCost   = totalMatCostPerItem * batch;
+      const otherCosts     = transport + misc * batch + craftFee * batch;
+      const totalCost      = totalMatCost + otherCosts;
+      const netProfit      = totalRevenue - totalCost;
+      const perItem        = netProfit / batch;
+      const margin         = totalRevenue > 0 ? (netProfit / totalRevenue) * 100 : 0;
+
+      document.getElementById('res-revenue').textContent  = fmt(totalRevenue);
+      document.getElementById('res-matcost').textContent  = fmt(totalMatCost);
+      document.getElementById('res-othercost').textContent = fmt(otherCosts);
+
+      const profEl = document.getElementById('res-profit');
+      profEl.textContent = fmt(netProfit);
+      profEl.className   = 'stat-value ' + (netProfit >= 0 ? 'positive' : 'negative');
+
+      const perEl = document.getElementById('res-peritem');
+      perEl.textContent = fmt(perItem);
+      perEl.className   = 'stat-value ' + (perItem >= 0 ? 'positive' : 'negative');
+
+      const marEl = document.getElementById('res-margin');
+      marEl.textContent = margin.toFixed(1) + '%';
+      marEl.className   = 'stat-value ' + (margin >= 0 ? 'positive' : 'negative');
+
+      const bar = document.getElementById('profit-bar');
+      bar.style.width = Math.min(100, Math.max(0, margin)) + '%';
+      bar.className   = 'profit-bar-fill' + (netProfit < 0 ? ' loss' : '');
+
+      document.getElementById('bar-label').textContent =
+        netProfit >= 0
+          ? `+${margin.toFixed(1)}% margin`
+          : `${margin.toFixed(1)}% margin (LOSS)`;
+    }
+
+    // Initialise
+    updateItem();
+    calculate();
+  </script>
+
+</body>
+</html>

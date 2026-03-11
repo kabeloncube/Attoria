@@ -12,19 +12,29 @@
 <body>
   <header>
     <div class="nav">
-      <div class="brand"><a href="../">Albion — Ættoria</a></div>
+      <div class="brand"><a href="/albion/index.html">⚒ Ættoria · Albion</a></div>
       <nav>
         <ul>
-          <li><a href="index.html">Home</a></li>
-          <li><a href="index.html#markets">Markets</a></li>
+          <li><a href="/albion/index.html">Home</a></li>
+          <li><a href="/albion/index.html#main-content">Markets</a></li>
+          <li class="nav-dropdown">
+            <a href="#" id="tools-toggle" aria-haspopup="true" aria-expanded="false">Tools ▾</a>
+            <ul class="dropdown-menu" id="tools-dropdown" aria-label="Tools submenu">
+              <li><a href="/albion/refining.html">⚗ Refining</a></li>
+              <li><a href="/albion/crafting.html">⚒ Crafting</a></li>
+            </ul>
+          </li>
         </ul>
       </nav>
+      <a href="/" class="nav-hub-link">← Hub</a>
     </div>
   </header>
 
   <main class="tool-container">
     <div class="page-header">
-      <h1>⚒️ Refining Calculator</h1>
+      <span class="page-header-emblem">⚗</span>
+      <div class="header-rule"><span>⚒ Albion Forge ⚒</span></div>
+      <h1>Refining Calculator</h1>
       <p>Calculate refining profits with accurate resource returns, city bonuses, and market fees.</p>
     </div>
 
@@ -315,5 +325,33 @@
   </main>
 
   <script src="/assets/js/refining-calculator.js"></script>
+
+  <script>
+    // Nav dropdown for Tools menu
+    (function () {
+      const toggle = document.getElementById('tools-toggle');
+      const menu   = document.getElementById('tools-dropdown');
+      if (!toggle || !menu) return;
+      menu.style.display = 'none';
+      toggle.addEventListener('click', function (e) {
+        e.preventDefault();
+        const visible = menu.style.display === 'block';
+        menu.style.display = visible ? 'none' : 'block';
+        toggle.setAttribute('aria-expanded', String(!visible));
+      });
+      document.addEventListener('click', function (e) {
+        if (!toggle.contains(e.target) && !menu.contains(e.target)) {
+          menu.style.display = 'none';
+          toggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          menu.style.display = 'none';
+          toggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    })();
+  </script>
 </body>
 </html>

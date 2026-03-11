@@ -2,25 +2,59 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Welcome — Ættoria Clash</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ættoria — Game Hub</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
   <link rel="stylesheet" href="assets/css/welcome.css">
 </head>
 <body>
-  <div class="card">
-    <div style="display:flex;align-items:center;gap:12px">
-      
-      <div style="text-align: center; width: 100%;">
-        <h1>Welcome to Ættoria</h1>
-        <p>Click the button below to open the Clash of Clans dashboard.</p>
+  <div class="welcome-wrap">
+
+    <header class="welcome-header">
+      <!-- Emblem -->
+      <div class="welcome-emblem">
+        <svg class="emblem-svg" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="30,4 56,18 56,42 30,56 4,42 4,18" stroke="#c8860a" stroke-width="1.5" fill="none" opacity="0.5"/>
+          <polygon points="30,10 50,21 50,39 30,50 10,39 10,21" stroke="#e8a820" stroke-width="1" fill="none"/>
+          <path d="M30 16 L34 26 L44 26 L36 32 L39 42 L30 36 L21 42 L24 32 L16 26 L26 26 Z" fill="#c8860a" opacity="0.9"/>
+          <circle cx="30" cy="30" r="3" fill="#f5d070"/>
+        </svg>
       </div>
+
+      <div class="header-rule"><span>✦ Game Hub ✦</span></div>
+
+      <h1 class="welcome-title">Ættoria</h1>
+      <p class="welcome-subtitle">Choose your realm and enter the forge</p>
+    </header>
+
+    <!-- Portal Cards -->
+    <div class="portals">
+
+      <a class="portal-card" href="coc/index.html">
+        <div class="portal-accent"></div>
+        <div class="portal-icon">⚔️</div>
+        <div class="portal-name">Clash of Clans</div>
+        <p class="portal-desc">
+          Track clan wars, player stats, league standings and upcoming events for your clan.
+        </p>
+        <span class="portal-btn">Enter</span>
+      </a>
+
+      <a class="portal-card" href="albion/index.html">
+        <div class="portal-accent"></div>
+        <div class="portal-icon">⚒️</div>
+        <div class="portal-name">Albion Online</div>
+        <p class="portal-desc">
+          Market prices, refining profits and crafting calculators — all your silver intelligence.
+        </p>
+        <span class="portal-btn">Enter</span>
+      </a>
+
     </div>
 
-    <div class="actions" style="margin-top:20px">
-      <!-- Link to the main dashboard index. This points to index.html in the same `public/` directory -->
-      <a class="btn" href="coc/index.html">Clash of Clans</a>
-      <a class="btn" href="albion/index.html">Albion Online</a>
-    </div>
+    <footer class="welcome-footer">
+      Ættoria · All realms, one forge.
+    </footer>
   </div>
 </body>
 </html>
