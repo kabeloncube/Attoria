@@ -159,6 +159,8 @@ attoria/
 
 ### Albion Online Routes (`/api/proxy/albion/...`)
 - `GET /prices?item=T4_BAG&locations=Caerleon,Bridgewatch&qualities=1` — Get item prices across cities
+
+
 - `GET /items/search?q=sword&limit=10` — Search for items by name
 - `GET /[item-id]` — Get specific item details
 
