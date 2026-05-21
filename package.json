@@ -1,0 +1,23 @@
+{
+  "name": "attoria",
+  "version": "1.0.0",
+  "description": "Multi-Game Analytics Hub",
+  "scripts": {
+    "start": "cd backend && npm start",
+    "dev": "cd backend && npm run dev",
+    "install-backend": "cd backend && npm install",
+    "build": "cd backend && npm run build",
+    "pm2-start": "pm2 start config/ecosystem.config.js",
+    "pm2-stop": "pm2 stop all",
+    "pm2-logs": "pm2 logs attoria",
+    "docker-build": "docker build -f config/Dockerfile -t attoria:latest .",
+    "docker-up": "docker-compose -f config/docker-compose.yml up -d",
+    "docker-down": "docker-compose -f config/docker-compose.yml down",
+    "migrate": "cd backend && node migrations-pg.js",
+    "backup": "cd backend && node scripts/backup.js",
+    "test": "cd tests && npm test"
+  },
+  "keywords": ["gaming", "analytics", "clash-of-clans", "albion-online"],
+  "author": "",
+  "license": "ISC"
+}

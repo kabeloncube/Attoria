@@ -1,0 +1,225 @@
+/* Flaticon Integration CSS */
+
+/* Method 1: Using Flaticon CSS CDN */
+@import url('https://cdn-uicons.flaticon.com/2.0.0/uicons-thin-straight/css/uicons-thin-straight.css');
+@import url('https://cdn-uicons.flaticon.com/2.0.0/uicons-thin-rounded/css/uicons-thin-rounded.css');
+@import url('https://cdn-uicons.flaticon.com/2.0.0/uicons-solid-straight/css/uicons-solid-straight.css');
+
+/* Icon base styles */
+.flaticon {
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 1;
+    vertical-align: middle;
+}
+
+/* Icon size utilities */
+.icon-xs { font-size: 0.75rem; }
+.icon-sm { font-size: 0.875rem; }
+.icon-md { font-size: 1rem; }
+.icon-lg { font-size: 1.25rem; }
+.icon-xl { font-size: 1.5rem; }
+.icon-2x { font-size: 2rem; }
+.icon-3x { font-size: 3rem; }
+
+/* Icon colors for clash of clans theme */
+.icon-primary { color: var(--primary-magenta); }
+.icon-secondary { color: var(--text-secondary); }
+.icon-success { color: var(--success-color); }
+.icon-warning { color: #f39c12; }
+.icon-danger { color: var(--error-color); }
+.icon-gold { color: #f1c40f; }
+.icon-purple { color: var(--primary-purple); }
+.icon-blue { color: var(--primary-blue); }
+
+/* Clash of Clans specific icon mappings */
+.coc-icon {
+    font-family: inherit;
+    font-weight: normal;
+    font-style: normal;
+    display: inline-block;
+    text-decoration: inherit;
+    vertical-align: middle;
+}
+
+/* Custom clash-themed icon styles */
+.coc-icon-clan::before { content: '🏰'; }
+.coc-icon-player::before { content: '👤'; }
+.coc-icon-trophy::before { content: '🏆'; }
+.coc-icon-war::before { content: '⚔️'; }
+.coc-icon-gold::before { content: '💰'; }
+.coc-icon-elixir::before { content: '💜'; }
+.coc-icon-dark-elixir::before { content: '🖤'; }
+.coc-icon-shield::before { content: '🛡️'; }
+.coc-icon-sword::before { content: '⚔️'; }
+.coc-icon-crown::before { content: '👑'; }
+.coc-icon-gem::before { content: '💎'; }
+.coc-icon-attack::before { content: '💥'; }
+.coc-icon-defense::before { content: '🛡️'; }
+.coc-icon-star::before { content: '⭐'; }
+.coc-icon-level::before { content: '📈'; }
+.coc-icon-experience::before { content: '🎯'; }
+.coc-icon-townhall::before { content: '🏛️'; }
+.coc-icon-army::before { content: '👥'; }
+.coc-icon-spell::before { content: '✨'; }
+.coc-icon-hero::before { content: '🦸'; }
+.coc-icon-building::before { content: '🏗️'; }
+.coc-icon-resource::before { content: '📦'; }
+.coc-icon-time::before { content: '⏰'; }
+.coc-icon-location::before { content: '📍'; }
+.coc-icon-search::before { content: '🔍'; }
+.coc-icon-close::before { content: '❌'; }
+.coc-icon-settings::before { content: '⚙️'; }
+.coc-icon-refresh::before { content: '🔄'; }
+.coc-icon-download::before { content: '⬇️'; }
+.coc-icon-upload::before { content: '⬆️'; }
+.coc-icon-link::before { content: '🔗'; }
+.coc-icon-unlink::before { content: '🔓'; }
+.coc-icon-check::before { content: '✅'; }
+.coc-icon-warning::before { content: '⚠️'; }
+.coc-icon-info::before { content: 'ℹ️'; }
+.coc-icon-news::before { content: '📰'; }
+.coc-icon-event::before { content: '🎉'; }
+.coc-icon-calendar::before { content: '📅'; }
+.coc-icon-chart::before { content: '📊'; }
+.coc-icon-analytics::before { content: '📈'; }
+.coc-icon-dashboard::before { content: '📋'; }
+
+/* Animated icons */
+.icon-spin {
+    animation: icon-spin 1s linear infinite;
+}
+
+.icon-pulse {
+    animation: icon-pulse 2s ease-in-out infinite;
+}
+
+@keyframes icon-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes icon-pulse {
+    0%, 100% { 
+        opacity: 1; 
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 0.7; 
+        transform: scale(1.1);
+    }
+}
+
+/* Button icons */
+.btn-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-icon-left i {
+    margin-right: 0.5rem;
+}
+
+.btn-icon-right i {
+    margin-left: 0.5rem;
+}
+
+/* Icon list styles */
+.icon-list {
+    list-style: none;
+    padding: 0;
+}
+
+.icon-list li {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0;
+    gap: 0.75rem;
+}
+
+.icon-list li i {
+    width: 1.25rem;
+    text-align: center;
+    color: var(--primary-magenta);
+}
+
+/* Specific flaticon thin classes for common use cases */
+.fi-ts-search { /* Search icon */ }
+.fi-ts-home { /* Home/Dashboard */ }
+.fi-ts-user { /* Player */ }
+.fi-ts-users { /* Clan */ }
+.fi-ts-trophy { /* Trophy */ }
+.fi-ts-sword { /* War */ }
+.fi-ts-shield { /* Defense */ }
+.fi-ts-star { /* Star */ }
+.fi-ts-crown { /* Crown */ }
+.fi-ts-diamond { /* Gem */ }
+.fi-ts-coins { /* Gold */ }
+.fi-ts-flask { /* Elixir */ }
+.fi-ts-time { /* Time */ }
+.fi-ts-location { /* Location */ }
+.fi-ts-settings { /* Settings */ }
+.fi-ts-refresh { /* Refresh */ }
+.fi-ts-download { /* Download */ }
+.fi-ts-upload { /* Upload */ }
+.fi-ts-link { /* Link */ }
+.fi-ts-cross { /* Close */ }
+.fi-ts-check { /* Check */ }
+.fi-ts-exclamation { /* Warning */ }
+.fi-ts-info { /* Info */ }
+.fi-ts-calendar { /* Calendar */ }
+.fi-ts-chart-line-up { /* Analytics */ }
+.fi-ts-layout-fluid { /* Dashboard */ }
+.fi-ts-newspaper { /* News */ }
+.fi-ts-party-hat { /* Events */ }
+
+/* Hover effects for interactive icons */
+.icon-interactive {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.icon-interactive:hover {
+    transform: scale(1.1);
+    color: var(--primary-magenta);
+}
+
+/* Icon backgrounds for special use cases */
+.icon-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    margin-right: 0.5rem;
+}
+
+.icon-badge.success {
+    background: rgba(46, 204, 113, 0.2);
+    border-color: var(--success-color);
+    color: var(--success-color);
+}
+
+.icon-badge.warning {
+    background: rgba(243, 156, 18, 0.2);
+    border-color: #f39c12;
+    color: #f39c12;
+}
+
+.icon-badge.danger {
+    background: rgba(231, 76, 60, 0.2);
+    border-color: var(--error-color);
+    color: var(--error-color);
+}
+
+.icon-badge.primary {
+    background: rgba(145, 32, 126, 0.2);
+    border-color: var(--primary-magenta);
+    color: var(--primary-magenta);
+}

@@ -1,0 +1,131 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: attoria-postgres
+    environment:
+      POSTGRES_USER: ${DB_USER:-attoria}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-change_this_password}
+      POSTGRES_DB: ${DB_NAME:-attoria_db}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - ../logs:/app/logs
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-attoria}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - attoria-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: attoria-redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - ../logs:/app/logs
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - attoria-network
+
+  # Node.js Application (1st instance)
+  app-1:
+    build: ../config
+    container_name: attoria-app-1
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-attoria}
+      DB_PASSWORD: ${DB_PASSWORD:-change_this_password}
+      DB_NAME: ${DB_NAME:-attoria_db}
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET}
+      SESSION_SECRET: ${SESSION_SECRET}
+      COC_API_KEY: ${COC_API_KEY}
+      COC_CACHE_TTL: ${COC_CACHE_TTL:-300}
+    ports:
+      - "3001:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ../logs:/app/logs
+      - ./logs:/app/logs
+    networks:
+      - attoria-network
+    restart: unless-stopped
+
+  # Node.js Application (2nd instance for load balancing)
+  app-2:
+    build: ../config
+    container_name: attoria-app-2
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-attoria}
+      DB_PASSWORD: ${DB_PASSWORD:-change_this_password}
+      DB_NAME: ${DB_NAME:-attoria_db}
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET}
+      SESSION_SECRET: ${SESSION_SECRET}
+      COC_API_KEY: ${COC_API_KEY}
+      COC_CACHE_TTL: ${COC_CACHE_TTL:-300}
+    ports:
+      - "3002:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ../logs:/app/logs
+      - ./logs:/app/logs
+    networks:
+      - attoria-network
+    restart: unless-stopped
+
+  # Nginx Reverse Proxy & Load Balancer
+  nginx:
+    image: nginx:alpine
+    container_name: attoria-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ../logs:/app/logs
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - nginx_cache:/var/cache/nginx
+    depends_on:
+      - app-1
+      - app-2
+    networks:
+      - attoria-network
+    restart: unless-stopped
+
+volumes:
+      - ../logs:/app/logs
+  postgres_data:
+  redis_data:
+  nginx_cache:
+
+networks:
+  attoria-network:
+    driver: bridge

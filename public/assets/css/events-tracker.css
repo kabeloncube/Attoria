@@ -1,0 +1,900 @@
+/*
+=============================================================================
+CLASH OF CLANS DASHBOARD - EVENTS TRACKER STYLES
+=============================================================================
+Styles for Phase 2: Events Tracker system including:
+- Event cards with countdown timers
+- Compact widget display
+- Real-time updates and animations
+- Responsive design
+*/
+
+/* 
+=============================================================================
+EVENTS GRID & LAYOUT
+=============================================================================
+*/
+
+.events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.events-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.7;
+}
+
+.empty-message {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.empty-description {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+/* 
+=============================================================================
+EVENT CARDS
+=============================================================================
+*/
+
+.event-card {
+    background: linear-gradient(135deg, var(--card-background), rgba(255, 255, 255, 0.05));
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--accent-color);
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.event-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.event-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    border-color: var(--accent-color);
+}
+
+.event-card:hover::before {
+    opacity: 1;
+    animation: shimmer 2s ease-in-out infinite;
+}
+
+.event-card.active {
+    border-left-color: #e74c3c;
+    background: linear-gradient(135deg, rgba(231, 76, 60, 0.1), var(--card-background));
+}
+
+.event-card.active::before {
+    background: linear-gradient(90deg, transparent, #e74c3c, transparent);
+}
+
+.event-card.upcoming {
+    border-left-color: #3498db;
+}
+
+/* 
+=============================================================================
+EVENT CARD COMPONENTS
+=============================================================================
+*/
+
+.event-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.event-icon {
+    font-size: 24px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.event-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.event-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.event-description {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+.event-priority {
+    font-size: 14px;
+    padding: 4px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.priority-high {
+    background: rgba(231, 76, 60, 0.2);
+}
+
+.priority-medium {
+    background: rgba(241, 196, 15, 0.2);
+}
+
+.priority-low {
+    background: rgba(39, 174, 96, 0.2);
+}
+
+/* 
+=============================================================================
+COUNTDOWN DISPLAY
+=============================================================================
+*/
+
+.event-countdown {
+    text-align: center;
+    margin-bottom: 16px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.countdown-display {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    font-family: 'Courier New', monospace;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    letter-spacing: 1px;
+}
+
+.countdown-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Countdown animation */
+.countdown-display {
+    animation: countdownPulse 2s ease-in-out infinite;
+}
+
+@keyframes countdownPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+/* 
+=============================================================================
+EVENT PROGRESS BAR
+=============================================================================
+*/
+
+.event-progress {
+    margin-bottom: 16px;
+}
+
+.progress-bar {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1s ease;
+    background: linear-gradient(90deg, var(--accent-color), rgba(255, 255, 255, 0.2));
+    position: relative;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: progressShimmer 2s ease-in-out infinite;
+}
+
+@keyframes progressShimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.progress-text {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-align: center;
+    font-weight: 500;
+}
+
+/* 
+=============================================================================
+EVENT ACTIONS
+=============================================================================
+*/
+
+.event-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.event-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.event-btn:hover {
+    background: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+    transform: translateY(-1px);
+}
+
+.event-btn.reminder {
+    opacity: 0.5;
+}
+
+.event-btn.reminder.active {
+    opacity: 1;
+    background: rgba(52, 152, 219, 0.2);
+    border-color: #3498db;
+    color: #3498db;
+}
+
+/* 
+=============================================================================
+EVENTS WIDGET (COMPACT DISPLAY)
+=============================================================================
+*/
+
+.events-widget {
+    background: linear-gradient(135deg, var(--card-background), rgba(255, 255, 255, 0.05));
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.widget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 12px;
+}
+
+.widget-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+.widget-expand {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.widget-expand:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--accent-color);
+    transform: scale(1.1);
+}
+
+.section-title {
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.active-events {
+    margin-bottom: 20px;
+}
+
+.upcoming-events .section-title {
+    color: var(--text-secondary);
+}
+
+.no-events {
+    text-align: center;
+    color: var(--text-secondary);
+    font-style: italic;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    border: 1px dashed var(--border-color);
+}
+
+/* 
+=============================================================================
+COMPACT EVENT CARDS
+=============================================================================
+*/
+
+.compact-event-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.compact-event-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-color);
+    transform: translateX(4px);
+}
+
+.compact-event-card.active {
+    border-left: 3px solid #e74c3c;
+    background: rgba(231, 76, 60, 0.1);
+}
+
+.compact-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.compact-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.compact-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.compact-time {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-family: 'Courier New', monospace;
+}
+
+.compact-arrow {
+    color: var(--text-secondary);
+    font-size: 16px;
+    opacity: 0.5;
+    transition: all 0.3s ease;
+}
+
+.compact-event-card:hover .compact-arrow {
+    opacity: 1;
+    transform: translateX(2px);
+    color: var(--accent-color);
+}
+
+/* 
+=============================================================================
+RESPONSIVE DESIGN
+=============================================================================
+*/
+
+@media (max-width: 768px) {
+    .events-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 16px 0;
+    }
+    
+    .event-card {
+        padding: 16px;
+    }
+    
+    .event-header {
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+    
+    .event-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 20px;
+    }
+    
+    .event-name {
+        font-size: 15px;
+    }
+    
+    .event-description {
+        font-size: 12px;
+    }
+    
+    .countdown-display {
+        font-size: 20px;
+    }
+    
+    .event-countdown {
+        padding: 12px;
+        margin-bottom: 12px;
+    }
+    
+    .event-actions {
+        gap: 6px;
+    }
+    
+    .event-btn {
+        padding: 6px 10px;
+        font-size: 13px;
+    }
+    
+    .events-widget {
+        padding: 16px;
+    }
+    
+    .compact-event-card {
+        padding: 10px;
+    }
+    
+    .compact-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+    }
+    
+    .compact-name {
+        font-size: 13px;
+    }
+    
+    .compact-time {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 480px) {
+    .events-grid {
+        padding: 12px 0;
+        gap: 12px;
+    }
+    
+    .event-card {
+        padding: 12px;
+    }
+    
+    .event-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .event-priority {
+        align-self: flex-end;
+        position: absolute;
+        top: 12px;
+        right: 12px;
+    }
+    
+    .countdown-display {
+        font-size: 18px;
+    }
+    
+    .event-actions {
+        justify-content: space-between;
+    }
+    
+    .events-widget {
+        padding: 12px;
+    }
+}
+
+/* 
+=============================================================================
+ANIMATIONS & EFFECTS
+=============================================================================
+*/
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.event-card {
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+.event-card:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.event-card:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.event-card:nth-child(4) {
+    animation-delay: 0.3s;
+}
+
+.event-card:nth-child(5) {
+    animation-delay: 0.4s;
+}
+
+.event-card:nth-child(6) {
+    animation-delay: 0.5s;
+}
+
+/* 
+=============================================================================
+DARK MODE & THEME VARIATIONS
+=============================================================================
+*/
+
+@media (prefers-color-scheme: dark) {
+    .event-card {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+    }
+    
+    .event-countdown {
+        background: rgba(0, 0, 0, 0.2);
+    }
+    
+    .compact-event-card {
+        background: rgba(255, 255, 255, 0.03);
+    }
+    
+    .compact-event-card:hover {
+        background: rgba(255, 255, 255, 0.08);
+    }
+}
+
+/* 
+=============================================================================
+ACCESSIBILITY
+=============================================================================
+*/
+
+@media (prefers-reduced-motion: reduce) {
+    .event-card,
+    .countdown-display,
+    .progress-fill::after,
+    .event-card::before {
+        animation: none;
+    }
+    
+    .event-card:hover,
+    .event-btn:hover,
+    .compact-event-card:hover {
+        transform: none;
+    }
+}
+
+/* 
+=============================================================================
+PRINT STYLES
+=============================================================================
+*/
+
+@media print {
+    .event-actions {
+        display: none;
+    }
+    
+    .widget-expand {
+        display: none;
+    }
+    
+    .event-card {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+    
+    .events-widget {
+        max-height: none;
+        overflow: visible;
+    }
+}
+
+/* 
+=============================================================================
+EVENTS PAGE CONTROLS
+=============================================================================
+*/
+
+.events-controls {
+    display: flex;
+    gap: 20px;
+    align-items: flex-end;
+    margin: 20px 0;
+    padding: 20px;
+    background: linear-gradient(135deg, var(--card-background), rgba(255, 255, 255, 0.05));
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    flex-wrap: wrap;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 150px;
+}
+
+.control-group label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.control-group select {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.control-group select:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.control-btn {
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.control-btn:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+}
+
+.control-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* 
+=============================================================================
+NOTIFICATION SETTINGS MODAL
+=============================================================================
+*/
+
+.notification-settings {
+    padding: 16px;
+}
+
+.setting-group {
+    margin-bottom: 16px;
+}
+
+.setting-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+.setting-group input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent-color);
+}
+
+.setting-group small {
+    color: var(--text-secondary);
+    font-size: 12px;
+    margin-top: 4px;
+    display: block;
+    margin-left: 24px;
+}
+
+.event-reminder-setting {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 6px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.event-reminder-setting label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.event-reminder-setting .event-icon {
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+}
+
+.reminder-priority {
+    color: var(--text-secondary);
+    font-size: 11px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+}
+
+.modal-actions button {
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.modal-actions button.primary {
+    background: var(--accent-color);
+    color: white;
+}
+
+.modal-actions button.primary:hover {
+    background: var(--accent-hover);
+}
+
+.modal-actions button.secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.modal-actions button.secondary:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--text-primary);
+}
+
+/* 
+=============================================================================
+EVENTS PAGE RESPONSIVE
+=============================================================================
+*/
+
+@media (max-width: 768px) {
+    .events-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+    }
+    
+    .control-group {
+        min-width: auto;
+    }
+    
+    .control-btn {
+        justify-content: center;
+        padding: 10px 16px;
+    }
+    
+    .modal-actions {
+        flex-direction: column;
+    }
+    
+    .modal-actions button {
+        width: 100%;
+        padding: 12px;
+    }
+}

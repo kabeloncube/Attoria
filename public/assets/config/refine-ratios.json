@@ -1,0 +1,208 @@
+{
+  "ORE": {
+    "refined": "METALBAR",
+    "yieldPer": 0.5,
+    "sellPrice": 120
+  },
+  "FIBER": {
+    "refined": "CLOTH",
+    "yieldPer": 0.5,
+    "sellPrice": 20
+  },
+  "WOOD": {
+    "refined": "PLANKS",
+    "yieldPer": 0.5,
+    "sellPrice": 30
+  },
+  "HIDE": {
+    "refined": "LEATHER",
+    "yieldPer": 0.5,
+    "sellPrice": 50
+  },
+  "STONE": {
+    "refined": "STONEBLOCK",
+    "yieldPer": 0.5,
+    "sellPrice": 15
+  },
+  "METAL_ORE": {
+    "refined": "METALBAR",
+    "yieldPer": 0.5,
+    "sellPrice": 120
+  },
+  "T2_ORE": {
+    "refined": "T2_METALBAR",
+    "yieldPer": 0.5,
+    "sellPrice": 50
+  },
+  "T3_ORE": {
+    "refined": "T3_METALBAR",
+    "yieldPer": 0.5,
+    "sellPrice": 75
+  },
+  "T4_ORE": {
+    "refined": "T4_METALBAR",
+    "yieldPer": 0.5,
+    "sellPrice": 120
+  },
+  "T5_ORE": {
+    "refined": "T5_METALBAR",
+    "yieldPer": 0.5,
+    "sellPrice": 200
+  },
+  "T6_ORE": {
+    "refined": "T6_METALBAR",
+    "yieldPer": 0.5,
+    "sellPrice": 350
+  },
+  "T7_ORE": {
+    "refined": "T7_METALBAR",
+    "yieldPer": 0.5,
+    "sellPrice": 600
+  },
+  "T8_ORE": {
+    "refined": "T8_METALBAR",
+    "yieldPer": 0.5,
+    "sellPrice": 1000
+  },
+  "T2_FIBER": {
+    "refined": "T2_CLOTH",
+    "yieldPer": 0.5,
+    "sellPrice": 30
+  },
+  "T3_FIBER": {
+    "refined": "T3_CLOTH",
+    "yieldPer": 0.5,
+    "sellPrice": 50
+  },
+  "T4_FIBER": {
+    "refined": "T4_CLOTH",
+    "yieldPer": 0.5,
+    "sellPrice": 80
+  },
+  "T5_FIBER": {
+    "refined": "T5_CLOTH",
+    "yieldPer": 0.5,
+    "sellPrice": 140
+  },
+  "T6_FIBER": {
+    "refined": "T6_CLOTH",
+    "yieldPer": 0.5,
+    "sellPrice": 250
+  },
+  "T7_FIBER": {
+    "refined": "T7_CLOTH",
+    "yieldPer": 0.5,
+    "sellPrice": 450
+  },
+  "T8_FIBER": {
+    "refined": "T8_CLOTH",
+    "yieldPer": 0.5,
+    "sellPrice": 800
+  },
+  "T2_WOOD": {
+    "refined": "T2_PLANKS",
+    "yieldPer": 0.5,
+    "sellPrice": 25
+  },
+  "T3_WOOD": {
+    "refined": "T3_PLANKS",
+    "yieldPer": 0.5,
+    "sellPrice": 45
+  },
+  "T4_WOOD": {
+    "refined": "T4_PLANKS",
+    "yieldPer": 0.5,
+    "sellPrice": 75
+  },
+  "T5_WOOD": {
+    "refined": "T5_PLANKS",
+    "yieldPer": 0.5,
+    "sellPrice": 130
+  },
+  "T6_WOOD": {
+    "refined": "T6_PLANKS",
+    "yieldPer": 0.5,
+    "sellPrice": 230
+  },
+  "T7_WOOD": {
+    "refined": "T7_PLANKS",
+    "yieldPer": 0.5,
+    "sellPrice": 420
+  },
+  "T8_WOOD": {
+    "refined": "T8_PLANKS",
+    "yieldPer": 0.5,
+    "sellPrice": 750
+  },
+  "T2_HIDE": {
+    "refined": "T2_LEATHER",
+    "yieldPer": 0.5,
+    "sellPrice": 40
+  },
+  "T3_HIDE": {
+    "refined": "T3_LEATHER",
+    "yieldPer": 0.5,
+    "sellPrice": 65
+  },
+  "T4_HIDE": {
+    "refined": "T4_LEATHER",
+    "yieldPer": 0.5,
+    "sellPrice": 100
+  },
+  "T5_HIDE": {
+    "refined": "T5_LEATHER",
+    "yieldPer": 0.5,
+    "sellPrice": 180
+  },
+  "T6_HIDE": {
+    "refined": "T6_LEATHER",
+    "yieldPer": 0.5,
+    "sellPrice": 320
+  },
+  "T7_HIDE": {
+    "refined": "T7_LEATHER",
+    "yieldPer": 0.5,
+    "sellPrice": 580
+  },
+  "T8_HIDE": {
+    "refined": "T8_LEATHER",
+    "yieldPer": 0.5,
+    "sellPrice": 1000
+  },
+  "T2_STONE": {
+    "refined": "T2_STONEBLOCK",
+    "yieldPer": 0.5,
+    "sellPrice": 15
+  },
+  "T3_STONE": {
+    "refined": "T3_STONEBLOCK",
+    "yieldPer": 0.5,
+    "sellPrice": 25
+  },
+  "T4_STONE": {
+    "refined": "T4_STONEBLOCK",
+    "yieldPer": 0.5,
+    "sellPrice": 45
+  },
+  "T5_STONE": {
+    "refined": "T5_STONEBLOCK",
+    "yieldPer": 0.5,
+    "sellPrice": 80
+  },
+  "T6_STONE": {
+    "refined": "T6_STONEBLOCK",
+    "yieldPer": 0.5,
+    "sellPrice": 145
+  },
+  "T7_STONE": {
+    "refined": "T7_STONEBLOCK",
+    "yieldPer": 0.5,
+    "sellPrice": 265
+  },
+  "T8_STONE": {
+    "refined": "T8_STONEBLOCK",
+    "yieldPer": 0.5,
+    "sellPrice": 480
+  }
+}
+

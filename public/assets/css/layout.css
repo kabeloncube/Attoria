@@ -1,0 +1,262 @@
+/*
+=============================================================================
+LAYOUT CSS - Structure, Positioning, Spacing, and Grid Systems
+=============================================================================
+*/
+
+/* Global Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Basic Layout Structure */
+body {
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    border-radius: 15px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+/* Header Layout */
+.header {
+    padding: 2rem;
+    text-align: center;
+}
+
+.header h1 {
+    margin-bottom: 0.5rem;
+    font-size: 2.5rem;
+}
+
+/* Auth Bar Layout */
+.auth-bar {
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Brand Logo */
+.brand {
+    display: flex;
+    align-items: center;
+}
+
+.brand-logo {
+    height: 40px;
+    width: auto;
+    max-width: 150px;
+    object-fit: contain;
+    filter: brightness(1.1);
+    transition: transform 0.2s ease;
+}
+
+.brand-logo:hover {
+    transform: scale(1.05);
+}
+
+/* Dashboard Overview Layout */
+.dashboard-overview {
+    padding: 2rem;
+}
+
+.overview-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+.overview-card {
+    border-radius: 12px;
+    padding: 1.5rem;
+    backdrop-filter: blur(10px);
+}
+
+/* Search Sections Layout */
+.search-section {
+    padding: 2rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.player-search-section {
+    padding: 2rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    cursor: pointer;
+}
+
+.section-content {
+    display: block;
+}
+
+.section-content.hidden {
+    display: none;
+}
+
+/* Form Layouts */
+.search-form {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: end;
+}
+
+.form-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+/* Stats Grid Layout */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.stat-item {
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    backdrop-filter: blur(5px);
+}
+
+/* Clan List Grid */
+.clan-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.clan-list-item {
+    padding: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    backdrop-filter: blur(10px);
+}
+
+/* Card Layouts */
+.clan-card, .player-card {
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    backdrop-filter: blur(10px);
+}
+
+.clan-header, .player-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+/* Results Layout */
+.results {
+    padding: 2rem;
+}
+
+.search-results {
+    margin-top: 1.5rem;
+    display: none; /* Hidden by default */
+}
+
+.search-results.show {
+    display: block;
+}
+
+/* Modal Layout */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
+
+.modal-content {
+    margin: 15% auto;
+    padding: 20px;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 8px;
+    position: relative;
+}
+
+/* Overlay */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 999;
+    display: none;
+}
+
+/* Loading States Layout */
+.loading {
+    text-align: center;
+    padding: 2rem;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 1rem;
+    border-radius: 50%;
+}
+
+/* Collapsible Content */
+.collapsible-content {
+    padding: 1rem;
+    display: none;
+    overflow: hidden;
+}
+
+.collapsible-content.active {
+    display: block;
+}
+
+/* Close Buttons Positioning */
+.section-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .search-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .form-group {
+        min-width: 100%;
+    }
+    
+    .stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .clan-list {
+        grid-template-columns: 1fr;
+    }
+}
