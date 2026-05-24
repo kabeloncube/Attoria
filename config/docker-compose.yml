@@ -41,7 +41,9 @@ services:
 
   # Node.js Application (1st instance)
   app-1:
-    build: ../config
+    build:
+      context: ..
+      dockerfile: config/Dockerfile
     container_name: attoria-app-1
     environment:
       NODE_ENV: production
@@ -72,7 +74,9 @@ services:
 
   # Node.js Application (2nd instance for load balancing)
   app-2:
-    build: ../config
+    build:
+      context: ..
+      dockerfile: config/Dockerfile
     container_name: attoria-app-2
     environment:
       NODE_ENV: production
