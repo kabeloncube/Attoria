@@ -1,0 +1,50 @@
+{
+  "family": "attoria-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "1024",
+  "memory": "2048",
+  "executionRoleArn": "arn:aws:iam::209866814973:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "attoria",
+      "image": "209866814973.dkr.ecr.eu-north-1.amazonaws.com/attoria:latest",
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        { "name": "NODE_ENV", "value": "production" },
+        { "name": "PORT", "value": "3000" },
+        { "name": "DB_HOST", "value": "<POSTGRES_HOST>" },
+        { "name": "DB_PORT", "value": "5432" },
+        { "name": "DB_USER", "value": "<DB_USER>" },
+        { "name": "DB_PASSWORD", "value": "<DB_PASSWORD>" },
+        { "name": "DB_NAME", "value": "<DB_NAME>" },
+        { "name": "REDIS_URL", "value": "<REDIS_URL>" },
+        { "name": "JWT_SECRET", "value": "<JWT_SECRET>" },
+        { "name": "SESSION_SECRET", "value": "<SESSION_SECRET>" },
+        { "name": "COC_API_KEY", "value": "<COC_API_KEY>" },
+        { "name": "COC_CACHE_TTL", "value": "300" }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/attoria",
+          "awslogs-region": "eu-north-1",
+          "awslogs-stream-prefix": "attoria"
+        }
+      },
+      "healthCheck": {
+        "command": ["CMD-SHELL", "curl -f http://localhost:3000/health || exit 1"],
+        "interval": 30,
+        "timeout": 10,
+        "retries": 3,
+        "startPeriod": 10
+      }
+    }
+  ]
+}
