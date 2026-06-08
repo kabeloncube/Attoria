@@ -1,6 +1,7 @@
 const express = require('express');
 const rateLimit = require('express-rate-limit');
 const Redis = require('ioredis');
+const logger = require('../logger');
 
 module.exports = function() {
   const router = express.Router();
@@ -24,9 +25,9 @@ module.exports = function() {
   if (REDIS_URL) {
     try {
       redis = new Redis(REDIS_URL);
-      redis.on('error', (err) => console.warn('Redis error:', err && err.message));
+      redis.on('error', (err) => logger.warn('Redis error: %s', err && err.message));
     } catch (err) {
-      console.warn('Failed to initialize Redis client, falling back to in-memory cache:', err && err.message);
+      logger.warn('Failed to initialize Redis client, falling back to in-memory cache: %s', err && err.message);
       redis = null;
     }
   }
@@ -66,7 +67,7 @@ module.exports = function() {
       if (!val) return null;
       return JSON.parse(val);
     } catch (err) {
-      console.warn('Redis get error:', err && err.message);
+      logger.warn('Redis get error: %s', err && err.message);
       return null;
     }
   }
@@ -77,7 +78,7 @@ module.exports = function() {
       await redis.set(key, JSON.stringify(data), 'EX', Math.max(5, Math.min(ttlSeconds, 86400)));
       return true;
     } catch (err) {
-      console.warn('Redis set error:', err && err.message);
+      logger.warn('Redis set error: %s', err && err.message);
       return false;
     }
   }

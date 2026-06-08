@@ -13,7 +13,7 @@ class DatabaseMigrations {
 
     // Run all migrations in order
     async runAllMigrations() {
-        console.log('🔧 Starting database migrations...\n');
+        console.log('Starting database migrations...');
         
         try {
             await this.migratePhase1();
@@ -21,9 +21,9 @@ class DatabaseMigrations {
             await this.migratePhase3(); 
             await this.migratePhase4();
             
-            console.log('\n✅ All migrations completed successfully!');
+            console.log('\nAll migrations completed successfully!');
         } catch (error) {
-            console.error('❌ Migration failed:', error);
+            console.error('Migration failed:', error);
             throw error;
         } finally {
             this.close();
@@ -32,7 +32,7 @@ class DatabaseMigrations {
 
     // Phase 1: Enhanced Player Data Tracking
     async migratePhase1() {
-        console.log('📊 Phase 1: Enhanced Player Data...');
+        console.log('Phase 1: Enhanced Player Data...');
         
         return new Promise((resolve, reject) => {
             this.db.serialize(() => {
@@ -52,14 +52,14 @@ class DatabaseMigrations {
                 newColumns.forEach((column, index) => {
                     this.db.run(`ALTER TABLE player_accounts ADD COLUMN ${column}`, (err) => {
                         if (err && !err.message.includes('duplicate column')) {
-                            console.warn(`  ⚠️ Column migration warning: ${err.message}`);
+                            console.warn(`  Column migration warning: ${err.message}`);
                         } else if (!err) {
-                            console.log(`  ✅ Added column: ${column.split(' ')[0]}`);
+                            console.log(`  Added column: ${column.split(' ')[0]}`);
                         }
                         
                         completedColumns++;
                         if (completedColumns === totalColumns) {
-                            console.log('✅ Phase 1 migration completed\n');
+                            console.log('Phase 1 migration completed\n');
                             resolve();
                         }
                     });
@@ -70,7 +70,7 @@ class DatabaseMigrations {
 
     // Phase 2: War Management System
     async migratePhase2() {
-        console.log('⚔️ Phase 2: War Management System...');
+        console.log('Phase 2: War Management System...');
         
         return new Promise((resolve, reject) => {
             this.db.serialize(() => {
@@ -101,7 +101,7 @@ class DatabaseMigrations {
                         reject(err);
                         return;
                     }
-                    console.log('  ✅ Created war_logs table');
+                    console.log('  Created war_logs table');
                 });
 
                 // Create war_attacks table
@@ -124,8 +124,8 @@ class DatabaseMigrations {
                         reject(err);
                         return;
                     }
-                    console.log('  ✅ Created war_attacks table');
-                    console.log('✅ Phase 2 migration completed\n');
+                    console.log('  Created war_attacks table');
+                    console.log('Phase 2 migration completed\n');
                     resolve();
                 });
             });
@@ -134,7 +134,7 @@ class DatabaseMigrations {
 
     // Phase 3: Clan Management System  
     async migratePhase3() {
-        console.log('🏰 Phase 3: Clan Management System...');
+        console.log('Phase 3: Clan Management System...');
         
         return new Promise((resolve, reject) => {
             this.db.serialize(() => {
@@ -172,7 +172,7 @@ class DatabaseMigrations {
                         reject(err);
                         return;
                     }
-                    console.log('  ✅ Created clan_data table');
+                    console.log('  Created clan_data table');
                 });
 
                 // Create clan_members table
@@ -199,8 +199,8 @@ class DatabaseMigrations {
                         reject(err);
                         return;
                     }
-                    console.log('  ✅ Created clan_members table');
-                    console.log('✅ Phase 3 migration completed\n');
+                    console.log('  Created clan_members table');
+                    console.log('Phase 3 migration completed\n');
                     resolve();
                 });
             });
@@ -209,7 +209,7 @@ class DatabaseMigrations {
 
     // Phase 4: Enhanced Events & Progress Tracking
     async migratePhase4() {
-        console.log('📅 Phase 4: Enhanced Events & Progress Tracking...');
+        console.log('Phase 4: Enhanced Events & Progress Tracking...');
         
         return new Promise((resolve, reject) => {
             this.db.serialize(() => {
@@ -231,7 +231,7 @@ class DatabaseMigrations {
                         reject(err);
                         return;
                     }
-                    console.log('  ✅ Created player_progress_tracking table');
+                    console.log('  Created player_progress_tracking table');
                 });
 
                 // Extend existing events table
@@ -250,14 +250,14 @@ class DatabaseMigrations {
                 eventColumns.forEach((column) => {
                     this.db.run(`ALTER TABLE events ADD COLUMN ${column}`, (err) => {
                         if (err && !err.message.includes('duplicate column')) {
-                            console.warn(`  ⚠️ Events column warning: ${err.message}`);
+                            console.warn(`  Events column warning: ${err.message}`);
                         } else if (!err) {
-                            console.log(`  ✅ Enhanced events table: ${column.split(' ')[0]}`);
+                            console.log(`  Enhanced events table: ${column.split(' ')[0]}`);
                         }
                         
                         completedEventColumns++;
                         if (completedEventColumns === totalEventColumns) {
-                            console.log('✅ Phase 4 migration completed\n');
+                            console.log('Phase 4 migration completed\n');
                             resolve();
                         }
                     });
@@ -268,7 +268,7 @@ class DatabaseMigrations {
 
     // Create indexes for performance
     async createIndexes() {
-        console.log('🚀 Creating database indexes for performance...');
+        console.log('Creating database indexes for performance...');
         
         return new Promise((resolve, reject) => {
             this.db.serialize(() => {
@@ -289,14 +289,14 @@ class DatabaseMigrations {
                 indexes.forEach((indexSQL, i) => {
                     this.db.run(indexSQL, (err) => {
                         if (err && !err.message.includes('already exists')) {
-                            console.warn(`  ⚠️ Index warning: ${err.message}`);
+                            console.warn(`  Index warning: ${err.message}`);
                         } else if (!err) {
-                            console.log(`  ✅ Created index ${i + 1}/${indexes.length}`);
+                            console.log(`  Created index ${i + 1}/${indexes.length}`);
                         }
                         
                         completed++;
                         if (completed === indexes.length) {
-                            console.log('✅ All indexes created\n');
+                            console.log('All indexes created\n');
                             resolve();
                         }
                     });
@@ -312,24 +312,24 @@ class DatabaseMigrations {
         
         try {
             fs.copyFileSync('./users.db', `./${backupName}`);
-            console.log(`✅ Database backed up as: ${backupName}\n`);
+            console.log(`Database backed up as: ${backupName}\n`);
             return backupName;
         } catch (error) {
-            console.error('❌ Backup failed:', error);
+            console.error('Backup failed:', error);
             throw error;
         }
     }
 
     // Validate database integrity after migration
     async validate() {
-        console.log('🔍 Validating database integrity...');
+        console.log('Validating database integrity...');
         
         return new Promise((resolve, reject) => {
             this.db.run('PRAGMA integrity_check', (err) => {
                 if (err) {
                     reject(err);
                 } else {
-                    console.log('✅ Database integrity check passed');
+                    console.log('Database integrity check passed');
                     resolve();
                 }
             });

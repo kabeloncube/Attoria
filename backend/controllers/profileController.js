@@ -97,7 +97,7 @@ module.exports = function createProfileController(deps) {
               res.json({
                 message: 'Account verified and linked successfully!',
                 method: 'API Token Verification',
-                security: 'Maximum Security ✅',
+                security: 'Maximum Security',
                 linkedPlayer: {
                   id: this.lastID,
                   playerTag: playerTag_final,
@@ -152,7 +152,7 @@ module.exports = function createProfileController(deps) {
               res.json({
                 message: 'Player account linked (Basic method)',
                 method: 'Player Tag',
-                security: 'Basic Security ⚠️',
+                security: 'Basic Security',
                 linkedPlayer: {
                   id: this.lastID,
                   playerTag: `#${cleanTag}`,

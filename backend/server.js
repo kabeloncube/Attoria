@@ -87,7 +87,7 @@ db.serialize(() => {
     eventColumns.forEach(column => {
         db.run(`ALTER TABLE events ADD COLUMN ${column}`, (err) => {
             if (err && !err.message.includes('duplicate column name')) {
-                console.warn(`Events table migration warning: ${err.message}`);
+                logger.debug(`Events table migration warning: ${err.message}`);
             }
         });
     });
@@ -143,16 +143,12 @@ db.serialize(() => {
         db.run(`ALTER TABLE player_accounts ADD COLUMN ${column}`, (err) => {
             // Ignore "duplicate column name" errors - means column already exists
             if (err && !err.message.includes('duplicate column name')) {
-                console.warn(`Database migration warning: ${err.message}`);
+                logger.debug(`Database migration warning: ${err.message}`);
             }
         });
     });
     
-    console.log('Smart database enhancements applied');
-});
-
-// DEFAULT EVENTS INITIALIZATION DISABLED
-// Using generated realistic events instead of database defaults
+    logger.info('Smart database enhancements applied');
 
 /*
 =============================================================================
@@ -232,20 +228,16 @@ app.use(session({
 const COC_API_BASE_URL = 'https://api.clashofclans.com/v1';
 const COC_API_KEY = process.env.COC_API_KEY;
 
-if (!COC_API_KEY) {
-    console.warn('Warning: COC_API_KEY not found in environment variables');
-}
-
 // Redis client for caching CoC responses (optional). Uses REDIS_URL env var when present.
 let redisClient = null;
 const REDIS_URL = process.env.REDIS_URL || process.env.REDIS_URI || null;
 if (REDIS_URL) {
     try {
         redisClient = new Redis(REDIS_URL);
-        redisClient.on('error', (err) => console.warn('Redis error:', err && err.message));
-        console.log('Redis client initialized for server-side caching');
+        redisClient.on('error', (err) => logger.warn('Redis error: %s', err && err.message));
+        logger.info('Redis client initialized for server-side caching');
     } catch (err) {
-        console.warn('Failed to initialize Redis client:', err && err.message);
+        logger.warn('Failed to initialize Redis client: %s', err && err.message);
         redisClient = null;
     }
 }
@@ -259,7 +251,7 @@ async function redisGet(key) {
         if (!raw) return null;
         return JSON.parse(raw);
     } catch (err) {
-        console.warn('Redis get error:', err && err.message);
+        logger.warn('Redis get error: %s', err && err.message);
         return null;
     }
 }
@@ -270,7 +262,7 @@ async function redisSet(key, value, ttlSeconds = COC_CACHE_TTL) {
         await redisClient.set(key, JSON.stringify(value), 'EX', Math.max(5, Math.min(ttlSeconds, 86400)));
         return true;
     } catch (err) {
-        console.warn('Redis set error:', err && err.message);
+        logger.warn('Redis set error: %s', err && err.message);
         return false;
     }
 }
@@ -285,7 +277,7 @@ function trackCoCActivity(req, res, next) {
     if (req.user && req.user.id) {
         db.run('UPDATE users SET last_coc_activity = CURRENT_TIMESTAMP WHERE id = ?', [req.user.id], (err) => {
             if (err) {
-                console.warn('Failed to update CoC activity:', err.message);
+                logger.warn('Failed to update CoC activity: %s', err.message);
             }
         });
     }
@@ -692,7 +684,7 @@ app.get('/api/coc-events', async (req, res) => {
                 cocEvents = eventsData.items;
             }
         } catch (apiError) {
-            console.log('CoC Events API not available, using generated events:', apiError.message);
+            logger.info('CoC Events API not available, using generated events: %s', apiError.message);
         }
         
         // Transform CoC API events to our format (if any)
@@ -764,9 +756,9 @@ app.get('/api/events', async (req, res) => {
     try {
         // Generate realistic events as primary source
         const generatedEvents = generateRealisticEvents();
-        console.log('Generated events count:', generatedEvents.length);
+        logger.debug('Generated events count: %d', generatedEvents.length);
         if (generatedEvents.length > 0) {
-            console.log('First generated event:', generatedEvents[0].title, generatedEvents[0].emoji);
+            logger.debug('First generated event: %s %s', generatedEvents[0].title, generatedEvents[0].emoji);
         }
         
         // Try to get additional events from CoC API
@@ -803,7 +795,7 @@ app.get('/api/events', async (req, res) => {
                 });
             }
         } catch (apiError) {
-            console.log('CoC Events API not available, using generated events only');
+            logger.info('CoC Events API not available, using generated events only');
         }
         
         // Combine generated events with API events
@@ -1036,7 +1028,7 @@ class SmartRefreshScheduler {
     start(intervalMinutes = 15) {
         // Only log if in development mode
         if (process.env.NODE_ENV !== 'production') {
-            console.log(`Starting smart auto-refresh scheduler (every ${intervalMinutes} minutes)`);
+            logger.info(`Starting smart auto-refresh scheduler (every ${intervalMinutes} minutes)`);
         }
 
         // Clear any existing interval
@@ -1051,7 +1043,7 @@ class SmartRefreshScheduler {
         this.refreshStats.nextRefreshAt = new Date(Date.now() + (intervalMinutes * 60 * 1000));
 
         if (process.env.NODE_ENV !== 'production') {
-            console.log(`Auto-refresh scheduler started. Next refresh: ${this.refreshStats.nextRefreshAt.toISOString()}`);
+            logger.info(`Auto-refresh scheduler started. Next refresh: ${this.refreshStats.nextRefreshAt.toISOString()}`);
         }
     }
     
@@ -1059,14 +1051,14 @@ class SmartRefreshScheduler {
         if (this.refreshInterval) {
             clearInterval(this.refreshInterval);
             this.refreshInterval = null;
-            console.log('Auto-refresh scheduler stopped');
+            logger.info('Auto-refresh scheduler stopped');
         }
     }
     
     async performScheduledRefresh() {
         if (this.refreshInProgress) {
         if (process.env.NODE_ENV !== 'production') {
-            console.log('Skipping scheduled refresh - previous refresh still in progress');
+            logger.info('Skipping scheduled refresh - previous refresh still in progress');
         }
             return;
         }
@@ -1076,7 +1068,7 @@ class SmartRefreshScheduler {
         this.refreshStats.lastRefreshAt = new Date();
 
         if (process.env.NODE_ENV !== 'production') {
-            console.log(`Starting scheduled refresh #${this.refreshStats.totalRefreshes}...`);
+            logger.info(`Starting scheduled refresh #${this.refreshStats.totalRefreshes}...`);
         }
         
         try {
@@ -1101,12 +1093,12 @@ class SmartRefreshScheduler {
                     }
                     
                     if (stalePlayers.length === 0) {
-                        console.log('No players need refreshing');
+                        logger.info('No players need refreshing');
                         resolve();
                         return;
                     }
                     
-                    console.log(`Found ${stalePlayers.length} players needing refresh`);
+                    logger.info(`Found ${stalePlayers.length} players needing refresh`);
                     
                     let successCount = 0;
                     let errorCount = 0;
@@ -1152,12 +1144,12 @@ class SmartRefreshScheduler {
                                 });
                                 
                                 successCount++;
-                                console.log(`[${i+1}/${stalePlayers.length}] Refreshed ${playerData.name} (${player.player_tag})`);
+                                logger.info(`[${i+1}/${stalePlayers.length}] Refreshed ${playerData.name} (${player.player_tag})`);
                             }
                             
                         } catch (playerError) {
                             errorCount++;
-                            console.warn(`[${i+1}/${stalePlayers.length}] Failed ${player.player_tag}: ${playerError.message}`);
+                            logger.warn(`[${i+1}/${stalePlayers.length}] Failed ${player.player_tag}: ${playerError.message}`);
                             
                             // Mark as stale
                             db.run('UPDATE player_accounts SET data_freshness = ? WHERE user_id = ? AND player_tag = ?', 
@@ -1168,13 +1160,13 @@ class SmartRefreshScheduler {
                     this.refreshStats.successCount += successCount;
                     this.refreshStats.errorCount += errorCount;
                     
-                    console.log(`Scheduled refresh completed: ${successCount} success, ${errorCount} errors`);
+                    logger.info(`Scheduled refresh completed: ${successCount} success, ${errorCount} errors`);
                     resolve();
                 });
             });
             
         } catch (error) {
-            console.error('❌ Scheduled refresh failed:', error);
+            console.error('Scheduled refresh failed:', error);
             this.refreshStats.errorCount++;
         } finally {
             this.refreshInProgress = false;
@@ -1225,7 +1217,7 @@ app.post('/api/refresh-player/:playerTag', authenticateToken, async (req, res) =
         const cleanTag = playerTag.replace('#', '').toUpperCase();
         const fullTag = `#${cleanTag}`;
         
-        console.log(`Refreshing player data for ${fullTag}...`);
+        logger.info(`Refreshing player data for ${fullTag}...`);
         
         // Verify this player is linked to the authenticated user
         db.get('SELECT * FROM player_accounts WHERE user_id = ? AND player_tag = ?', 
@@ -1291,7 +1283,7 @@ app.post('/api/refresh-player/:playerTag', authenticateToken, async (req, res) =
                         return res.status(500).json({ error: 'Failed to update player data' });
                     }
                     
-                    console.log(`Refreshed ${playerData.name} (${fullTag}) - ${playerData.trophies} trophies`);
+                    logger.info(`Refreshed ${playerData.name} (${fullTag}) - ${playerData.trophies} trophies`);
                     
                     res.json({
                         success: true,
@@ -1315,7 +1307,7 @@ app.post('/api/refresh-player/:playerTag', authenticateToken, async (req, res) =
                 });
                 
             } catch (apiError) {
-                console.error(`❌ Failed to refresh ${fullTag}:`, apiError.message);
+                console.error(`Failed to refresh ${fullTag}:`, apiError.message);
                 
                 // Mark as stale if API call failed
                 db.run('UPDATE player_accounts SET data_freshness = ?, last_updated = CURRENT_TIMESTAMP WHERE id = ?', 
@@ -1340,7 +1332,7 @@ app.post('/api/refresh-all-players', authenticateToken, async (req, res) => {
     try {
         const userId = req.user.id;
         
-        console.log(`Bulk refreshing all players for user ${userId}...`);
+        logger.info(`Bulk refreshing all players for user ${userId}...`);
         
         // Get all linked players for this user
         db.all('SELECT * FROM player_accounts WHERE user_id = ? AND auto_refresh_enabled = 1', 
@@ -1405,11 +1397,11 @@ app.post('/api/refresh-all-players', authenticateToken, async (req, res) => {
                         });
                         refreshedCount++;
                         
-                        console.log(`Refreshed ${playerData.name} (${player.player_tag}) - ${playerData.trophies} trophies`);
+                        logger.info(`Refreshed ${playerData.name} (${player.player_tag}) - ${playerData.trophies} trophies`);
                     }
                     
                 } catch (playerError) {
-                    console.warn(`⚠️ Failed to refresh ${player.player_tag}:`, playerError.message);
+                    logger.warn(`Failed to refresh ${player.player_tag}: %s`, playerError.message);
                     
                     // Mark as stale
                     db.run('UPDATE player_accounts SET data_freshness = ? WHERE id = ?', ['stale', player.id]);
@@ -1423,7 +1415,7 @@ app.post('/api/refresh-all-players', authenticateToken, async (req, res) => {
                 }
             }
             
-                        console.log(`Bulk refresh completed: ${refreshedCount}/${linkedPlayers.length} players refreshed`);
+                        logger.info(`Bulk refresh completed: ${refreshedCount}/${linkedPlayers.length} players refreshed`);
             
             res.json({
                 success: true,
@@ -1609,12 +1601,12 @@ app.get('/health', (req, res) => {
 // Graceful shutdown handler
 const server = app.listen(PORT, '0.0.0.0', () => {
     const localIP = getLocalNetworkIP();
-    logger.info(`🚀 Server running on http://localhost:${PORT}`);
-    logger.info(`🌐 Also accessible on local network at http://${localIP}:${PORT}`);
-    logger.info(`🔑 API Key configured: ${!!COC_API_KEY}`);
-    logger.info(`📦 Environment: ${process.env.NODE_ENV || 'development'}`);
-    logger.info(`💾 Database: ${process.env.NODE_ENV === 'production' ? 'PostgreSQL' : 'SQLite'}`);
-    logger.info(`✅ Health check available at http://localhost:${PORT}/health`);
+    logger.info(`Server running on http://localhost:${PORT}`);
+    logger.info(`Also accessible on local network at http://${localIP}:${PORT}`);
+    logger.info(`API key configured: ${!!COC_API_KEY}`);
+    logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    logger.info(`Database: ${process.env.NODE_ENV === 'production' ? 'PostgreSQL' : 'SQLite'}`);
+    logger.info(`Health check available at http://localhost:${PORT}/health`);
 });
 
 // Graceful shutdown on SIGTERM

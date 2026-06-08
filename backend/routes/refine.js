@@ -1,6 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const logger = require('../logger');
 
 module.exports = function depsFactory(deps) {
   const { db, authenticateToken } = deps;
@@ -9,13 +10,15 @@ module.exports = function depsFactory(deps) {
   // -----------------------------
   // RATIOS SUPPORT (compatibility)
   // -----------------------------
-  const ratiosPath = path.join(__dirname, '..', 'public', 'assets', 'config', 'refine-ratios.json');
+  const ratiosPath = path.join(__dirname, '..', '..', 'public', 'assets', 'config', 'refine-ratios.json');
   let RATIOS = {};
   try {
     const raw = fs.readFileSync(ratiosPath, 'utf8');
     RATIOS = JSON.parse(raw);
   } catch (err) {
-    console.warn('Could not load refine ratios:', err && err.message);
+    if (err.code && err.code !== 'ENOENT') {
+      logger.warn('Could not load refine ratios: %s', err.message);
+    }
     RATIOS = {};
   }
 
@@ -214,12 +217,12 @@ module.exports = function depsFactory(deps) {
           results.effectiveRawUsed, results.effectivePrevTierUsed, results.materialCost, results.totalProductionCost,
           results.grossSaleValue, results.marketTaxRate, results.marketTax, results.netSaleValue, results.netProfit,
           results.profitPerUnit, results.profitMargin, results.roi, results.breakEvenSellPricePerUnit,
-          (err) => { if (err) console.warn('Failed to save history:', err.message); }
+          (err) => { if (err) logger.warn('Failed to save history: %s', err.message); }
         );
       }
       res.json(results);
     } catch (err) {
-      console.error('Calculate endpoint error:', err);
+      logger.error('Calculate endpoint error: %O', err);
       res.status(500).json({ error: 'Server error' });
     }
   });
@@ -244,7 +247,7 @@ module.exports = function depsFactory(deps) {
       );
       res.json(sim);
     } catch (err) {
-      console.error('Simulate endpoint error:', err);
+      logger.error('Simulate endpoint error: %O', err);
       res.status(500).json({ error: 'Server error' });
     }
   });

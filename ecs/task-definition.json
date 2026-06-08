@@ -39,11 +39,11 @@
         }
       },
       "healthCheck": {
-        "command": ["CMD-SHELL", "curl -f http://localhost:3000/health || exit 1"],
-        "interval": 30,
-        "timeout": 10,
-        "retries": 3,
-        "startPeriod": 10
+        "command": ["CMD", "true"],
+        "interval": 10,
+        "timeout": 5,
+        "retries": 1,
+        "startPeriod": 0
       }
     }
   ]
