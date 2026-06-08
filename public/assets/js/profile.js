@@ -1051,7 +1051,7 @@ function getTownHallIcon(level) {
     const imageName = townHallImages[level] || townHallImages[16]; // Default to TH16 if not found
     
     // Create image with local path and fallback
-    return `<img src="assets/images/townhalls/${imageName}" 
+    return `<img src="/assets/images/townhalls/${imageName}" 
                  alt="Town Hall ${level}" 
                  class="stat-icon-img" 
                  loading="lazy"
