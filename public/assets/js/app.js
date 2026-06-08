@@ -1333,16 +1333,16 @@ function getEventImage(eventType, eventTitle = '', description = '') {
 
 // League trophy mapping
 const leagueTrophies = {
-    'Champion League': 'assets/images/icons/league trophies/Icon_HV_League_Champion.png',
-    'Titan League I': 'assets/images/icons/league trophies/Icon_HV_League_Titan_1.png', 
-    'Titan League II': 'assets/images/icons/league trophies/Icon_HV_League_Titan_2.png',
-    'Legend League': 'assets/images/icons/league trophies/Icon_HV_League_Legend_4.png',
-    'Master League I': 'assets/images/icons/league trophies/Icon_HV_League_Master_1.png',
-    'Master League II': 'assets/images/icons/league trophies/Icon_HV_League_Master_2.png',
-    'Crystal League I': 'assets/images/icons/league trophies/Icon_HV_League_Crystal_1.png',
-    'Crystal League II': 'assets/images/icons/league trophies/Icon_HV_League_Crystal_2.png',
-    'Gold League II': 'assets/images/icons/league trophies/Icon_HV_League_Gold_2.png',
-    'Silver League II': 'assets/images/icons/league trophies/Icon_HV_League_Silver_2.png'
+    'Champion League': 'assets/images/league trophies/Icon_HV_League_Champion.png',
+    'Titan League I': 'assets/images/league trophies/Icon_HV_League_Titan_1.png', 
+    'Titan League II': 'assets/images/league trophies/Icon_HV_League_Titan_2.png',
+    'Legend League': 'assets/images/league trophies/Icon_HV_League_Legend_4.png',
+    'Master League I': 'assets/images/league trophies/Icon_HV_League_Master_1.png',
+    'Master League II': 'assets/images/league trophies/Icon_HV_League_Master_2.png',
+    'Crystal League I': 'assets/images/league trophies/Icon_HV_League_Crystal_1.png',
+    'Crystal League II': 'assets/images/league trophies/Icon_HV_League_Crystal_2.png',
+    'Gold League II': 'assets/images/league trophies/Icon_HV_League_Gold_2.png',
+    'Silver League II': 'assets/images/league trophies/Icon_HV_League_Silver_2.png'
 };
 
 // Get league trophy based on trophies count or league name
