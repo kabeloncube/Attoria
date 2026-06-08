@@ -172,12 +172,12 @@ module.exports = function() {
       const path = `/api/v2/stats/prices/${encodeURIComponent(item)}.json`;
       const url = `${host}${path}${params.toString() ? '?' + params.toString() : ''}`;
 
-      console.log(`Albion API Request: ${url}`);
+      logger.info('Albion API Request: %s', url);
 
       const cacheKey = makeCacheKey(resolvedRegion, item, other);
       const cached = await getCached(cacheKey);
       if (cached) {
-        console.log(`Cache hit for ${item}`);
+        logger.debug('Cache hit for %s', item);
         return res.json({ cached: true, data: cached, region: resolvedRegion });
       }
 
@@ -187,9 +187,7 @@ module.exports = function() {
 
       if (!resp.ok) {
         const text = await resp.text();
-        console.error(`Albion API error ${resp.status}:`, text.substring(0, 200));
-
-        // Handle specific error codes
+          logger.error('Albion API error %s: %s', resp.status, text.substring(0, 200));
         if (resp.status === 404) {
           return res.status(404).json({
             error: 'Item not found or no market data available',
@@ -219,7 +217,7 @@ module.exports = function() {
 
       // Validate response data
       if (!Array.isArray(data)) {
-        console.error('Invalid API response format:', typeof data);
+        logger.error('Invalid API response format: %s', typeof data);
         return res.status(502).json({
           error: 'Invalid response from Albion API',
           code: 'INVALID_RESPONSE_FORMAT'
@@ -230,7 +228,7 @@ module.exports = function() {
       const ttlSeconds = Number(ttl) > 0 ? Math.min(Math.max(Number(ttl), 5), 3600) : DEFAULT_TTL_SECONDS;
       await setCached(cacheKey, data, ttlSeconds);
 
-      console.log(`Successfully fetched ${data.length} price records for ${item}`);
+      logger.info('Successfully fetched %d price records for %s', data.length, item);
       res.json({
         cached: false,
         data,
@@ -239,7 +237,7 @@ module.exports = function() {
       });
 
     } catch (err) {
-      console.error('Albion proxy error:', err);
+      logger.error('Albion proxy error: %O', err);
 
       // Handle specific error types
       if (err.name === 'AbortError') {
@@ -307,8 +305,7 @@ module.exports = function() {
             }
           }
         } catch (err) {
-          console.warn('AlbionDB search failed, trying fallback:', err.message);
-        }
+          logger.warn('AlbionDB search failed, trying fallback: %s', err.message);
 
         // Fallback: Use data dumps API if AlbionDB fails
         if (items.length === 0) {
@@ -343,7 +340,7 @@ module.exports = function() {
               }
             }
           } catch (err) {
-            console.warn('Data dumps search fallback failed:', err.message);
+            logger.warn('Data dumps search fallback failed: %s', err.message);
           }
         }
 
@@ -355,7 +352,7 @@ module.exports = function() {
 
     res.json({ cached: false, items });
     } catch (err) {
-      console.error('Item search error:', err);
+      logger.error('Item search error: %O', err);
       res.status(500).json({ error: 'Search error', message: err.message });
     }
   });
@@ -367,7 +364,7 @@ module.exports = function() {
       const queryParams = new URLSearchParams(req.query).toString();
       const url = `https://gameinfo.albiononline.com/api/gameinfo/${endpoint}${queryParams ? '?' + queryParams : ''}`;
 
-      console.log(`Official GameInfo API Request: ${url}`);
+      logger.info('Official GameInfo API Request: %s', url);
 
       const cacheKey = `gameinfo_${endpoint}_${queryParams}`;
       const cached = await getCached(cacheKey);
@@ -379,7 +376,7 @@ module.exports = function() {
 
       if (!resp.ok) {
         const text = await resp.text();
-        console.error(`GameInfo API error ${resp.status}:`, text.substring(0, 200));
+        logger.error('GameInfo API error %s: %s', resp.status, text.substring(0, 200));
         return res.status(resp.status).json({
           error: 'Official GameInfo API error',
           code: 'GAMEINFO_API_ERROR',
@@ -393,7 +390,7 @@ module.exports = function() {
 
       res.json({ cached: false, ...data });
     } catch (err) {
-      console.error('GameInfo API error:', err);
+      logger.error('GameInfo API error: %O', err);
       res.status(500).json({
         error: 'Official GameInfo API error',
         code: 'GAMEINFO_INTERNAL_ERROR',
@@ -408,7 +405,7 @@ module.exports = function() {
       const filename = req.params[0]; // Everything after /dumps/
       const url = `https://www.albion-online-data.com/api/dumps/${filename}`;
 
-      console.log(`Data Dumps API Request: ${url}`);
+      logger.info('Data Dumps API Request: %s', url);
 
       const cacheKey = `dump_${filename}`;
       const cached = await getCached(cacheKey);
@@ -420,7 +417,7 @@ module.exports = function() {
 
       if (!resp.ok) {
         const text = await resp.text();
-        console.error(`Data dumps API error ${resp.status}:`, text.substring(0, 200));
+        logger.error('Data dumps API error %s: %s', resp.status, text.substring(0, 200));
         return res.status(resp.status).json({
           error: 'Data dumps API error',
           code: 'DUMPS_API_ERROR',
@@ -436,7 +433,7 @@ module.exports = function() {
 
       res.json({ cached: false, data });
     } catch (err) {
-      console.error('Data dumps API error:', err);
+      logger.error('Data dumps API error: %O', err);
       res.status(500).json({
         error: 'Data dumps API error',
         code: 'DUMPS_INTERNAL_ERROR',
@@ -484,7 +481,7 @@ module.exports = function() {
 
       res.json(result);
     } catch (err) {
-      console.error('Item validation error:', err);
+      logger.error('Item validation error: %O', err);
       res.status(500).json({
         error: 'Validation error',
         code: 'VALIDATION_ERROR',

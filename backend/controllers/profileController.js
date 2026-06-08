@@ -1,3 +1,5 @@
+const logger = require('../logger');
+
 module.exports = function createProfileController(deps) {
   const { db, fetchCoCAPI, fetchCoCAPIWithPlayerToken, sanitizeInput } = deps;
 
@@ -30,13 +32,13 @@ module.exports = function createProfileController(deps) {
         return res.status(200).json({
           success: true,
           tokenValid: true,
-          message: 'Your API token is valid! 🎉',
+          message: 'Your API token is valid!',
           nextStep: 'playerTag',
           help: 'Find your player tag by tapping your name in Clash of Clans'
         });
 
       } catch (apiError) {
-        console.error('Token verification failed:', apiError.message);
+        logger.error('Token verification failed: %s', apiError.message);
         return res.status(400).json({
           error: 'Invalid API token or token expired',
           help: 'Please check your token or generate a new one in Clash of Clans settings'
@@ -44,7 +46,7 @@ module.exports = function createProfileController(deps) {
       }
 
     } catch (error) {
-      console.error('Token verification error:', error);
+      logger.error('Token verification error: %O', error);
       res.status(500).json({ error: 'Server error during token verification' });
     }
   }
@@ -113,12 +115,12 @@ module.exports = function createProfileController(deps) {
         });
 
       } catch (apiError) {
-        console.error('Account linking failed:', apiError.message);
+        logger.error('Account linking failed: %s', apiError.message);
         return res.status(400).json({ error: 'Could not link account with provided credentials', help: 'Make sure your API token and player tag are correct' });
       }
 
     } catch (error) {
-      console.error('Account linking error:', error);
+      logger.error('Account linking error: %O', error);
       res.status(500).json({ error: 'Server error during account linking' });
     }
   }
@@ -245,13 +247,13 @@ module.exports = function createProfileController(deps) {
 
           db.run(`INSERT INTO player_accounts (user_id, player_tag, player_name, town_hall_level, trophies, exp_level, verification_method) VALUES (?, ?, ?, ?, ?, ?, ?)`, [userId, `#${cleanTag}`, finalPlayerName, finalTownHallLevel || 1, finalTrophies || 0, finalExpLevel || 1, 'json_import'], function(err) {
             if (err) return res.status(500).json({ error: 'Failed to link player account' });
-            res.json({ message: 'Player account linked from JSON data', method: 'JSON Import', security: 'Data Import 📄', linkedPlayer: { id: this.lastID, playerTag: `#${cleanTag}`, playerName: finalPlayerName, townHallLevel: finalTownHallLevel || 1, trophies: finalTrophies || 0, expLevel: finalExpLevel || 1, verificationMethod: 'json_import', source: source || 'manual' } });
+            res.json({ message: 'Player account linked from JSON data', method: 'JSON Import', security: 'Data Import', linkedPlayer: { id: this.lastID, playerTag: `#${cleanTag}`, playerName: finalPlayerName, townHallLevel: finalTownHallLevel || 1, trophies: finalTrophies || 0, expLevel: finalExpLevel || 1, verificationMethod: 'json_import', source: source || 'manual' } });
           });
         });
       });
 
     } catch (error) {
-      console.error('JSON link error:', error);
+      logger.error('JSON link error: %O', error);
       res.status(500).json({ error: 'Server error' });
     }
   }
@@ -293,10 +295,10 @@ module.exports = function createProfileController(deps) {
               try {
                 warData = await fetchCoCAPI(`/clans/${encodeURIComponent(playerData.clan.tag)}/currentwar`);
               } catch (warError) {
-                console.log('No current war data available');
+                logger.info('No current war data available');
               }
             } catch (clanError) {
-              console.log('Failed to fetch clan data:', clanError.message);
+              logger.warn('Failed to fetch clan data: %s', clanError.message);
             }
           }
 

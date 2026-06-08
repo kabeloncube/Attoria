@@ -363,7 +363,7 @@ async function fetchCoCAPI(endpoint) {
         await redisSet(key, data).catch(() => {});
         return data;
         } catch (error) {
-            console.error('Scheduled refresh failed:', error);
+            logger.error('Scheduled refresh failed: %O', error);
             this.refreshStats.errorCount++;
         }
 }
@@ -385,7 +385,7 @@ async function fetchCoCAPIWithPlayerToken(endpoint, playerToken) {
 
         return await response.json();
     } catch (error) {
-        console.error('Error fetching from CoC API with player token:', error);
+        logger.error('Error fetching from CoC API with player token: %O', error);
         throw error;
     }
 }
@@ -737,7 +737,7 @@ app.get('/api/coc-events', async (req, res) => {
         });
         
     } catch (error) {
-        console.error('Error fetching CoC events:', error);
+        logger.error('Error fetching CoC events: %O', error);
         res.status(500).json({ 
             error: 'Failed to fetch CoC events', 
             message: error.message 
@@ -863,7 +863,7 @@ app.get('/api/events', async (req, res) => {
         });
         
     } catch (error) {
-        console.error('Error in events API:', error);
+        logger.error('Error in events API: %O', error);
         res.status(500).json({ error: 'Server error' });
     }
 });
@@ -1166,7 +1166,7 @@ class SmartRefreshScheduler {
             });
             
         } catch (error) {
-            console.error('Scheduled refresh failed:', error);
+            logger.error('Scheduled refresh failed: %O', error);
             this.refreshStats.errorCount++;
         } finally {
             this.refreshInProgress = false;
@@ -1279,9 +1279,7 @@ app.post('/api/refresh-player/:playerTag', authenticateToken, async (req, res) =
                 
                 db.run(updateQuery, updateParams, function(err) {
                     if (err) {
-                        console.error('Failed to update player cache:', err);
-                        return res.status(500).json({ error: 'Failed to update player data' });
-                    }
+                            logger.error('Failed to update player cache: %O', err);
                     
                     logger.info(`Refreshed ${playerData.name} (${fullTag}) - ${playerData.trophies} trophies`);
                     
@@ -1307,7 +1305,7 @@ app.post('/api/refresh-player/:playerTag', authenticateToken, async (req, res) =
                 });
                 
             } catch (apiError) {
-                console.error(`Failed to refresh ${fullTag}:`, apiError.message);
+                logger.error('Failed to refresh %s: %s', fullTag, apiError.message);
                 
                 // Mark as stale if API call failed
                 db.run('UPDATE player_accounts SET data_freshness = ?, last_updated = CURRENT_TIMESTAMP WHERE id = ?', 
@@ -1322,7 +1320,7 @@ app.post('/api/refresh-player/:playerTag', authenticateToken, async (req, res) =
         });
         
     } catch (error) {
-        console.error('Player refresh error:', error);
+        logger.error('Player refresh error: %O', error);
         res.status(500).json({ error: 'Server error during player refresh' });
     }
 });
@@ -1428,7 +1426,7 @@ app.post('/api/refresh-all-players', authenticateToken, async (req, res) => {
         });
         
     } catch (error) {
-        console.error('Bulk refresh error:', error);
+        logger.error('Bulk refresh error: %O', error);
         res.status(500).json({ error: 'Server error during bulk refresh' });
     }
 });
