@@ -2,7 +2,7 @@
 
 A comprehensive web platform combining analytics and market tools for **Clash of Clans** and **Albion Online**.
 
-## 🚀 Quick Start
+##  Quick Start
 
 ```bash
 # Install backend dependencies
@@ -39,7 +39,7 @@ attoria/
 └── 📁 tests/            # Test files
 ```
 
-## 🛠️ Development
+##  Development
 
 ### Prerequisites
 - Node.js 18+
@@ -66,7 +66,7 @@ npm run migrate
 npm run dev
 ```
 
-## 🚀 Production Deployment
+##  Production Deployment
 
 ### Docker (Recommended)
 ```bash
@@ -89,7 +89,7 @@ npm run pm2-start
 npm run pm2-logs
 ```
 
-## 📚 Documentation
+##  Documentation
 
 - [Production Deployment Guide](docs/PRODUCTION_DEPLOYMENT.md)
 - [API Documentation](docs/API.md)
@@ -104,7 +104,7 @@ npm run pm2-logs
 - `npm run migrate` - Run database migrations
 - `npm run backup` - Create database backup
 
-## 🌟 Features
+##  Features
 
 ### Clash of Clans Analytics
 - Clan search and analysis
@@ -119,7 +119,7 @@ npm run pm2-logs
 - Item search with NLP
 - Multi-city price comparison
 
-## 🤝 Contributing
+##  Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -127,7 +127,7 @@ npm run pm2-logs
 4. Add tests if applicable
 5. Submit a pull request
 
-## 📄 License
+##  License
 
 ISC License - see LICENSE file for details
 
