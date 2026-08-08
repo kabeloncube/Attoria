@@ -306,6 +306,7 @@ module.exports = function() {
           }
         } catch (err) {
           logger.warn('AlbionDB search failed, trying fallback: %s', err.message);
+        }
 
         // Fallback: Use data dumps API if AlbionDB fails
         if (items.length === 0) {

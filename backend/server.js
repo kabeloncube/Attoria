@@ -149,6 +149,7 @@ db.serialize(() => {
     });
     
     logger.info('Smart database enhancements applied');
+});
 
 /*
 =============================================================================
@@ -1279,10 +1280,12 @@ app.post('/api/refresh-player/:playerTag', authenticateToken, async (req, res) =
                 
                 db.run(updateQuery, updateParams, function(err) {
                     if (err) {
-                            logger.error('Failed to update player cache: %O', err);
-                    
+                        logger.error('Failed to update player cache: %O', err);
+                        return res.status(500).json({ error: 'Failed to update player cache' });
+                    }
+
                     logger.info(`Refreshed ${playerData.name} (${fullTag}) - ${playerData.trophies} trophies`);
-                    
+
                     res.json({
                         success: true,
                         message: 'Player data refreshed successfully',
