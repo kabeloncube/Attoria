@@ -125,7 +125,6 @@ services:
     restart: unless-stopped
 
 volumes:
-      - ../logs:/app/logs
   postgres_data:
   redis_data:
   nginx_cache:
