@@ -387,6 +387,12 @@
           return itemId.replace(/_/g, ' ').replace(/T(\d+)/g, 'Tier $1');
         }
 
+        function getBaseItemId(itemId) {
+          return String(itemId || '')
+            .split('@')[0]
+            .replace(/_LEVEL\d+$/, '');
+        }
+
         function formatTime(dateString) {
           if (!dateString) return 'Unknown';
           const date = new Date(dateString);
@@ -438,36 +444,22 @@
           // Fetch prices for ALL cities at once
           const cities = 'Caerleon,Bridgewatch,Fort Sterling,Lymhurst,Martlock,Thetford';
           const enchantment = $('enchantment-select').value; // Read from UI
-          const quality = '1'; // 1 = normal
 
-          // Handle resource enchantment formatting
-          // UI selector takes priority over text-detected enchantment
-          let finalItemId = itemId;
-          
-          // Remove any existing enchantment from text input
-          let baseItemId = itemId;
-          if (itemId.includes('@')) {
-            baseItemId = itemId.split('@')[0];
-          }
-          // Also remove LEVEL suffix if present
-          if (baseItemId.includes('_LEVEL')) {
-            baseItemId = baseItemId.split('_LEVEL')[0];
-          }
-          
-          // Apply UI enchantment if selected
-          if (enchantment !== '0') {
-            // Check if this is a resource or refined material item
-            const isResourceOrRefined = ['FIBER', 'WOOD', 'ROCK', 'ORE', 'HIDE', 'LEATHER', 'CLOTH', 'METALBAR', 'STONEBLOCK', 'PLANKS'].includes(baseItemId);
-            if (isResourceOrRefined) {
-              // Resources and refined materials use LEVEL format: FIBER_LEVEL1@1, LEATHER_LEVEL2@2, etc.
-              finalItemId = `${baseItemId}_LEVEL${enchantment}@${enchantment}`;
-            } else {
-              // Regular items just append @enchantment
-              finalItemId = `${baseItemId}@${enchantment}`;
-            }
-          } else {
-            // No UI enchantment, use text-detected enchantment if present
-            finalItemId = itemId;
+          const quality = '1';
+          const baseItemId = getBaseItemId(itemId);
+          const tierMatch = baseItemId.match(/^T(\d+)_/);
+          const tier = tierMatch ? Number(tierMatch[1]) : 0;
+          const resourceType = baseItemId.replace(/^T\d+_/, '');
+          const isResourceOrRefined = [
+            'FIBER', 'WOOD', 'ROCK', 'ORE', 'HIDE',
+            'LEATHER', 'CLOTH', 'METALBAR', 'STONEBLOCK', 'PLANKS'
+          ].includes(resourceType);
+
+          let finalItemId = baseItemId;
+          if (tier >= 4 && enchantment !== '0') {
+            finalItemId = isResourceOrRefined
+              ? `${baseItemId}_LEVEL${enchantment}@${enchantment}`
+              : `${baseItemId}@${enchantment}`;
           }
 
           const qs = new URLSearchParams({
@@ -528,12 +520,16 @@
           itemPreviewCard.style.display = 'flex';
           
           // Parse enchantment from itemId
-          let baseItemId = itemId;
+          let baseItemId = getBaseItemId(itemId);
           let displayEnchantment = '0';
           if (itemId.includes('@')) {
             const parts = itemId.split('@');
-            baseItemId = parts[0];
-            displayEnchantment = parts[1];
+            displayEnchantment = parts[1] || '0';
+          }
+
+          const levelMatch = itemId.match(/_LEVEL(\d+)/);
+          if (levelMatch) {
+            displayEnchantment = levelMatch[1];
           }
           
           let displayName = formatItemName(baseItemId);
