@@ -951,6 +951,9 @@ app.use('/api/proxy/coc', require('./routes/cocProxy')({ fetchCoCAPI, authentica
 
  // Albion Data proxy - keeps frontend same-origin and avoids CSP/CORS problems
  app.use('/api/proxy/albion', require('./routes/albionProxy')());
+
+ // Official Albion GameInfo proxy for PvP player search and history.
+ app.use('/api/proxy/albion-pvp', require('./routes/albionPvpProxy')());
  
  // Refining helpers (local ratios + batch planner)
  // ensure refine_presets and refine_history tables exist for user data
