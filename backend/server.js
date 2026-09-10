@@ -206,7 +206,23 @@ app.use(helmet({
 app.use(require('compression')());
 
 // GENERAL MIDDLEWARE
-app.use(cors());
+// Accept the Cloudflare Pages frontend (and any additional comma-separated
+// origins configured in CORS_ORIGIN). Requests without an Origin header, such
+// as Render health checks, are allowed as well.
+const allowedOrigins = (process.env.CORS_ORIGIN || 'https://attoria.pages.dev')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+app.use(cors({
+    origin(origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+        return callback(new Error('Origin is not allowed by CORS'));
+    },
+    credentials: process.env.CORS_CREDENTIALS === 'true'
+}));
 app.use(express.json({ limit: '10mb' })); // Limit JSON payload size
 // Serve static files BEFORE rate limiting to avoid blocking CSS/JS/images
 // Serve files normally; root index.html is now the welcome page
