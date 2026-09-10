@@ -1139,7 +1139,7 @@ function createEventsHTML(events) {
         return `
             <div class="event-card ${event.status || 'active'}" data-event-id="${event.id || ''}">
                 <div class="event-image">
-                    <img src="${eventImage}" alt="${event.title}" onerror="this.src='assets/images/events/news-update.png'">
+                    <img src="${eventImage}" alt="${event.title}" onerror="this.onerror=null; this.src='/assets/images/events/Clan_Games.png'">
                 </div>
                 <div class="event-content">
                     <div class="event-header">
@@ -1267,24 +1267,24 @@ async function loadLeaderboard() {
 // Event image mapping system
 const eventImages = {
     // Main Events
-    'clan_games': 'assets/images/events/Clan_Games.png',
-    'clan_capital': 'assets/images/events/Clan_Capital.png',
-    'cwl': 'assets/images/events/CWL_Gold_2.png', // Default CWL image
-    'gold_pass': 'assets/images/events/Gold_Pass.png',
-    'silver_pass': 'assets/images/events/Silver_Pass.png',
-    'builder_base': 'assets/images/events/Goblin_Builder.png',
-    'builder_event': 'assets/images/events/Goblin_Builder_BG.png',
+    'clan_games': '/assets/images/events/Clan_Games.png',
+    'clan_capital': '/assets/images/events/Clan_Capital.png',
+    'cwl': '/assets/images/league%20trophies/Icon_HV_League_Gold_2.png', // Default CWL image
+    'gold_pass': '/assets/images/events/Gold_Pass.png',
+    'silver_pass': '/assets/images/events/Silver_Pass.png',
+    'builder_base': '/assets/images/events/Goblin_Builder.png',
+    'builder_event': '/assets/images/events/Goblin_Builder_BG.png',
     
     // CWL League specific images
-    'cwl_bronze': 'assets/images/events/CWL_Bronze_2.png',
-    'cwl_silver': 'assets/images/events/CWL_Silver_2.png', 
-    'cwl_gold': 'assets/images/events/CWL_Gold_2.png',
-    'cwl_crystal': 'assets/images/events/CWL_Crystal_2.png',
-    'cwl_master': 'assets/images/events/CWL_Master_2.png',
-    'cwl_champion': 'assets/images/events/CWL_Champion_2.png',
+    'cwl_bronze': '/assets/images/league%20trophies/Icon_HV_League_Silver_2.png',
+    'cwl_silver': '/assets/images/league%20trophies/Icon_HV_League_Silver_2.png',
+    'cwl_gold': '/assets/images/league%20trophies/Icon_HV_League_Gold_2.png',
+    'cwl_crystal': '/assets/images/league%20trophies/Icon_HV_League_Crystal_2.png',
+    'cwl_master': '/assets/images/league%20trophies/Icon_HV_League_Master_2.png',
+    'cwl_champion': '/assets/images/league%20trophies/Icon_HV_League_Champion.png',
     
     // Default fallback
-    'default': 'assets/images/events/Clan_Games.png'
+    'default': '/assets/images/events/Clan_Games.png'
 };
 
 // Get event image based on event type and additional context

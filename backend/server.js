@@ -379,10 +379,10 @@ async function fetchCoCAPI(endpoint) {
         // cache the successful response
         await redisSet(key, data).catch(() => {});
         return data;
-        } catch (error) {
-            logger.error('Scheduled refresh failed: %O', error);
-            this.refreshStats.errorCount++;
-        }
+    } catch (error) {
+        logger.error('CoC API request failed: %O', error);
+        throw error;
+    }
 }
 
 // Helper function to make CoC API requests with player's token (for verification)
