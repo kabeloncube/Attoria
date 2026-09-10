@@ -16,7 +16,7 @@ const resultsDiv = document.getElementById('results');              // The main 
 const locationSelect = document.getElementById('locationSelect');   // The dropdown for selecting locations in leaderboard
 
 // API CONFIGURATION - Where to send requests to our backend server
-const API_BASE_URL = window.location.origin;  // This gets the current website URL (like http://localhost:3000)
+const API_BASE_URL = window.API_BASE || window.location.origin;
 
 // AUTHENTICATION VARIABLES - Keep track of who's logged in
 let currentUser = null;                                    // Stores info about the logged-in user (null = no one logged in)
@@ -1004,6 +1004,10 @@ async function loadEvents() {
     
     try {
         const response = await fetch(`${API_BASE_URL}/api/events`);
+        const contentType = response.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
+            throw new Error(`Events API returned ${response.status} instead of JSON`);
+        }
         const data = await response.json();
         
         if (!response.ok) {
@@ -2678,4 +2682,3 @@ function refreshCustomDropdown(originalSelect) {
         optionsContainer.appendChild(optionElement);
     });
 }
-

@@ -5,7 +5,7 @@ PROFILE PAGE JAVASCRIPT - Dedicated player profile management
 */
 
 // API CONFIGURATION
-const API_BASE_URL = window.location.origin;
+const API_BASE_URL = window.API_BASE || window.location.origin;
 
 // AUTHENTICATION VARIABLES
 let currentUser = null;
