@@ -75,6 +75,16 @@ const RESOURCE_NAMES = {
   'rock': { raw: 'Rock', refined: 'Stone Blocks' }
 };
 
+const REFINING_RECIPES = {
+  2: { raw: 1, previous: 0 },
+  3: { raw: 2, previous: 1 },
+  4: { raw: 2, previous: 1 },
+  5: { raw: 3, previous: 1 },
+  6: { raw: 4, previous: 1 },
+  7: { raw: 5, previous: 1 },
+  8: { raw: 5, previous: 1 }
+};
+
 // Fixed game values
 const MARKET_TAX_NO_PREMIUM = 0.08;  // 8%
 const MARKET_TAX_PREMIUM = 0.04;     // 4%
@@ -171,7 +181,7 @@ async function calculateProfit() {
   const rawPrice = parseFloat(document.getElementById('raw-price').value) || 0;
   const prevTierPrice = parseFloat(document.getElementById('prev-tier-price').value) || 0;
   const refinedPrice = parseFloat(document.getElementById('refined-price').value) || 0;
-  const stationCost = parseFloat(document.getElementById('station-cost').value) || 0;
+  const stationCostPerUnit = parseFloat(document.getElementById('station-cost').value) || 0;
   const city = document.getElementById('city').value;
   const resourceType = document.getElementById('resource-type').value;
   const tier = document.getElementById('tier').value;
@@ -183,6 +193,8 @@ async function calculateProfit() {
     alert('Please enter a valid quantity');
     return null;
   }
+
+  const stationCost = stationCostPerUnit * quantity;
 
   // If authenticated, use backend API
   if (isAuthenticated()) {
@@ -202,10 +214,10 @@ async function calculateProfit() {
   // Step 1: Determine Resource Return Rate (RRR)
   const rrr = calculateRRR(city, resourceType, focus);
 
-  // Step 2: Determine Material Requirements
-  // Rule: 2 Raw Materials + 1 Previous Tier Refined Material
-  const rawRequired = 2 * quantity;
-  const prevTierRequired = 1 * quantity;
+  // Step 2: Determine requirements from the Albion recipe for this tier.
+  const recipe = REFINING_RECIPES[parseInt(tier, 10)] || REFINING_RECIPES[4];
+  const rawRequired = recipe.raw * quantity;
+  const prevTierRequired = recipe.previous * quantity;
 
   // Step 3: Apply Resource Return
   const returnedRaw = rawRequired * rrr;
@@ -245,6 +257,7 @@ async function calculateProfit() {
     prevTierPrice,
     refinedPrice,
     stationCost,
+    stationCostPerUnit,
     city,
     resourceType,
     tier,
@@ -278,11 +291,12 @@ async function calculateProfit() {
 /**
  * Step 10: Reinvestment Simulation
  */
-function simulateReinvestment(initialQuantity, rrr, rawPrice, prevTierPrice, stationCostPerBatch, premium) {
+function simulateReinvestment(initialQuantity, rrr, rawPrice, prevTierPrice, stationCostPerUnit, premium, tier = 4) {
+  const recipe = REFINING_RECIPES[parseInt(tier, 10)] || REFINING_RECIPES[4];
   let totalRefined = 0;
   let totalCost = 0;
-  let remainingRaw = initialQuantity * 2; // Initial raw materials
-  let remainingPrevTier = initialQuantity * 1; // Initial previous tier materials
+  let remainingRaw = initialQuantity * recipe.raw;
+  let remainingPrevTier = initialQuantity * recipe.previous;
   let iterations = 0;
   const maxIterations = 10; // Safety limit
 
@@ -290,15 +304,15 @@ function simulateReinvestment(initialQuantity, rrr, rawPrice, prevTierPrice, sta
 
   while (iterations < maxIterations) {
     // Calculate how many we can refine with current materials
-    const canRefineFromRaw = Math.floor(remainingRaw / 2);
-    const canRefineFromPrevTier = Math.floor(remainingPrevTier / 1);
+    const canRefineFromRaw = Math.floor(remainingRaw / recipe.raw);
+    const canRefineFromPrevTier = recipe.previous ? Math.floor(remainingPrevTier / recipe.previous) : initialQuantity;
     const canRefine = Math.min(canRefineFromRaw, canRefineFromPrevTier);
 
     if (canRefine <= 0) break;
 
     // Materials used for this batch
-    const rawUsed = canRefine * 2;
-    const prevTierUsed = canRefine * 1;
+    const rawUsed = canRefine * recipe.raw;
+    const prevTierUsed = canRefine * recipe.previous;
 
     // Materials returned
     const rawReturned = rawUsed * rrr;
@@ -310,7 +324,7 @@ function simulateReinvestment(initialQuantity, rrr, rawPrice, prevTierPrice, sta
 
     // Cost for this batch
     const batchMaterialCost = (effectiveRawConsumed * rawPrice) + (effectivePrevTierConsumed * prevTierPrice);
-    const batchCostBeforeFees = batchMaterialCost + stationCostPerBatch;
+    const batchCostBeforeFees = batchMaterialCost + (stationCostPerUnit * canRefine);
     const batchSetupFee = batchCostBeforeFees * SETUP_FEE_RATE;
     const batchTotalCost = batchCostBeforeFees + batchSetupFee;
 
@@ -362,6 +376,7 @@ function formatCurrency(num) {
 function displayResults(results) {
   // Show results container
   const container = document.getElementById('results-container');
+  container.parentElement.classList.add('has-results');
   container.classList.add('show');
 
   // Profit highlight
@@ -392,7 +407,7 @@ function displayResults(results) {
       <td>${formatNumber(results.rawRequired)}</td>
     </tr>
     <tr>
-      <td>Previous Tier Required (T${parseInt(results.tier) - 1} ${resourceName.refined}):</td>
+      <td>${results.prevTierRequired ? `Previous Tier Required (T${parseInt(results.tier) - 1} ${resourceName.refined}):` : 'Previous Tier Required:'}</td>
       <td>${formatNumber(results.prevTierRequired)}</td>
     </tr>
     <tr>
@@ -868,6 +883,8 @@ async function runReinvestmentSimulation() {
         rawPrice: results.rawPrice,
         prevTierPrice: results.prevTierPrice,
         stationCost: results.stationCost,
+        stationCostPerUnit: results.stationCostPerUnit,
+        tier: results.tier,
         city: results.city,
         resourceType: results.resourceType,
         premium: results.premium,
@@ -880,8 +897,9 @@ async function runReinvestmentSimulation() {
         results.rrr,
         results.rawPrice,
         results.prevTierPrice,
-        results.stationCost,
-        results.premium
+        results.stationCostPerUnit ?? (results.stationCost / results.quantity),
+        results.premium,
+        results.tier
       );
     }
   } else {
@@ -890,8 +908,9 @@ async function runReinvestmentSimulation() {
       results.rrr,
       results.rawPrice,
       results.prevTierPrice,
-      results.stationCost,
-      results.premium
+      results.stationCostPerUnit ?? (results.stationCost / results.quantity),
+      results.premium,
+      results.tier
     );
   }
 

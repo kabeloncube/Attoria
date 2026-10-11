@@ -72,6 +72,16 @@ module.exports = function depsFactory(deps) {
     'rock': { raw: 'Rock', refined: 'Stone Blocks' }
   };
 
+  const REFINING_RECIPES = {
+    2: { raw: 1, previous: 0 },
+    3: { raw: 2, previous: 1 },
+    4: { raw: 2, previous: 1 },
+    5: { raw: 3, previous: 1 },
+    6: { raw: 4, previous: 1 },
+    7: { raw: 5, previous: 1 },
+    8: { raw: 5, previous: 1 }
+  };
+
   const MARKET_TAX_NO_PREMIUM = 0.08;
   const MARKET_TAX_PREMIUM = 0.04;
   const SETUP_FEE_RATE = 0.025;
@@ -104,8 +114,9 @@ module.exports = function depsFactory(deps) {
     } = params;
 
     const rrr = calculateRRR(city, resourceType, focus);
-    const rawRequired = 2 * quantity;
-    const prevTierRequired = 1 * quantity;
+    const recipe = REFINING_RECIPES[Number(tier)] || REFINING_RECIPES[4];
+    const rawRequired = recipe.raw * quantity;
+    const prevTierRequired = recipe.previous * quantity;
     const returnedRaw = rawRequired * rrr;
     const returnedPrevTier = prevTierRequired * rrr;
     const effectiveRawUsed = rawRequired - returnedRaw;
@@ -126,6 +137,7 @@ module.exports = function depsFactory(deps) {
 
     return {
       quantity, rawPrice, prevTierPrice, refinedPrice, stationCost,
+      stationCostPerUnit: quantity > 0 ? stationCost / quantity : 0,
       city, resourceType, tier, premium, focus,
       rrr, rawRequired, prevTierRequired, returnedRaw, returnedPrevTier,
       effectiveRawUsed, effectivePrevTierUsed, materialCost,
@@ -135,28 +147,29 @@ module.exports = function depsFactory(deps) {
     };
   }
 
-  function simulateReinvestment(initialQuantity, rrr, rawPrice, prevTierPrice, stationCostPerBatch, premium) {
+  function simulateReinvestment(initialQuantity, rrr, rawPrice, prevTierPrice, stationCostPerUnit, premium, tier = 4) {
+    const recipe = REFINING_RECIPES[Number(tier)] || REFINING_RECIPES[4];
     let totalRefined = 0;
     let totalCost = 0;
-    let remainingRaw = initialQuantity * 2;
-    let remainingPrevTier = initialQuantity * 1;
+    let remainingRaw = initialQuantity * recipe.raw;
+    let remainingPrevTier = initialQuantity * recipe.previous;
     let iterations = 0;
     const maxIterations = 10;
     const marketTaxRate = premium ? MARKET_TAX_PREMIUM : MARKET_TAX_NO_PREMIUM;
 
     while (iterations < maxIterations) {
-      const canRefineFromRaw = Math.floor(remainingRaw / 2);
-      const canRefineFromPrevTier = Math.floor(remainingPrevTier / 1);
+      const canRefineFromRaw = Math.floor(remainingRaw / recipe.raw);
+      const canRefineFromPrevTier = recipe.previous ? Math.floor(remainingPrevTier / recipe.previous) : initialQuantity;
       const canRefine = Math.min(canRefineFromRaw, canRefineFromPrevTier);
       if (canRefine <= 0) break;
-      const rawUsed = canRefine * 2;
-      const prevTierUsed = canRefine * 1;
+      const rawUsed = canRefine * recipe.raw;
+      const prevTierUsed = canRefine * recipe.previous;
       const rawReturned = rawUsed * rrr;
       const prevTierReturned = prevTierUsed * rrr;
       const effectiveRawConsumed = rawUsed - rawReturned;
       const effectivePrevTierConsumed = prevTierUsed - prevTierReturned;
       const batchMaterialCost = (effectiveRawConsumed * rawPrice) + (effectivePrevTierConsumed * prevTierPrice);
-      const batchCostBeforeFees = batchMaterialCost + stationCostPerBatch;
+      const batchCostBeforeFees = batchMaterialCost + (stationCostPerUnit * canRefine);
       const batchSetupFee = batchCostBeforeFees * SETUP_FEE_RATE;
       const batchTotalCost = batchCostBeforeFees + batchSetupFee;
       totalRefined += canRefine;
@@ -242,8 +255,9 @@ module.exports = function depsFactory(deps) {
         rrr,
         Number(params.rawPrice),
         Number(params.prevTierPrice),
-        Number(params.stationCost),
-        Boolean(params.premium)
+        Number(params.stationCostPerUnit ?? (Number(params.stationCost) / Number(params.quantity))),
+        Boolean(params.premium),
+        params.tier || 4
       );
       res.json(sim);
     } catch (err) {

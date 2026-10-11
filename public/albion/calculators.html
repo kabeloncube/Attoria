@@ -1,0 +1,1048 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Albion Online livestock and cooking calculators."><meta name="robots" content="index,follow"><meta property="og:title" content="Albion Calculators | Ættoria"><meta property="og:description" content="Plan livestock feeding and compare cooking costs and returns."><title>Albion Calculators | Ættoria</title><link rel="icon" type="image/png" href="/favicon.png"><link rel="stylesheet" href="../assets/css/albion.css"><link rel="stylesheet" href="../assets/css/calculators.css"></head><body>
+
+
+<header><div class="nav"><div class="brand"><a href="/albion/index.html">⚒ Ættoria · Albion</a></div><nav><ul><li><a href="/albion/index.html">Home</a></li><li><a href="/albion/index.html#main-content">Markets</a></li><li><a href="/albion/pvp-analytics.html">PvP</a></li><li class="nav-dropdown"><a href="#" id="tools-toggle" aria-haspopup="true" aria-expanded="false">Tools ▾</a><ul class="dropdown-menu" id="tools-dropdown" aria-label="Tools submenu"><li><a href="/albion/refining.html">Refining</a></li><li><a href="/albion/crafting.html">Crafting</a></li><li><a href="/albion/calculators.html" aria-current="page">Calculators</a></li></ul></li></ul></nav><a href="/" class="nav-hub-link">← Hub</a></div></header>
+<main class="calculator-page"><div class="calculator-page-header"><div class="header-rule"><span>Albion Forge</span></div><h1>Albion Calculators</h1><p>Plan livestock feeding and compare cooking costs and returns.</p></div>
+<input class="calculator-tab-toggle" type="radio" name="calculator-tab" id="livestock-tab" checked aria-label="Livestock calculator">
+<input class="calculator-tab-toggle" type="radio" name="calculator-tab" id="cooking-tab" aria-label="Cooking calculator">
+<div class="tab-bar" role="group" aria-label="Choose calculator">
+  <label class="tab-btn" for="livestock-tab">Livestock</label>
+  <label class="tab-btn" for="cooking-tab">Cooking</label>
+</div>
+
+<div class="tab-content" id="tab-livestock">
+<div class="container">
+  <h1>Albion Livestock Food Calculator</h1>
+  <p class="subtitle">Add animals from the preset list — grow time and food per animal fill in automatically.</p>
+
+  <div class="card">
+    <div class="top-bar">
+      <label for="nonfavPrice">Cheapest food price (silver):</label>
+      <input type="number" id="nonfavPrice" value="450" min="0">
+      <span class="hint">Used for non-fav food (2× qty) and <em style="color:var(--pale-gold)">Any Food</em> animals.</span>
+      <label for="meatPrice" style="margin-left:8px">Cheapest meat price (silver):</label>
+      <input type="number" id="meatPrice" value="300" min="0">
+      <span class="hint">Used for all <em style="color:#c47a5a">Meat</em> animals.</span>
+    </div>
+
+    <div class="legend">
+      <span class="legend-item"><span class="badge badge-fav">Fav food</span>&nbsp;cheaper to feed favourite food</span>
+      <span class="legend-item"><span class="badge badge-nonfav">Non-fav food</span>&nbsp;cheaper to feed non-favourite food</span>
+      <span class="legend-item"><span class="badge badge-any">Any food</span>&nbsp;eats any food — uses cheapest price above</span>
+      <span class="legend-item"><span class="badge badge-meat">Meat</span>&nbsp;eats cheapest meat — uses meat price above</span>
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:160px">Animal</th>
+            <th style="width:105px">Food</th>
+            <th style="width:65px">Count</th>
+            <th style="width:115px">Food price (silver)</th>
+            <th style="width:80px">Grow time</th>
+            <th style="width:75px">Food / animal</th>
+            <th style="width:75px">Total qty</th>
+            <th style="width:85px">Fav cost</th>
+            <th style="width:90px">Non-fav cost</th>
+            <th style="width:95px">Best option</th>
+            <th style="width:50px"></th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <p class="empty" id="livestock-empty">No animals added yet — click <strong>+ Add animal</strong> to pick from the preset list.</p>
+    </div>
+
+    <div class="totals" id="totals"></div>
+
+    <div class="shop" id="shopSection" style="display:none">
+      <h3>Shopping list — what to actually buy</h3>
+      <div class="shop-grid" id="shopGrid"></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-add" id="add-animal-button" type="button">+ Add animal</button>
+      <button class="btn" id="livestock-clear-all" type="button">Clear all</button>
+    </div>
+  </div>
+</div>
+
+<!-- Animal picker modal — inside livestock tab -->
+<div class="overlay" id="ls_overlay">
+  <div class="picker">
+    <h2>Choose an animal</h2>
+    <input class="picker-search" id="ls_pickerSearch" type="text" placeholder="Search…">
+    <div class="picker-list" id="ls_pickerList"></div>
+    <button class="picker-cancel" id="ls-picker-cancel" type="button">Cancel</button>
+  </div>
+</div>
+</div>
+
+<div class="tab-content" id="tab-cooking">
+<div class="container">
+  <h1>Albion Cooking Calculator</h1>
+  <p class="subtitle">Enter your ingredient prices, how many you want to cook, and see your costs and profit.</p>
+
+  <div class="settings">
+    <div class="sf">
+      <label>Crafting Station Fee</label>
+      <input type="number" id="stationFee" value="300" min="0">
+    </div>
+    <div class="sf">
+      <label>Resource Return Rate %</label>
+      <input type="number" id="returnRate" value="11" min="0" max="100">
+      <div class="hint">Default 11% — ingredients returned per craft</div>
+    </div>
+    <div class="sf">
+      <label>Market Tax %</label>
+      <input type="number" id="taxRate" value="3" min="0" max="100">
+      <div class="hint">Deducted from sell price</div>
+    </div>
+    <div class="sf">
+      <label>Focus</label>
+      <div class="focus-row">
+        <input type="checkbox" id="useFocus">
+        <label for="useFocus">Use focus (Premium)</label>
+      </div>
+      <div class="hint">Boosts return rate — requires Premium</div>
+    </div>
+    <div class="focus-fields" id="focusFields" style="display:none">
+      <div class="sf">
+        <label>Focused return rate %</label>
+        <input type="number" id="focusReturn" value="47" min="0" max="100">
+        <div class="hint">Check your Destiny Board spec level</div>
+      </div>
+      <div class="sf">
+        <label>Focus cost per craft</label>
+        <input type="number" id="focusCost" value="1000" min="0">
+        <div class="hint">10,000 focus points per day max</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="recipes" id="recipes"></div>
+  <div class="empty" id="cooking-empty">No recipes yet — click <strong>+ Add recipe</strong> to get started.</div>
+
+  <div class="actions">
+    <button class="btn btn-add" id="add-recipe-button" type="button">+ Add recipe</button>
+    <button class="btn" id="add-blank-button" type="button">+ Blank</button>
+    <button class="btn" id="cooking-clear-all" type="button">Clear all</button>
+  </div>
+
+<!-- Cooking picker modal — inside cooking tab -->
+<div class="overlay" id="overlay">
+  <div class="picker">
+    <h2>Choose a recipe</h2>
+    <input class="picker-search" id="pickerSearch" type="text" placeholder="Search…">
+    <div class="picker-list" id="pickerList"></div>
+    <button class="picker-cancel" id="picker-cancel" type="button">Cancel</button>
+  </div>
+</div>
+</div>
+</div>
+
+<script>
+// ── Livestock JS ──
+// Note: PRESETS renamed to LS_PRESETS to avoid clash with cooking PRESETS
+// anyFood = true means uses global cheapest price, no per-row price input
+// foodPerAnimal = total fav food per animal for one full grow (cycles × perCycle)
+// nonfavMult = multiplier for non-fav qty (always 2× fav qty)
+const LS_PRESETS = [
+  // ── Basic animals ──────────────────────────────────────────────
+  {group:'Basic animals', name:'Chicken (Chick)',      food:'Wheat',    anyFood:false, growDays:1, growHours:20, cycles:1, perCycle:9,   foodPerAnimal:9},
+  {group:'Basic animals', name:'Goat (Kid)',           food:'Turnips',  anyFood:false, growDays:1, growHours:20, cycles:1, perCycle:9,   foodPerAnimal:9},
+  {group:'Basic animals', name:'Goose (Gosling)',      food:'Cabbages', anyFood:false, growDays:1, growHours:20, cycles:1, perCycle:9,   foodPerAnimal:9},
+  {group:'Basic animals', name:'Pig (Piglet)',         food:'Corn',     anyFood:false, growDays:1, growHours:20, cycles:1, perCycle:9,   foodPerAnimal:9},
+  {group:'Basic animals', name:'Sheep (Lamb)',         food:'Potatoes', anyFood:false, growDays:1, growHours:20, cycles:1, perCycle:9,   foodPerAnimal:9},
+  {group:'Basic animals', name:'Cow (Calf)',           food:'Pumpkins', anyFood:false, growDays:1, growHours:20, cycles:1, perCycle:9,   foodPerAnimal:9},
+  // ── T3 ────────────────────────────────────────────────────────
+  {group:'Tier 3',        name:'T3 Horse (Foal)',      food:'Any food', anyFood:true,  growDays:1, growHours:20, cycles:1, perCycle:9,   foodPerAnimal:9},
+  {group:'Tier 3',        name:'T3 Ox (Calf)',         food:'Any food', anyFood:true,  growDays:1, growHours:20, cycles:1, perCycle:9,   foodPerAnimal:9},
+  // ── T4 ────────────────────────────────────────────────────────
+  {group:'Tier 4',        name:'T4 Horse (Foal)',      food:'Any food', anyFood:true,  growDays:3, growHours:20, cycles:2, perCycle:16,  foodPerAnimal:32},
+  {group:'Tier 4',        name:'T4 Ox (Calf)',         food:'Any food', anyFood:true,  growDays:3, growHours:20, cycles:2, perCycle:16,  foodPerAnimal:32},
+  {group:'Tier 4',        name:'Giant Stag (Fawn)',    food:'Any food', anyFood:true,  growDays:3, growHours:20, cycles:2, perCycle:16,  foodPerAnimal:32},
+  // ── T5 ────────────────────────────────────────────────────────
+  {group:'Tier 5',        name:'T5 Horse (Foal)',      food:'Any food', anyFood:true,  growDays:5, growHours:20, cycles:3, perCycle:31,  foodPerAnimal:93},
+  {group:'Tier 5',        name:'T5 Ox (Calf)',         food:'Any food', anyFood:true,  growDays:5, growHours:20, cycles:3, perCycle:31,  foodPerAnimal:93},
+  // ── T6 ────────────────────────────────────────────────────────
+  {group:'Tier 6',        name:'T6 Horse (Foal)',      food:'Any food', anyFood:true,  growDays:7, growHours:20, cycles:4, perCycle:69,  foodPerAnimal:276},
+  {group:'Tier 6',        name:'T6 Ox (Calf)',         food:'Any food', anyFood:true,  growDays:7, growHours:20, cycles:4, perCycle:69,  foodPerAnimal:276},
+  {group:'Tier 6',        name:'Moose (Calf)',         food:'Any food', anyFood:true,  growDays:7, growHours:20, cycles:4, perCycle:65,  foodPerAnimal:260},
+  // ── T7 ────────────────────────────────────────────────────────
+  {group:'Tier 7',        name:'T7 Horse (Foal)',      food:'Any food', anyFood:true,  growDays:9, growHours:20, cycles:5, perCycle:165, foodPerAnimal:825},
+  {group:'Tier 7',        name:'T7 Ox (Calf)',         food:'Any food', anyFood:true,  growDays:9, growHours:20, cycles:5, perCycle:165, foodPerAnimal:825},
+  // ── T8 ────────────────────────────────────────────────────────
+  {group:'Tier 8',        name:'T8 Horse (Foal)',         food:'Any food',      anyFood:true,  meatFood:false, growDays:11,growHours:20, cycles:6, perCycle:411, foodPerAnimal:2466},
+  {group:'Tier 8',        name:'T8 Ox (Calf)',            food:'Any food',      anyFood:true,  meatFood:false, growDays:11,growHours:20, cycles:6, perCycle:411, foodPerAnimal:2466},
+  // ── Meat animals ─────────────────────────────────────────────
+  {group:'Meat animals',  name:'Grey Wolf (Pup)',          food:'Cheapest meat', anyFood:false, meatFood:true,  growDays:5, growHours:20, cycles:3, perCycle:29,  foodPerAnimal:87},
+  {group:'Meat animals',  name:'Wild Boar (Boarlet)',      food:'Cheapest meat', anyFood:false, meatFood:true,  growDays:5, growHours:20, cycles:3, perCycle:29,  foodPerAnimal:87},
+  {group:'Meat animals',  name:'Winter Bear (Cub)',        food:'Cheapest meat', anyFood:false, meatFood:true,  growDays:5, growHours:20, cycles:3, perCycle:29,  foodPerAnimal:87},
+  {group:'Meat animals',  name:'Swiftclaw (Cub)',          food:'Cheapest meat', anyFood:false, meatFood:true,  growDays:5, growHours:20, cycles:3, perCycle:29,  foodPerAnimal:87},
+  {group:'Meat animals',  name:'Swamp Salamander (Baby)',  food:'Cheapest meat', anyFood:false, meatFood:true,  growDays:5, growHours:20, cycles:3, perCycle:29,  foodPerAnimal:87},
+  {group:'Meat animals',  name:'Mystic Owl (Owlet)',       food:'Cheapest meat', anyFood:false, meatFood:true,  growDays:5, growHours:20, cycles:3, perCycle:29,  foodPerAnimal:87},
+  {group:'Meat animals',  name:'Hellspinner (Baby)',       food:'Cheapest meat', anyFood:false, meatFood:true,  growDays:5, growHours:20, cycles:3, perCycle:29,  foodPerAnimal:87},
+  {group:'Meat animals',  name:'Swamp Dragon (Pup)',            food:'Cheapest meat', anyFood:false, meatFood:true,  growDays:9,  growHours:20, cycles:5, perCycle:153, foodPerAnimal:765},
+  {group:'Meat animals',  name:'T7 Direboar (Piglet)',          food:'Cheapest meat', anyFood:false, meatFood:true,  growDays:9,  growHours:20, cycles:5, perCycle:153, foodPerAnimal:765},
+  {group:'Meat animals',  name:'Elite Grey Wolf (Pup)',         food:'Cheapest meat', anyFood:false, meatFood:true,  growDays:11, growHours:20, cycles:6, perCycle:380, foodPerAnimal:2280},
+  {group:'Meat animals',  name:'Elite Wild Boar (Boarlet)',     food:'Cheapest meat', anyFood:false, meatFood:true,  growDays:11, growHours:20, cycles:6, perCycle:380, foodPerAnimal:2280},
+  {group:'Meat animals',  name:'Direbear (Cub)',                food:'Cheapest meat', anyFood:false, meatFood:true,  growDays:11, growHours:20, cycles:6, perCycle:380, foodPerAnimal:2280},
+  {group:'Meat animals',  name:'Elite Winter Bear (Cub)',       food:'Cheapest meat', anyFood:false, meatFood:true,  growDays:11, growHours:20, cycles:6, perCycle:380, foodPerAnimal:2280},
+  {group:'Meat animals',  name:'Elite Swamp Salamander (Baby)', food:'Cheapest meat', anyFood:false, meatFood:true,  growDays:11, growHours:20, cycles:6, perCycle:380, foodPerAnimal:2280},
+  {group:'Meat animals',  name:'Elite Mystic Owl (Owlet)',      food:'Cheapest meat', anyFood:false, meatFood:true,  growDays:11, growHours:20, cycles:6, perCycle:380, foodPerAnimal:2280},
+  // ── Cheapest food animals ─────────────────────────────────────
+  {group:'Cheapest food', name:'Moarbird (Baby)',               food:'Any food',      anyFood:true,  meatFood:false, growDays:5,  growHours:20, cycles:3, perCycle:31,  foodPerAnimal:93},
+  {group:'Cheapest food', name:'Bighorn Ram (Ram Lamb)',        food:'Any food',      anyFood:true,  meatFood:false, growDays:5,  growHours:20, cycles:3, perCycle:31,  foodPerAnimal:93},
+  {group:'Cheapest food', name:'Mammoth (Calf)',                food:'Any food',      anyFood:true,  meatFood:false, growDays:11, growHours:20, cycles:6, perCycle:411, foodPerAnimal:2466},
+  {group:'Cheapest food', name:'Elite Terrorbird (Baby)',       food:'Any food',      anyFood:true,  meatFood:false, growDays:11, growHours:20, cycles:6, perCycle:411, foodPerAnimal:2466},
+  {group:'Cheapest food', name:'Elite Bighorn Ram (Ram Lamb)',  food:'Any food',      anyFood:true,  meatFood:false, growDays:11, growHours:20, cycles:6, perCycle:411, foodPerAnimal:2466},
+  // ── Special / unknown ─────────────────────────────────────────
+  {group:'Special',       name:'Firewing Drake (Fire Drake Egg)', food:'Mounts',     anyFood:false, meatFood:false, specialFood:true, growDays:27, growHours:20, cycles:0, perCycle:0, foodPerAnimal:0},
+];
+
+let animals = [];
+let lsNid = 1;
+
+function lsLoad() {
+  try {
+    const s = localStorage.getItem('alb_v4');
+    if (s) {
+      const p = JSON.parse(s);
+      animals = p.animals || [];
+      lsNid = p.lsNid || animals.length + 1;
+      if (p.nonfavPrice != null) document.getElementById('nonfavPrice').value = p.nonfavPrice;
+      if (p.meatPrice != null) document.getElementById('meatPrice').value = p.meatPrice;
+    }
+  } catch(e) {}
+}
+
+function lsSave() {
+  try {
+    localStorage.setItem('alb_v4', JSON.stringify({
+      animals,
+      lsNid,
+      nonfavPrice: document.getElementById('nonfavPrice').value,
+      meatPrice: document.getElementById('meatPrice').value,
+    }));
+  } catch(e) {}
+}
+
+function lsEsc(t) {
+  return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+}
+
+function fmtGrow(d, h) {
+  d = parseInt(d)||0; h = parseInt(h)||0;
+  if (!d && !h) return '—';
+  if (!d) return h+'h';
+  if (!h) return d+'d';
+  return d+'d '+h+'h';
+}
+
+// ── Picker ──────────────────────────────────────────────────────
+function lsOpenPicker() {
+  lsFilterPicker('');
+  document.getElementById('ls_pickerSearch').value = '';
+  document.getElementById('ls_overlay').classList.add('open');
+  document.getElementById('ls_pickerSearch').focus();
+}
+
+document.getElementById('add-animal-button').addEventListener('click', lsOpenPicker);
+
+function lsClosePicker(e) {
+  document.getElementById('ls_overlay').classList.remove('open');
+}
+
+document.getElementById('ls_overlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) lsClosePicker();
+});
+document.getElementById('ls-picker-cancel').addEventListener('click', lsClosePicker);
+document.getElementById('ls_pickerSearch').addEventListener('input', e => lsFilterPicker(e.target.value));
+document.getElementById('livestock-clear-all').addEventListener('click', lsClearAll);
+document.getElementById('nonfavPrice').addEventListener('input', () => { lsSave(); recalc(); });
+document.getElementById('meatPrice').addEventListener('input', () => { lsSave(); recalc(); });
+document.getElementById('tbody').addEventListener('click', e => {
+  const removeButton = e.target.closest('[data-remove-animal]');
+  if (removeButton) removeAnimal(Number(removeButton.dataset.removeAnimal));
+});
+document.getElementById('tbody').addEventListener('input', e => {
+  const field = e.target.closest('[data-animal-field]');
+  if (field) upd(Number(field.dataset.animalId), field.dataset.animalField, field.value);
+});
+document.getElementById('ls_pickerList').addEventListener('click', e => {
+  const item = e.target.closest('[data-animal-index]');
+  if (item) addPresetAt(Number(item.dataset.animalIndex));
+});
+
+function lsFilterPicker(q) {
+  q = q.toLowerCase();
+  const list = document.getElementById('ls_pickerList');
+  const filtered = LS_PRESETS.filter(p =>
+    !animals.some(a => a.presetName === p.name) && // hide already-added
+    (p.name.toLowerCase().includes(q) || p.group.toLowerCase().includes(q) || p.food.toLowerCase().includes(q))
+  );
+
+  if (!filtered.length) {
+    list.innerHTML = '<div style="color:#555;font-size:13px;padding:12px 4px">No matching animals — all may already be added.</div>';
+    return;
+  }
+
+  // group them
+  const groups = {};
+  filtered.forEach(p => { if (!groups[p.group]) groups[p.group] = []; groups[p.group].push(p); });
+
+  list.innerHTML = Object.entries(groups).map(([g, items]) => `
+    <div class="picker-group-label">${g}</div>
+    ${items.map(p => `
+      <button class="picker-item" type="button" data-animal-index="${LS_PRESETS.indexOf(p)}">
+        <div>
+          <div class="pi-name">${lsEsc(p.name)}</div>
+          <div class="pi-food">${lsEsc(p.food)} &nbsp;·&nbsp; ${fmtGrow(p.growDays, p.growHours)} grow &nbsp;·&nbsp; ${p.foodPerAnimal} food total</div>
+        </div>
+        <div class="pi-meta">${p.cycles} cycle${p.cycles>1?'s':''} × ${p.perCycle}</div>
+      </button>
+    `).join('')}
+  `).join('');
+}
+
+function addPreset(name) {
+  const p = LS_PRESETS.find(x => x.name === name);
+  if (!p) return;
+  animals.push({
+    id: lsNid++,
+    presetName: p.name,
+    name: p.name,
+    food: p.food,
+    anyFood: p.anyFood,
+    meatFood: p.meatFood || false,
+    specialFood: p.specialFood || false,
+    count: 1,
+    price: 0,
+    growDays: p.growDays,
+    growHours: p.growHours,
+    cycles: p.cycles,
+    perCycle: p.perCycle,
+    foodPerAnimal: p.foodPerAnimal,
+  });
+  lsSave();
+  lsClosePicker();
+  render();
+  // focus the count field of the new row
+  const row = document.getElementById('row-' + (lsNid-1));
+  if (row) { const inp = row.querySelector('input[type=number]'); if (inp) inp.focus(); }
+}
+
+function addPresetAt(index) {
+  const p = LS_PRESETS[index];
+  if (p) addPreset(p.name);
+}
+
+// ── Data ─────────────────────────────────────────────────────────
+function removeAnimal(id) {
+  animals = animals.filter(a => a.id !== id);
+  lsSave(); render();
+}
+
+function upd(id, field, val) {
+  const a = animals.find(a => a.id === id);
+  if (!a) return;
+  a[field] = (field === 'count' || field === 'price') ? (parseFloat(val) || 0) : val;
+  lsSave(); recalc();
+}
+
+function cheapestPrice() { return parseFloat(document.getElementById('nonfavPrice').value) || 0; }
+function meatPrice()    { return parseFloat(document.getElementById('meatPrice').value)    || 0; }
+
+// ── Calc ─────────────────────────────────────────────────────────
+function recalc() {
+  const cp = cheapestPrice();
+  const mp = meatPrice();
+  let totAnimals = 0, totFavCost = 0, totNonfavCost = 0, totBest = 0;
+  const shopMap = {};
+
+  animals.forEach(a => {
+    const count  = a.count || 0;
+    const fpa    = a.foodPerAnimal || 9;
+    const nfpa   = fpa * 2;
+
+    let favCost, nfavCost, favQty, nfavQty;
+
+    if (a.anyFood) {
+      favQty   = count * fpa;
+      favCost  = favQty * cp;
+      nfavQty  = count * nfpa;
+      nfavCost = nfavQty * cp;
+    } else if (a.meatFood) {
+      // meat animals: always use meat price, no fav/non-fav comparison
+      favQty   = count * fpa;
+      favCost  = favQty * mp;
+      nfavQty  = count * nfpa;
+      nfavCost = nfavQty * mp;
+    } else if (a.specialFood) {
+      favQty = 0; favCost = 0; nfavQty = 0; nfavCost = 0;
+    } else {
+      const price = a.price || 0;
+      favQty   = count * fpa;
+      favCost  = favQty * price;
+      nfavQty  = count * nfpa;
+      nfavCost = nfavQty * cp;
+    }
+
+    totAnimals    += count;
+    totFavCost    += favCost;
+    totNonfavCost += nfavCost;
+
+    let badge, buyQty, buyCost, buyFood;
+    if (a.anyFood) {
+      badge   = `<span class="badge badge-any">Any food</span>`;
+      buyQty  = favQty; buyCost = favCost; buyFood = 'Cheapest food (any)';
+    } else if (a.meatFood) {
+      badge   = `<span class="badge badge-meat">Meat</span>`;
+      buyQty  = favQty; buyCost = favCost; buyFood = 'Cheapest meat';
+    } else if (a.specialFood) {
+      badge   = `<span class="badge" style="background:#2a2a2a;color:#666">Unknown</span>`;
+      buyQty  = 0; buyCost = 0; buyFood = null;
+    } else if (favCost <= nfavCost) {
+      badge   = `<span class="badge badge-fav">Fav food</span>`;
+      buyQty  = favQty; buyCost = favCost; buyFood = a.food;
+    } else {
+      badge   = `<span class="badge badge-nonfav">Non-fav food</span>`;
+      buyQty  = nfavQty; buyCost = nfavCost; buyFood = 'Non-fav (cheapest)';
+    }
+    totBest += buyCost;
+    if (buyFood) {
+      if (!shopMap[buyFood]) shopMap[buyFood] = {qty:0, cost:0};
+      shopMap[buyFood].qty  += buyQty;
+      shopMap[buyFood].cost += buyCost;
+    }
+
+    const row = document.getElementById('row-' + a.id);
+    if (!row) return;
+    const qEl  = row.querySelector('.c-totalqty');
+    const fEl  = row.querySelector('.c-favcost');
+    const nEl  = row.querySelector('.c-nfavcost');
+    const bEl  = row.querySelector('.c-badge');
+    if (qEl)  qEl.textContent  = (count * fpa).toLocaleString();
+    if (fEl)  fEl.textContent  = a.anyFood ? '—' : favCost.toLocaleString();
+    if (nEl)  nEl.textContent  = a.anyFood ? '—' : nfavCost.toLocaleString();
+    if (bEl)  bEl.innerHTML    = badge;
+  });
+
+  document.getElementById('totals').innerHTML = `
+    <div class="stat"><div class="stat-label">Total animals</div><div class="stat-val">${totAnimals.toLocaleString()}</div></div>
+    <div class="stat"><div class="stat-label">Fav-food total</div><div class="stat-val">${totFavCost.toLocaleString()}</div></div>
+    <div class="stat"><div class="stat-label">Non-fav total</div><div class="stat-val">${totNonfavCost.toLocaleString()}</div></div>
+    <div class="stat stat-best"><div class="stat-label">Best-option total</div><div class="stat-val">${totBest.toLocaleString()} silver</div></div>
+  `;
+
+  const shopSection = document.getElementById('shopSection');
+  const shopGrid    = document.getElementById('shopGrid');
+  const foods = Object.entries(shopMap);
+  if (foods.length && totAnimals > 0) {
+    shopSection.style.display = '';
+    shopGrid.innerHTML = foods.map(([food, {qty, cost}]) => `
+      <div class="shop-item">
+        <div class="si-food">${lsEsc(food)}</div>
+        <div class="si-qty">${qty.toLocaleString()} units needed</div>
+        <div class="si-cost">${cost.toLocaleString()} silver</div>
+      </div>
+    `).join('');
+  } else {
+    shopSection.style.display = 'none';
+  }
+}
+
+// ── Render ───────────────────────────────────────────────────────
+function render() {
+  const tbody = document.getElementById('tbody');
+  const empty = document.getElementById('livestock-empty');
+  if (!animals.length) {
+    tbody.innerHTML = '';
+    empty.style.display = '';
+    document.getElementById('totals').innerHTML = '';
+    document.getElementById('shopSection').style.display = 'none';
+    return;
+  }
+  empty.style.display = 'none';
+
+  tbody.innerHTML = animals.map(a => {
+    const growTxt = fmtGrow(a.growDays, a.growHours);
+    const cyclesTxt = `${a.cycles} × ${a.perCycle}`;
+    const priceCell = a.anyFood
+      ? `<td class="any-food">Uses cheapest<br>price above</td>`
+      : a.meatFood
+      ? `<td class="any-food" style="color:#c47a5a">Uses meat<br>price above</td>`
+      : a.specialFood
+      ? `<td class="any-food" style="color:#888">N/A</td>`
+      : `<td><input type="number" value="${a.price||0}" min="0" placeholder="0" data-animal-id="${a.id}" data-animal-field="price"></td>`;
+
+    return `
+    <tr id="row-${a.id}">
+      <td style="font-size:13px;color:#ddd">${lsEsc(a.name)}</td>
+      <td style="font-size:12px;color:${a.anyFood?'var(--pale-gold)':'#8a9a6a'}">${lsEsc(a.food)}</td>
+      <td><input type="number" value="${a.count ?? 1}" min="0" data-animal-id="${a.id}" data-animal-field="count"></td>
+      ${priceCell}
+      <td class="grow-disp">${growTxt}<br><small style="font-size:10px;color:#444">${a.specialFood ? 'N/A' : cyclesTxt}</small></td>
+      <td class="food-calc">${a.specialFood ? '<span style="color:#666">N/A</span>' : a.foodPerAnimal + '<small>per animal</small>'}</td>
+      <td class="num c-totalqty">0</td>
+      <td class="num c-favcost">0</td>
+      <td class="num c-nfavcost">0</td>
+      <td class="c-badge"></td>
+      <td><button class="remove-btn" type="button" data-remove-animal="${a.id}" title="Remove">✕</button></td>
+    </tr>`;
+  }).join('');
+
+  recalc();
+}
+
+function lsClearAll() {
+  if (!confirm('Remove all animals?')) return;
+  animals = []; lsNid = 1;
+  try { localStorage.removeItem('alb_v4'); } catch(e) {}
+  render();
+}
+
+// keyboard close
+document.addEventListener('keydown', e => { if (e.key === 'Escape') lsClosePicker(); });
+
+lsLoad();
+render();
+
+// ── Cooking JS ──
+const PRESETS = [
+  {name:'Simple Fish Bait',         out:1,  ings:[{n:'Earthworm',          q:1}]},
+  {name:'Fancy Fish Bait',          out:1,  ings:[{n:'Earthworm',          q:5}]},
+  {name:'Special Fish Bait',        out:1,  ings:[{n:'Earthworm',          q:25}]},
+  {name:'Grilled Fish',             out:1,  ings:[{n:'Chopped Fish',       q:10}]},
+  {name:'Seaweed Salad',            out:1,  ings:[{n:'Seaweed',            q:10}]},
+  {name:'Basic Fish Sauce',         out:1,  ings:[{n:'Chopped Fish',       q:15},{n:'Seaweed',q:1}]},
+  {name:'Fancy Fish Sauce',         out:1,  ings:[{n:'Chopped Fish',       q:45},{n:'Seaweed',q:3}]},
+  {name:'Special Fish Sauce',       out:1,  ings:[{n:'Chopped Fish',       q:135},{n:'Seaweed',q:9}]},
+  {name:'Carrot Soup',              out:10, ings:[{n:'Carrot',             q:16}]},
+  {name:'Shallowshore Squid Salad', out:1,  ings:[{n:'Shallowshore Squid', q:1},{n:'Beans',q:1},{n:'Arcane Agaric',q:1}]},
+  {name:'Wheat Soup',               out:10, ings:[{n:'Wheat',              q:48}]},
+  {name:'Greenmoor Clam Soup',              out:1,  ings:[{n:'Greenmoor Clam',     q:1},{n:'Carrot',q:2}]},
+  {name:'Bean Salad',                        out:1,  ings:[{n:'Beans',              q:8},{n:'Carrot',q:8}]},
+  {name:'Murkwater Clam Soup',              out:1,  ings:[{n:'Murkwater Clam',     q:1},{n:'Wheat',q:2},{n:'Brightleaf Comfrey',q:2},{n:'Raw Chicken',q:2}]},
+  {name:'Chicken Omelette',                 out:10, ings:[{n:'Wheat',              q:4},{n:'Raw Chicken',q:8},{n:'Hen Eggs',q:2}]},
+  {name:'Lowriver Crab Omelette',           out:1,  ings:[{n:'Lowriver Crab',      q:1},{n:'Brightleaf Comfrey',q:1},{n:'Hen Egg',q:1}]},
+  {name:'Avalonian Chicken Omelette',       out:10, ings:[{n:'Goats Milk',         q:4},{n:'Raw Chicken',q:8},{n:'Hen Eggs',q:2},{n:'Avalonian Energy',q:10}]},
+  {name:'Carefree Leyfin Omelette',         out:1,  ings:[{n:'Carefree Leyfin',    q:1},{n:'Goats Milk',q:1},{n:'Brightleaf Comfrey',q:1},{n:'Hen Egg',q:1}]},
+  {name:'Chicken Pie',                      out:10, ings:[{n:'Wheat',              q:2},{n:'Flour',q:4},{n:'Raw Chicken',q:8}]},
+  {name:'Upland Coldeye Pie',               out:1,  ings:[{n:'Upland Coldeye',     q:1},{n:'Flour',q:1},{n:'Hen Egg',q:1}]},
+  {name:'Roast Chicken',                    out:10, ings:[{n:'Raw Chicken',        q:8},{n:'Beans',q:4},{n:'Goats Milk',q:4}]},
+  {name:'Roasted Whitefog Snapper',         out:1,  ings:[{n:'Whitefog Snapper',   q:1},{n:'Brightleaf Comfrey',q:1},{n:'Goats Milk',q:1}]},
+  {name:'Turnip Salad',                     out:10, ings:[{n:'Turnips',            q:24},{n:'Wheat',q:24}]},
+  {name:'Midwater Octopus Salad',           out:1,  ings:[{n:'Midwater Octopus',   q:1},{n:'Turnips',q:2},{n:'Brightleaf Comfrey',q:2},{n:'Raw Goat',q:2}]},
+  {name:'Goat Stew',                        out:10, ings:[{n:'Turnips',            q:4},{n:'Bread',q:4},{n:'Raw Goat',q:8}]},
+  {name:'Greenriver Eel Stew',              out:1,  ings:[{n:'Greenriver Eel',     q:1},{n:'Turnip',q:1},{n:'Brightleaf Comfrey',q:1}]},
+  {name:'Avalonian Goat Stew',              out:10, ings:[{n:'Carrots',            q:4},{n:'Turnips',q:4},{n:'Raw Goat',q:8},{n:'Avalonian Energy',q:10}]},
+  {name:'Goat Sandwich',                    out:10, ings:[{n:'Bread',              q:4},{n:'Raw Goat',q:8},{n:'Goats Butter',q:2}]},
+  {name:'Stonestream Lurcher Sandwich',     out:1,  ings:[{n:'Stonestream Lurcher',q:1},{n:'Turnip',q:1},{n:'Goats Butter',q:1}]},
+  {name:'Avalonian Goat Sandwich',          out:10, ings:[{n:'Bread',              q:4},{n:'Raw Goat',q:8},{n:'Goats Butter',q:2},{n:'Avalonian Energy',q:10}]},
+  {name:'Bread',                            out:1,  ings:[{n:'Flour',              q:1}]},
+  {name:'Cabbage Soup',                     out:10, ings:[{n:'Cabbages',           q:144}]},
+  {name:'Blackbog Clam Soup',               out:1,  ings:[{n:'Blackbog Clam',      q:1},{n:'Cabbages',q:6},{n:'Dragon Teasel',q:6},{n:'Raw Goose',q:6}]},
+  {name:'Goose Omelette',                   out:10, ings:[{n:'Cabbages',           q:12},{n:'Raw Goose',q:24},{n:'Goose Eggs',q:6}]},
+  {name:'Drybrook Crab Omelette',           out:1,  ings:[{n:'Drybrook Crab',      q:1},{n:'Cabbages',q:2},{n:'Dragon Teasel',q:2},{n:'Goose Eggs',q:2}]},
+  {name:'Avalonian Goose Omelette',         out:10, ings:[{n:'Sheeps Milk',        q:12},{n:'Raw Goose',q:24},{n:'Goose Eggs',q:6},{n:'Avalonian Energy',q:30}]},
+  {name:'Brightsoul Leyfin Omelette',       out:1,  ings:[{n:'Brightsoul Leyfin',  q:1},{n:'Sheeps Milk',q:2},{n:'Dragon Teasel',q:2},{n:'Goose Eggs',q:2}]},
+  {name:'Goose Pie',                        out:10, ings:[{n:'Cabbages',           q:6},{n:'Flour',q:12},{n:'Raw Goose',q:24},{n:'Goats Milk',q:6}]},
+  {name:'Mountain Blindeye Pie',            out:1,  ings:[{n:'Mountain Blindeye',  q:1},{n:'Cabbages',q:2},{n:'Dragon Teasel',q:2},{n:'Goose Eggs',q:2}]},
+  {name:'Roast Goose',                      out:10, ings:[{n:'Raw Goose',          q:24},{n:'Cabbages',q:12},{n:'Sheeps Milk',q:12}]},
+  {name:'Roasted Clearhaze Snapper',        out:1,  ings:[{n:'Clearhaze Snapper',  q:1},{n:'Cabbages',q:2},{n:'Dragon Teasel',q:2},{n:'Sheeps Milk',q:2}]},
+  {name:'Potato Salad',                     out:10, ings:[{n:'Potatoes',           q:72},{n:'Cabbages',q:72}]},
+  {name:'Deepwater Kraken Salad',           out:1,  ings:[{n:'Deepwater Kraken',   q:1},{n:'Potatoes',q:6},{n:'Elusive Foxglove',q:6},{n:'Raw Mutton',q:6}]},
+  {name:'Mutton Stew',                      out:10, ings:[{n:'Potatoes',           q:12},{n:'Bread',q:12},{n:'Raw Mutton',q:24}]},
+  {name:'Redspring Eel Stew',               out:1,  ings:[{n:'Redspring Eel',      q:1},{n:'Potatoes',q:2},{n:'Elusive Foxglove',q:2},{n:'Sheeps Milk',q:2}]},
+  {name:'Avalonian Mutton Stew',            out:10, ings:[{n:'Cabbages',           q:12},{n:'Potatoes',q:12},{n:'Raw Mutton',q:24},{n:'Avalonian Energy',q:30}]},
+  {name:'Mutton Sandwich',                  out:10, ings:[{n:'Bread',              q:12},{n:'Raw Mutton',q:24},{n:'Sheeps Butter',q:6}]},
+  {name:'Rushwater Lurcher Sandwich',       out:1,  ings:[{n:'Rushwater Lurcher',  q:1},{n:'Potatoes',q:2},{n:'Elusive Foxglove',q:2},{n:'Sheeps Butter',q:2}]},
+  {name:'Avalonian Mutton Sandwich',        out:10, ings:[{n:'Bread',              q:12},{n:'Raw Mutton',q:24},{n:'Sheeps Butter',q:6},{n:'Avalonian Energy',q:30}]},
+  {name:'Pork Omelette',                    out:10, ings:[{n:'Corn',               q:36},{n:'Raw Pork',q:72},{n:'Goose Eggs',q:18}]},
+  {name:'Dusthole Crab Omelette',           out:1,  ings:[{n:'Dusthole Crab',      q:1},{n:'Corn',q:6},{n:'Firetouched Mullein',q:6},{n:'Raw Pork',q:6}]},
+  {name:'Avalonian Pork Omelette',          out:10, ings:[{n:'Cows Milk',          q:36},{n:'Raw Pork',q:72},{n:'Goose Eggs',q:18},{n:'Avalonian Energy',q:90}]},
+  {name:'Dragonbound Leyfin Omelette',      out:1,  ings:[{n:'Dragonbound Leyfin', q:1},{n:'Firetouched Mullein',q:6},{n:'Dragon Teasel',q:6},{n:'Goose Eggs',q:6}]},
+  {name:'Pork Pie',                         out:10, ings:[{n:'Corn',               q:18},{n:'Flour',q:36},{n:'Raw Pork',q:72},{n:'Sheeps Milk',q:18}]},
+  {name:'Frostpeak Deadeye Pie',            out:1,  ings:[{n:'Frostpeak Deadeye',  q:1},{n:'Corn',q:6},{n:'Firetouched Mullein',q:6},{n:'Raw Pork',q:6}]},
+  {name:'Roast Pork',                       out:10, ings:[{n:'Raw Pork',           q:72},{n:'Corn',q:36},{n:'Cows Milk',q:36}]},
+  {name:'Roasted Puremist Snapper',         out:1,  ings:[{n:'Puremist Snapper',   q:1},{n:'Corn',q:6},{n:'Firetouched Mullein',q:6},{n:'Cows Milk',q:6}]},
+  {name:'Beef Stew',                        out:10, ings:[{n:'Pumpkins',           q:36},{n:'Bread',q:36},{n:'Raw Beef',q:72}]},
+  {name:'Deadwater Eel Stew',               out:1,  ings:[{n:'Deadwater Eel',      q:1},{n:'Pumpkins',q:6},{n:'Ghoul Yarrow',q:6},{n:'Cows Milk',q:6}]},
+  {name:'Avalonian Beef Stew',              out:10, ings:[{n:'Corn',               q:36},{n:'Pumpkins',q:36},{n:'Raw Beef',q:72},{n:'Avalonian Energy',q:90}]},
+  {name:'Beef Sandwich',                    out:10, ings:[{n:'Bread',              q:36},{n:'Raw Beef',q:72},{n:'Cows Butter',q:18}]},
+  {name:'Thunderfall Lurcher Sandwich',     out:1,  ings:[{n:'Thunderfall Lurcher',q:1},{n:'Pumpkins',q:6},{n:'Ghoul Yarrow',q:6},{n:'Cows Butter',q:6}]},
+  {name:'Avalonian Beef Sandwich',          out:10, ings:[{n:'Bread',              q:36},{n:'Raw Beef',q:72},{n:'Cows Butter',q:18},{n:'Avalonian Energy',q:90}]},
+  {name:'Drake Egg Biscuits',               out:99, ings:[{n:'Flour',              q:36},{n:'Cows Butter',q:12},{n:'Cows Milk',q:24},{n:'Firewing Drake Egg',q:1}]},
+];
+
+let recipes = [], nid = 1;
+
+function load() {
+  try { const s = localStorage.getItem('alb_cook_v2'); if(s){const p=JSON.parse(s);recipes=p.r;nid=p.n||recipes.length+1;} } catch(e){}
+}
+function save() {
+  try { localStorage.setItem('alb_cook_v2', JSON.stringify({r:recipes,n:nid})); } catch(e){}
+}
+function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+
+// ── Global getters ────────────────────────────────────────────
+function gFee()    { return parseFloat(document.getElementById('stationFee').value)||0; }
+function gRR()     { return parseFloat(document.getElementById('returnRate').value)||0; }
+function gTax()    { return parseFloat(document.getElementById('taxRate').value)||0; }
+function gFocus()  { return document.getElementById('useFocus').checked; }
+function gFR()     { return parseFloat(document.getElementById('focusReturn').value)||0; }
+function gFC()     { return parseFloat(document.getElementById('focusCost').value)||0; }
+function activeRR(){ return gFocus() ? gFR() : gRR(); }
+
+function toggleFocus(){
+  document.getElementById('focusFields').style.display = gFocus() ? '' : 'none';
+  recalcAll();
+}
+
+// ── Picker ────────────────────────────────────────────────────
+function openPicker(){ filterPicker(''); document.getElementById('pickerSearch').value=''; document.getElementById('overlay').classList.add('open'); document.getElementById('pickerSearch').focus(); }
+function closePicker(e){ if(!e||e.target===document.getElementById('overlay')) document.getElementById('overlay').classList.remove('open'); }
+document.getElementById('overlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) document.getElementById('overlay').classList.remove('open');
+});
+document.getElementById('picker-cancel').addEventListener('click', () => document.getElementById('overlay').classList.remove('open'));
+document.getElementById('pickerSearch').addEventListener('input', e => filterPicker(e.target.value));
+document.getElementById('add-recipe-button').addEventListener('click', openPicker);
+document.getElementById('add-blank-button').addEventListener('click', addBlank);
+document.getElementById('cooking-clear-all').addEventListener('click', clearAll);
+['stationFee','returnRate','taxRate','focusReturn','focusCost'].forEach(id => {
+  document.getElementById(id).addEventListener('input', recalcAll);
+});
+document.getElementById('useFocus').addEventListener('change', toggleFocus);
+document.getElementById('recipes').addEventListener('click', e => {
+  const removeButton = e.target.closest('[data-remove-recipe]');
+  if (removeButton) delRecipe(Number(removeButton.dataset.removeRecipe));
+  const actionButton = e.target.closest('[data-recipe-action]');
+  if (actionButton) {
+    const recipeId = Number(actionButton.dataset.recipeId);
+    if (actionButton.dataset.recipeAction === 'add-ing') addIng(recipeId);
+    if (actionButton.dataset.recipeAction === 'remove-ing') remIng(recipeId);
+    if (actionButton.dataset.recipeAction === 'toggle-enchant') toggleEnchant(recipeId);
+    if (actionButton.dataset.recipeAction === 'set-mode') updR(recipeId, 'mode', actionButton.dataset.mode);
+  }
+});
+document.getElementById('recipes').addEventListener('input', e => {
+  const field = e.target;
+  const recipeId = Number(field.dataset.recipeId);
+  if (!recipeId) return;
+  if (field.dataset.recipeField) updR(recipeId, field.dataset.recipeField, field.value);
+  else if (field.dataset.ingredientField) updI(recipeId, Number(field.dataset.ingredientIndex), field.dataset.ingredientField, field.value);
+  else if (field.dataset.sauceField) updS(recipeId, field.dataset.sauceField, field.value);
+});
+document.getElementById('pickerList').addEventListener('click', e => {
+  const item = e.target.closest('[data-recipe-index]');
+  if (item) addRecipeAt(Number(item.dataset.recipeIndex));
+});
+function filterPicker(q){
+  q=q.toLowerCase();
+  const list=document.getElementById('pickerList');
+  const items=PRESETS.filter(p=>p.name.toLowerCase().includes(q));
+  if(!items.length){list.innerHTML='<div style="color:#444;font-size:13px;padding:10px">No matches.</div>';return;}
+  list.innerHTML=items.map(p=>`
+    <button type="button" class="picker-item" data-recipe-index="${PRESETS.indexOf(p)}">
+      <div class="pi-name">${esc(p.name)} <span style="font-size:10px;color:#3a5a3a;margin-left:4px">×${p.out}</span></div>
+      <div class="pi-detail">${p.ings.map(i=>`${i.q}× ${i.n}`).join('  +  ')}</div>
+    </button>`).join('');
+}
+
+function makeRecipe(name, out, ings){
+  // ensure at least 3 ingredient slots
+  const slots = ings.map(i=>({name:i.n||i.name, qty:i.q||i.qty, price:0}));
+  while(slots.length<3) slots.push({name:'',qty:0,price:0});
+  return { id:nid++, name, out, enchanted:false, ingredients:slots, sauce:{name:'Sauce',qty:1,price:0}, sellPrice:0, wantQty:'', mode:'want', haveQty:'' };
+}
+
+function addFromPreset(name){
+  const p=PRESETS.find(x=>x.name===name); if(!p) return;
+  recipes.push(makeRecipe(p.name, p.out, p.ings));
+  save(); closePicker(); renderAll();
+}
+
+function addRecipeAt(index){
+  const p = PRESETS[index];
+  if (p) addFromPreset(p.name);
+}
+
+function addBlank(){
+  recipes.push(makeRecipe('New recipe',1,[{n:'Ingredient 1',q:1},{n:'Ingredient 2',q:1},{n:'Ingredient 3',q:1}]));
+  save(); renderAll();
+  const card=document.getElementById('card-'+(nid-1));
+  if(card) card.querySelector('.card-name-input').focus();
+}
+
+// ── Data updates ──────────────────────────────────────────────
+function delRecipe(id){ recipes=recipes.filter(r=>r.id!==id); save(); renderAll(); }
+function updR(id,f,v){
+  const r=recipes.find(r=>r.id===id); if(!r) return;
+  if(f==='name') r.name=v;
+  else if(f==='sellPrice') r.sellPrice=parseFloat(v)||0;
+  else if(f==='wantQty') r.wantQty=parseInt(v)||0;
+  else if(f==='haveQty') r.haveQty=parseInt(v)||0;
+  else if(f==='mode'){r.mode=v; save(); renderAll(); return;}
+  else if(f==='enchanted') r.enchanted=!r.enchanted;
+  save(); recalcCard(id);
+}
+function updI(rid,i,f,v){
+  const r=recipes.find(r=>r.id===rid); if(!r) return;
+  const ing=r.ingredients[i]; if(!ing) return;
+  if(f==='name') ing.name=v;
+  else if(f==='qty') ing.qty=parseFloat(v)||0;
+  else if(f==='price') ing.price=parseFloat(v)||0;
+  save(); recalcCard(rid);
+}
+function updS(rid,f,v){
+  const r=recipes.find(r=>r.id===rid); if(!r) return;
+  if(f==='name') r.sauce.name=v;
+  else if(f==='qty') r.sauce.qty=parseFloat(v)||0;
+  else if(f==='price') r.sauce.price=parseFloat(v)||0;
+  save(); recalcCard(rid);
+}
+function addIng(rid){
+  const r=recipes.find(r=>r.id===rid); if(!r||r.ingredients.length>=4) return;
+  r.ingredients.push({name:'',qty:0,price:0}); save(); renderAll();
+}
+function remIng(rid){
+  const r=recipes.find(r=>r.id===rid); if(!r||r.ingredients.length<=1) return;
+  r.ingredients=r.ingredients.filter((_,i)=>i<r.ingredients.length-1||r.ingredients[r.ingredients.length-1].name==='');
+  r.ingredients.pop(); save(); renderAll();
+}
+function toggleEnchant(rid){
+  const r=recipes.find(r=>r.id===rid); if(!r) return;
+  r.enchanted=!r.enchanted; save(); renderAll();
+}
+
+// ── Calc ──────────────────────────────────────────────────────
+function calc(r){
+  const rr  = activeRR()/100;
+  const fee = gFee();
+  const tax = gTax()/100;
+  const out = r.out||r.outputQty||1;
+  const focus = gFocus();
+  const fc  = focus ? gFC() : 0;
+
+  // per-craft costs
+  const activeIngs = r.ingredients.filter(i=>i.qty>0);
+  let rawCost=0;
+  activeIngs.forEach(i=>{ rawCost+=(i.qty||0)*(i.price||0); });
+  const sauceCost = r.enchanted ? (r.sauce.qty||0)*(r.sauce.price||0) : 0;
+  const effIngCost = rawCost*(1-rr);
+  const craftCost  = effIngCost+sauceCost+fee;
+  const costPerItem= out>0 ? craftCost/out : 0;
+  const breakEven  = out>0 ? craftCost/out/(1-tax) : 0;
+
+  // revenue per craft
+  const sell         = r.sellPrice||0;
+  const rev          = sell*out*(1-tax);
+  const profit       = rev-craftCost;
+  const profitPerItem= out>0 ? profit/out : 0;
+  const margin       = rev>0 ? (profit/rev)*100 : 0;
+
+  // quantity planning
+  const mode = r.mode || 'want';
+  let crafts, actualOut, ingNeeded;
+
+  if(mode === 'have'){
+    // work out crafts from limiting ingredient stock
+    const have = parseInt(r.haveQty)||0;
+    const activeWithQty = activeIngs.filter(i=>i.qty>0);
+    // use haveQty as stock of the first/main ingredient unless multi
+    // for single-ingredient recipes haveQty is stock of that ingredient
+    crafts = have>0 && activeWithQty.length>0 ? Math.floor(have / activeWithQty[0].qty) : 1;
+    actualOut = crafts * out;
+    ingNeeded = activeIngs.map(i=>({
+      name: i.name,
+      totalNeeded: crafts * i.qty,
+      effectiveNeeded: Math.ceil(crafts * i.qty * (1-rr))
+    }));
+  } else {
+    // want mode
+    const want = parseInt(r.wantQty)||0;
+    crafts = want>0 ? Math.ceil(want/out) : 1;
+    actualOut = crafts*out;
+    ingNeeded = activeIngs.map(i=>({
+      name: i.name,
+      totalNeeded: crafts * i.qty,
+      effectiveNeeded: Math.ceil(crafts * i.qty * (1-rr))
+    }));
+  }
+
+  const want = r.mode==='want' ? (parseInt(r.wantQty)||0) : (parseInt(r.haveQty)||0);
+
+  const totalCost   = craftCost*crafts;
+  const totalRev    = rev*crafts;
+  const totalProfit = profit*crafts;
+  const focusUsed   = focus ? fc*crafts : 0;
+  const maxCrafts   = focus&&fc>0 ? Math.floor(10000/fc) : null;
+
+  return { rr, rawCost, effIngCost, sauceCost, craftCost, costPerItem, breakEven, sell, rev, profit, profitPerItem, margin,
+           want, crafts, actualOut, ingNeeded, totalCost, totalRev, totalProfit,
+           focus, fc, focusUsed, maxCrafts, out, mode };
+}
+
+// ── Render ────────────────────────────────────────────────────
+function renderAll(){
+  const container=document.getElementById('recipes');
+  const empty=document.getElementById('cooking-empty');
+  empty.style.display=recipes.length?'none':'';
+
+  container.innerHTML=recipes.map(r=>{
+    const c=calc(r);
+    const activeIngs=r.ingredients.filter(i=>i.qty>0||i.name);
+
+    const ingRows=r.ingredients.map((ing,i)=>`
+      <div class="ing-item">
+        <input type="text" value="${esc(ing.name)}" placeholder="Ingredient name" data-recipe-id="${r.id}" data-ingredient-index="${i}" data-ingredient-field="name">
+        <input type="number" value="${ing.qty||''}" placeholder="Qty" title="Qty per craft" data-recipe-id="${r.id}" data-ingredient-index="${i}" data-ingredient-field="qty">
+        <input type="number" value="${ing.price||''}" placeholder="Price paid" data-recipe-id="${r.id}" data-ingredient-index="${i}" data-ingredient-field="price">
+      </div>`).join('');
+
+    const sauceRows=r.enchanted?`
+      <div class="sauce-row">
+        <div class="sauce-label">✦ Sauce (enchant ingredient)</div>
+        <div class="ing-item">
+        <input type="text" value="${esc(r.sauce.name)}" placeholder="Sauce name" data-recipe-id="${r.id}" data-sauce-field="name">
+        <input type="number" value="${r.sauce.qty||''}" placeholder="Qty" data-recipe-id="${r.id}" data-sauce-field="qty">
+        <input type="number" value="${r.sauce.price||''}" placeholder="Price" data-recipe-id="${r.id}" data-sauce-field="price">
+        </div>
+      </div>`:'';
+
+    const ingNeededRows = c.ingNeeded.filter(i=>i.name).map(i=>`
+      <div class="ing-need-row">
+        <span class="ing-need-name">${esc(i.name)}</span>
+        <span class="ing-need-qty">${i.totalNeeded.toLocaleString()}</span>
+      </div>`).join('');
+
+    const profCls=c.profit>=0?'pos':'neg';
+    const totProfCls=c.totalProfit>=0?'pos':'neg';
+
+    return `
+    <div class="card" id="card-${r.id}">
+      <div class="card-top">
+        <input class="card-name-input" type="text" value="${esc(r.name)}" placeholder="Recipe name" data-recipe-id="${r.id}" data-recipe-field="name" style="flex:1;background:transparent;border:none;color:#ddd;font-size:14px;font-weight:600;padding:0">
+        <span class="card-out">×${r.out||r.outputQty||1} output</span>
+        <button type="button" class="enchant-badge ${r.enchanted?'':'off'}" data-recipe-id="${r.id}" data-recipe-action="toggle-enchant">✦ Enchanted</button>
+        <button class="rm-btn" type="button" data-remove-recipe="${r.id}" title="Remove">✕</button>
+      </div>
+
+      <div class="card-body">
+        <!-- LEFT: ingredients -->
+        <div class="card-left">
+          <div class="section-label">Ingredients per craft</div>
+          <div class="ing-item" style="margin-bottom:4px">
+            <span class="ing-header">Name</span>
+            <span class="ing-header">Qty</span>
+            <span class="ing-header">Price per Unit</span>
+          </div>
+          <div class="ing-list">${ingRows}</div>
+          ${sauceRows}
+          ${r.ingredients.length<4
+            ? `<button type="button" class="add-ing-btn" data-recipe-id="${r.id}" data-recipe-action="add-ing">+ add 4th ingredient</button>`
+            : `<button type="button" class="add-ing-btn" data-recipe-id="${r.id}" data-recipe-action="remove-ing">− remove ingredient</button>`}
+        </div>
+
+        <!-- RIGHT: planner + results -->
+        <div class="card-right">
+          <div class="planner">
+            <div style="display:flex;gap:6px;margin-bottom:10px">
+              <button type="button" class="toggle-btn ${(!r.mode||r.mode==='want')?'active':''}" data-recipe-id="${r.id}" data-recipe-action="set-mode" data-mode="want">Desired Amount</button>
+              <button type="button" class="toggle-btn ${r.mode==='have'?'active':''}" data-recipe-id="${r.id}" data-recipe-action="set-mode" data-mode="have">I have X ingredients</button>
+            </div>
+            ${r.mode==='have' ? `
+              <div class="want-row">
+                <label>I have</label>
+                <input type="number" value="${r.haveQty||''}" placeholder="e.g. 100" min="1" data-recipe-id="${r.id}" data-recipe-field="haveQty">
+                <label style="color:#6a8a6a;font-size:11px">${esc(r.ingredients.filter(i=>i.name)[0]?.name||'ingredient')}</label>
+              </div>` : `
+              <div class="want-row">
+                <label>I want</label>
+                <input type="number" value="${r.wantQty||''}" placeholder="e.g. 20" min="1" data-recipe-id="${r.id}" data-recipe-field="wantQty">
+                <label>${r.name}</label>
+              </div>`}
+            ${c.want>0 ? `
+            <div class="ing-needed">
+              <div class="ing-needed-label">${r.mode==='have' ? 'You can make' : 'Ingredients you need to buy'}</div>
+              <div class="ing-needed-list">
+                ${r.mode==='have'
+                  ? `<div class="ing-need-row"><span class="ing-need-name">${esc(r.name)}</span><span class="ing-need-qty">${c.actualOut.toLocaleString()}</span></div>`
+                  : (ingNeededRows || '<span style="color:#333;font-size:12px">Enter ingredient details on the left</span>')}
+              </div>
+            </div>` : ''}
+            <div class="sell-row" style="margin-top:10px">
+              <label>Sell price per item</label>
+              <input type="number" value="${r.sellPrice||''}" placeholder="Market price" data-recipe-id="${r.id}" data-recipe-field="sellPrice">
+            </div>
+          </div>
+
+          <!-- Results -->
+          <div class="res-grid">
+            <div class="res-section-label full">Costs</div>
+            <div class="res-box">
+              <div class="res-box-label">Total Ingredient Cost</div>
+              <div class="res-box-val r-rawcost">${Math.round(c.rawCost).toLocaleString()} s</div>
+            </div>
+            <div class="res-box">
+              <div class="res-box-label">Crafting Cost<br><span style="font-size:9px;color:#3a3a3a">(after ${Math.round(c.rr*100)}% return + fee)</span></div>
+              <div class="res-box-val r-craftcost">${Math.round(c.craftCost).toLocaleString()} s</div>
+            </div>
+            <div class="res-box">
+              <div class="res-box-label">Cost per Item</div>
+              <div class="res-box-val r-costperitem">${Math.round(c.costPerItem).toLocaleString()} s</div>
+            </div>
+
+            <div class="res-section-label full">Selling</div>
+            <div class="res-box">
+              <div class="res-box-label">Sell Price per Item</div>
+              <div class="res-box-val r-sellprice">${Math.round(c.sell).toLocaleString()} s</div>
+            </div>
+            <div class="res-box">
+              <div class="res-box-label">Market Tax</div>
+              <div class="res-box-val">${gTax()}%</div>
+            </div>
+            <div class="res-box">
+              <div class="res-box-label">Break-even Sell Price</div>
+              <div class="res-box-val r-breakeven">${Math.round(c.breakEven).toLocaleString()} s</div>
+            </div>
+
+            <div class="res-section-label full">Profit (per craft = ${c.out} item${c.out!==1?'s':''})</div>
+            <div class="res-box">
+              <div class="res-box-label">Profit per Item</div>
+              <div class="res-box-val r-profitperitem ${profCls}">${Math.round(c.profitPerItem).toLocaleString()} s</div>
+            </div>
+            <div class="res-box">
+              <div class="res-box-label">Profit Margin</div>
+              <div class="res-box-val r-margin ${profCls}">${c.margin.toFixed(1)}%</div>
+            </div>
+            <div class="res-box">
+              <div class="res-box-label">Revenue per Craft</div>
+              <div class="res-box-val blue r-craftrev">${Math.round(c.rev).toLocaleString()} s</div>
+            </div>
+            <div class="res-box">
+              <div class="res-box-label">Profit per Craft</div>
+              <div class="res-box-val r-craftprofit ${profCls}">${Math.round(c.profit).toLocaleString()} s</div>
+            </div>
+
+            <div class="res-section-label full r-batchlabel">Batch Summary — ${c.actualOut} item${c.actualOut!==1?'s':''} (${c.crafts} craft${c.crafts!==1?'s':''})</div>
+            <div class="res-box">
+              <div class="res-box-label">Total Cost</div>
+              <div class="res-box-val r-totalcost">${Math.round(c.totalCost).toLocaleString()} s</div>
+            </div>
+            <div class="res-box">
+              <div class="res-box-label">Total Revenue</div>
+              <div class="res-box-val blue r-totalrev">${Math.round(c.totalRev).toLocaleString()} s</div>
+            </div>
+            <div class="res-box full" style="border-color:#1a3a2a">
+              <div class="res-box-label" style="color:#2a6a3a">Total Profit</div>
+              <div class="res-box-val r-totalprofit ${totProfCls}">${Math.round(c.totalProfit).toLocaleString()} s</div>
+            </div>
+
+            ${c.focus?`
+            <div class="res-section-label full">Focus</div>
+            <div class="res-box focus-box">
+              <div class="res-box-label">Focus / Craft</div>
+              <div class="res-box-val">${c.fc.toLocaleString()} pts</div>
+            </div>
+            <div class="res-box focus-box">
+              <div class="res-box-label">Max Crafts / Day</div>
+              <div class="res-box-val">${c.maxCrafts!==null?c.maxCrafts:'—'}</div>
+            </div>`:''}
+          </div>
+        </div>
+      </div>
+
+      <div class="summary-line">
+        <span>Resource Return Rate: <span>${(c.rr*100).toFixed(0)}%${c.focus?' (focused)':''}</span></span>
+        <span>Crafting Station Fee: <span>${gFee().toLocaleString()} s</span></span>
+        <span>Market Tax: <span>${gTax()}%</span></span>
+        ${c.focus&&c.want>0?`<span>Focus Used: <span>${c.focusUsed.toLocaleString()} pts</span></span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function recalcCard(id){
+  const r=recipes.find(r=>r.id===id); if(!r) return;
+  const c=calc(r);
+  const card=document.getElementById('card-'+id); if(!card) return;
+
+  const profCls=c.profit>=0?'pos':'neg';
+  const totProfCls=c.totalProfit>=0?'pos':'neg';
+
+  const set=(cls,val)=>{const e=card.querySelector('.'+cls);if(e)e.textContent=val;};
+  const setCls=(cls,val,cn)=>{const e=card.querySelector('.'+cls);if(e){e.textContent=val;e.classList.remove('pos','neg');e.classList.add(cn);}};
+
+  set('r-rawcost',       Math.round(c.rawCost).toLocaleString()+' s');
+  set('r-craftcost',     Math.round(c.craftCost).toLocaleString()+' s');
+  set('r-costperitem',   Math.round(c.costPerItem).toLocaleString()+' s');
+  set('r-sellprice',     Math.round(c.sell).toLocaleString()+' s');
+  set('r-breakeven',     Math.round(c.breakEven).toLocaleString()+' s');
+  set('r-craftrev',      Math.round(c.rev).toLocaleString()+' s');
+  set('r-totalcost',     Math.round(c.totalCost).toLocaleString()+' s');
+  set('r-totalrev',      Math.round(c.totalRev).toLocaleString()+' s');
+  setCls('r-profitperitem', Math.round(c.profitPerItem).toLocaleString()+' s', profCls);
+  setCls('r-craftprofit',Math.round(c.profit).toLocaleString()+' s', profCls);
+  setCls('r-totalprofit',Math.round(c.totalProfit).toLocaleString()+' s', totProfCls);
+  setCls('r-margin',     c.margin.toFixed(1)+'%', profCls);
+  // update batch label
+  const bl=card.querySelector('.r-batchlabel');
+  if(bl) bl.textContent=`Batch Summary — ${c.actualOut} item${c.actualOut!==1?'s':''} (${c.crafts} craft${c.crafts!==1?'s':''})`;
+  // update profit section label
+  const pl=card.querySelector('.res-section-label.full:nth-of-type(3)');
+  if(pl) pl.textContent=`Profit (per craft = ${c.out} item${c.out!==1?'s':''})`;  
+
+  // summary line
+  const sl=card.querySelector('.summary-line');
+  if(sl) sl.innerHTML=`
+    <span>Resource Return Rate: <span>${(c.rr*100).toFixed(0)}%${c.focus?' (focused)':''}</span></span>
+    <span>Crafting Station Fee: <span>${gFee().toLocaleString()} s</span></span>
+    <span>Market Tax: <span>${gTax()}%</span></span>
+    ${c.focus&&c.want>0?`<span>Focus Used: <span>${c.focusUsed.toLocaleString()} pts</span></span>`:''}`;
+
+  // ingredient needed list + total row — update or insert
+  const planner=card.querySelector('.planner');
+  if(planner){
+    // ingredients needed block
+    let ingNeed=planner.querySelector('.ing-needed');
+    if(c.want>0){
+      const ingNeededRows=c.ingNeeded.filter(i=>i.name).map(i=>`
+        <div class="ing-need-row">
+          <span class="ing-need-name">${esc(i.name)}</span>
+          <span class="ing-need-qty">${i.totalNeeded.toLocaleString()}</span>
+        </div>`).join('');
+      if(!ingNeed){
+        ingNeed=document.createElement('div');
+        ingNeed.className='ing-needed';
+        const sellRow=planner.querySelector('.sell-row');
+        planner.insertBefore(ingNeed,sellRow);
+      }
+      ingNeed.innerHTML=`<div class="ing-needed-label">Ingredients you need to buy</div>
+        <div class="ing-needed-list">${ingNeededRows||'<span style="color:#333;font-size:12px">Enter ingredient details on the left</span>'}</div>`;
+    } else {
+      if(ingNeed) ingNeed.remove();
+    }
+  }
+
+}
+
+function recalcAll(){ recipes.forEach(r=>recalcCard(r.id)); }
+
+function clearAll(){
+  if(!confirm('Remove all recipes?')) return;
+  recipes=[];nid=1;
+  try{localStorage.removeItem('alb_cook_v2');}catch(e){}
+  renderAll();
+}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closePicker();});
+load();
+renderAll();
+</script>
+</main>
+<script>(function(){const toggle=document.getElementById('tools-toggle');const menu=document.getElementById('tools-dropdown');if(!toggle||!menu)return;menu.style.display='none';toggle.addEventListener('click',function(e){e.preventDefault();const visible=menu.style.display==='block';menu.style.display=visible?'none':'block';toggle.setAttribute('aria-expanded',String(!visible))});document.addEventListener('click',function(e){if(!toggle.contains(e.target)&&!menu.contains(e.target)){menu.style.display='none';toggle.setAttribute('aria-expanded','false')}});document.addEventListener('keydown',function(e){if(e.key==='Escape'){menu.style.display='none';toggle.setAttribute('aria-expanded','false')}})})();</script></body></html>

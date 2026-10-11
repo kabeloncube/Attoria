@@ -865,3 +865,109 @@ input:checked ~ .toggle-label { color: var(--parchment); }
     max-width: 280px;
   }
 }
+
+/* Planner layout: compact inputs beside a clear batch summary, with the
+   existing Albion forge palette and typography shared across the site. */
+.page-header {
+  text-align: left;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--spacing-10) 0 var(--spacing-8);
+}
+.page-header-emblem { display: none; }
+.header-rule {
+  max-width: none;
+  margin: 0 0 var(--spacing-3);
+  justify-content: flex-start;
+}
+.header-rule::before { display: none; }
+.header-rule::after { max-width: 100px; }
+.header-rule span { letter-spacing: 2px; }
+.page-header h1 {
+  font-size: clamp(28px, 4.4vw, 48px);
+  letter-spacing: 0;
+  margin-bottom: var(--spacing-2);
+}
+.page-header p {
+  max-width: 680px;
+  font-size: 17px;
+  font-style: normal;
+  color: var(--silver);
+}
+.page-badge {
+  display: inline-block;
+  margin-top: var(--spacing-4);
+  padding: 6px 12px;
+  border: 1px solid rgba(200,134,10,.4);
+  color: var(--pale-gold);
+  font-family: var(--font-family-display);
+  font-size: 10px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+}
+.calculator-grid {
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: var(--spacing-4);
+}
+.calculator-grid.has-results {
+  grid-template-columns: minmax(0, 1.2fr) minmax(290px, .8fr);
+}
+.calculator-grid.has-results > .section:nth-child(1),
+.calculator-grid.has-results > .section:nth-child(2),
+.calculator-grid.has-results > .section:nth-child(3) { grid-column: 1; }
+.results-container {
+  grid-column: 1;
+  min-width: 0;
+}
+.calculator-grid.has-results .results-container {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  position: sticky;
+  top: 90px;
+}
+.results-container .section { margin-top: var(--spacing-4); }
+.recipe-reference,
+.advanced-section { grid-column: 1 / -1; }
+.recipe-reference .section-header { margin-bottom: var(--spacing-3); }
+.recipe-reference .section-header h2 { width: 100%; }
+.recipe-reference .table-scroll { margin-bottom: var(--spacing-2); }
+.recipe-table { min-width: 620px; }
+.recipe-note { color: var(--mist); font-size: 14px; }
+.collapsible-content { overflow-x: auto; }
+.calculate-button { width: 100%; min-height: 48px; }
+.feature-tabs { overflow-x: auto; }
+.feature-tab { white-space: nowrap; }
+
+@media (max-width: 900px) {
+  .calculator-grid,
+  .calculator-grid.has-results { grid-template-columns: minmax(0, 1fr); }
+  .calculator-grid.has-results > .section:nth-child(1),
+  .calculator-grid.has-results > .section:nth-child(2),
+  .calculator-grid.has-results > .section:nth-child(3),
+  .results-container,
+  .recipe-reference,
+  .advanced-section { grid-column: 1; }
+  .calculator-grid.has-results .results-container { grid-column: 1; grid-row: auto; position: static; }
+  .page-header { padding-top: var(--spacing-8); }
+}
+
+@media (max-width: 600px) {
+  .tool-container { padding: 0 var(--spacing-4) var(--spacing-10); }
+  .page-header { padding: var(--spacing-8) 0 var(--spacing-6); }
+  .page-header p { font-size: 16px; }
+  .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .toggle-group { gap: var(--spacing-3); }
+  .batch-scaling { grid-template-columns: 1fr; }
+  .profit-highlight { padding: var(--spacing-6) var(--spacing-4); }
+  .advanced-section .feature-tabs { flex-direction: row; }
+  .feature-tab { flex: 0 0 auto; width: auto; min-height: 44px; }
+}
+
+@media (max-width: 420px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .page-header h1 { font-size: 29px; }
+  .section { padding: var(--spacing-5) var(--spacing-4); }
+  .toggle-group { padding: var(--spacing-3); }
+  .toggle-item { align-items: flex-start; }
+}

@@ -1588,15 +1588,19 @@ app.get('/api/coc-status', async (req, res) => {
 // Helper function to get local network IP
 function getLocalNetworkIP() {
     const os = require('os');
-    const interfaces = os.networkInterfaces();
-    
-    for (const name of Object.keys(interfaces)) {
-        for (const interface of interfaces[name]) {
-            // Skip internal (loopback) and non-IPv4 addresses
-            if (interface.family === 'IPv4' && !interface.internal) {
-                return interface.address;
+    try {
+        const interfaces = os.networkInterfaces();
+
+        for (const name of Object.keys(interfaces)) {
+            for (const networkInterface of interfaces[name] || []) {
+                // Skip internal (loopback) and non-IPv4 addresses
+                if (networkInterface.family === 'IPv4' && !networkInterface.internal) {
+                    return networkInterface.address;
+                }
             }
         }
+    } catch (error) {
+        logger.warn(`Could not inspect network interfaces; using localhost: ${error.message}`);
     }
     return 'localhost'; // Fallback
 }

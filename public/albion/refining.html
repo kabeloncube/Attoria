@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="description" content="Albion Online refining calculator for resource conversion and profit estimates." />
+  <meta name="description" content="Plan Albion Online refining batches, review recipes, and estimate silver profit with city returns and market fees." />
   <meta name="robots" content="index,follow" />
   <meta property="og:title" content="Albion Online Refining Calculator | Ættoria" />
   <meta property="og:description" content="Albion Online refining calculator for resource conversion and profit estimates." />
@@ -29,8 +29,9 @@
           <li class="nav-dropdown">
             <a href="#" id="tools-toggle" aria-haspopup="true" aria-expanded="false">Tools ▾</a>
             <ul class="dropdown-menu" id="tools-dropdown" aria-label="Tools submenu">
-              <li><a href="/albion/refining.html">⚗ Refining</a></li>
-              <li><a href="/albion/crafting.html">⚒ Crafting</a></li>
+              <li><a href="/albion/refining.html">Refining</a></li>
+              <li><a href="/albion/crafting.html">Crafting</a></li>
+              <li><a href="/albion/calculators.html">Calculators</a></li>
             </ul>
           </li>
         </ul>
@@ -41,15 +42,16 @@
 
   <main class="tool-container">
     <div class="page-header">
-      <span class="page-header-emblem">⚗</span>
-      <div class="header-rule"><span>⚒ Albion Forge ⚒</span></div>
-      <h1>Albion Online Refining Calculator</h1>
-      <p>Calculate refining profits with city bonuses, resource returns, and market fees.</p>
+      <span class="page-header-emblem" aria-hidden="true">⚒</span>
+      <div class="header-rule"><span>Albion Online · Crafting tools</span></div>
+      <h1>Refining, with the recipe clear.</h1>
+      <p>Choose a resource family and tier, add your market prices, and estimate the materials and silver for your batch.</p>
+      <span class="page-badge">T2–T8 · Recipe guide included</span>
     </div>
 
     <!-- City Bonus Reference (Collapsible) -->
     <div class="collapsible-header" id="city-bonus-toggle">
-      <div class="collapsible-title"> City Refining Bonuses (36.7% Return)</div>
+        <div class="collapsible-title">City refining return reference</div>
       <div class="collapsible-icon">▼</div>
     </div>
     <div class="collapsible-content" id="city-bonus-content">
@@ -106,7 +108,7 @@
         </div>
         <div class="form-grid">
           <div class="form-group">
-            <label>Resource Type</label>
+            <label for="resource-type">Resource family</label>
             <select id="resource-type">
               <option value="ore">Ore → Metal Bars</option>
               <option value="fiber">Fiber → Cloth</option>
@@ -116,7 +118,7 @@
             </select>
           </div>
           <div class="form-group">
-            <label>Tier</label>
+            <label for="tier">Target tier</label>
             <select id="tier">
               <option value="2">Tier 2</option>
               <option value="3">Tier 3</option>
@@ -128,7 +130,7 @@
             </select>
           </div>
           <div class="form-group">
-            <label>City</label>
+            <label for="city">Refining city</label>
             <select id="city">
               <option value="Thetford">Thetford</option>
               <option value="Lymhurst">Lymhurst</option>
@@ -140,7 +142,7 @@
             </select>
           </div>
           <div class="form-group">
-            <label>Quantity to Refine</label>
+            <label for="quantity">Refined units to make</label>
             <input type="number" id="quantity" value="1000" min="1" step="1" placeholder="1000">
           </div>
         </div>
@@ -153,20 +155,20 @@
         </div>
         <div class="form-grid">
           <div class="form-group">
-            <label>Raw Material Price</label>
+            <label for="raw-price">Raw resource price (silver per item)</label>
             <input type="number" id="raw-price" value="0" min="0" step="1" placeholder="Per unit (silver)">
           </div>
           <div class="form-group">
-            <label>Previous Tier Price</label>
+            <label for="prev-tier-price">Previous-tier refined price (per item)</label>
             <input type="number" id="prev-tier-price" value="0" min="0" step="1" placeholder="Per unit (silver)">
           </div>
           <div class="form-group">
-            <label>Refined Sell Price</label>
+            <label for="refined-price">Refined sell price (per item)</label>
             <input type="number" id="refined-price" value="0" min="0" step="1" placeholder="Per unit (silver)">
           </div>
           <div class="form-group">
-            <label>Station Silver Cost</label>
-            <input type="number" id="station-cost" value="0" min="0" step="1" placeholder="Flat cost (silver)">
+            <label for="station-cost">Station fee per refined item</label>
+            <input type="number" id="station-cost" value="0" min="0" step="1" placeholder="Silver per item">
           </div>
         </div>
       </div>
@@ -189,12 +191,12 @@
               <input type="checkbox" id="focus">
               <span class="toggle-slider"></span>
             </label>
-            <span class="toggle-label">Use Focus (+17.2% to +28.3% return)</span>
+            <span class="toggle-label">Use Focus (higher material return)</span>
           </div>
         </div>
 
         <button class="calculate-button" id="calculate-btn">
-          🧮 Calculate Profit
+          Calculate batch estimate
         </button>
       </div>
 
@@ -251,6 +253,27 @@
           </table>
         </div>
       </div>
+
+      <section class="section recipe-reference" aria-labelledby="recipe-reference-title">
+        <div class="section-header">
+          <h2 id="recipe-reference-title">Recipe reference · one refined item</h2>
+        </div>
+        <div class="table-scroll">
+          <table class="bonus-table recipe-table">
+            <thead><tr><th>Tier</th><th>Current-tier raw</th><th>Previous-tier refined</th><th>Recipe</th></tr></thead>
+            <tbody>
+              <tr><td>T2</td><td>1 raw</td><td>—</td><td>1 raw</td></tr>
+              <tr><td>T3</td><td>2 raw</td><td>1 × T2</td><td>2 raw + 1 previous tier</td></tr>
+              <tr><td>T4</td><td>2 raw</td><td>1 × T3</td><td>2 raw + 1 previous tier</td></tr>
+              <tr><td>T5</td><td>3 raw</td><td>1 × T4</td><td>3 raw + 1 previous tier</td></tr>
+              <tr><td>T6</td><td>4 raw</td><td>1 × T5</td><td>4 raw + 1 previous tier</td></tr>
+              <tr><td>T7</td><td>5 raw</td><td>1 × T6</td><td>5 raw + 1 previous tier</td></tr>
+              <tr><td>T8</td><td>5 raw</td><td>1 × T7</td><td>5 raw + 1 previous tier</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="recipe-note">The estimate applies the selected city return rate to ingredient consumption. Returns are an average; check your station details before refining large batches.</p>
+      </section>
 
       <!-- Advanced Features -->
       <div class="section advanced-section">
