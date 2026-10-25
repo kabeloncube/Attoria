@@ -174,3 +174,36 @@
   .gear-crafting .res-card { padding: 10px; }
   .gear-crafting .res-card-val { font-size: 19px; }
 }
+
+/* Current calculator controls and per-item profitability states. */
+.gear-crafting .sf select,
+.gear-crafting .fee-rate {
+  width: 100%;
+  min-height: 42px;
+  padding: 8px 10px;
+  border: 1px solid var(--dust);
+  background: var(--void);
+  color: var(--parchment);
+  font: 15px var(--font-family-base);
+}
+.gear-crafting .fee-rate { color: var(--gold); font-variant-numeric: tabular-nums; }
+.gear-crafting .item-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--spacing-3); }
+.gear-crafting .remove-item-btn {
+  flex: 0 0 auto;
+  padding: 5px 9px;
+  border: 1px solid rgba(192,57,43,.45);
+  background: rgba(192,57,43,.08);
+  color: #e07868;
+  cursor: pointer;
+  font: 10px var(--font-family-display);
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
+.gear-crafting .remove-item-btn:hover { border-color: var(--crimson); background: rgba(192,57,43,.16); color: #ffaaa0; }
+.gear-crafting .item-card.profit-card { border-color: rgba(93,184,93,.55); }
+.gear-crafting .item-card.loss-card { border-color: rgba(192,57,43,.65); }
+.gear-crafting .item-card.unpriced-card { border-color: rgba(200,134,10,.3); }
+.gear-crafting .item-profit-status { display: flex; justify-content: space-between; gap: var(--spacing-3); margin-top: var(--spacing-3); padding-top: var(--spacing-3); border-top: 1px solid rgba(200,134,10,.14); font-size: 13px; }
+.gear-crafting .item-profit-status.pos { color: #79bd78; }
+.gear-crafting .item-profit-status.neg { color: #e07868; }
+.gear-crafting .item-profit-status.neutral { color: var(--mist); }
