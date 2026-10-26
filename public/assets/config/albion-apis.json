@@ -12,7 +12,7 @@
       "east": "https://east.albion-online-data.com",
       "europe": "https://europe.albion-online-data.com"
     },
-    "notes": "Community market data API (prices, history, charts). Rate limits: 180/min, 300/5min"
+    "notes": "Community market data API (prices, history, charts). Safety limits: 99/min and 300/5min per IP."
   },
   "render_api": {
     "name": "Albion Render API",

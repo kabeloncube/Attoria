@@ -787,10 +787,15 @@ const ITEM_MAPPINGS = {
 
             //hearts
             'TREE_HEART': 'FACTION_FOREST_TOKEN_1',
+            'TREEHEART': 'FACTION_FOREST_TOKEN_1',
             'ROCK_HEART': 'FACTION_HIGHLAND_TOKEN_1',
+            'ROCKHEART': 'FACTION_HIGHLAND_TOKEN_1',
             'VINE_HEART': 'FACTION_SWAMP_TOKEN_1',
+            'VINEHEART': 'FACTION_SWAMP_TOKEN_1',
             'BEAST_HEART': 'FACTION_STEPPE_TOKEN_1',
+            'BEASTHEART': 'FACTION_STEPPE_TOKEN_1',
             'SHADOW_HEART': 'FACTION_CAERLEON_TOKEN_1',
+            'SHADOWHEART': 'FACTION_CAERLEON_TOKEN_1',
 
             //fish
             //freshwater fish
