@@ -11,7 +11,7 @@ module.exports = function() {
     west: 'https://west.albion-online-data.com',
     europe: 'https://europe.albion-online-data.com',
     east: 'https://east.albion-online-data.com',
-    default: 'https://www.albion-online-data.com'
+    default: 'https://europe.albion-online-data.com'
   };
 
   // Basic in-memory cache (Map) with TTL handling (fallback)
@@ -134,7 +134,7 @@ module.exports = function() {
   // GET /prices?region=europe&item=T4_BAG&locations=Caerleon&qualities=1
   router.get('/prices', proxyLimiter, async (req, res) => {
     try {
-      const { region = 'default', item, ttl } = req.query;
+      const { region = 'europe', item, ttl } = req.query;
       const other = { ...req.query };
       delete other.region; delete other.item; delete other.ttl;
 
@@ -165,7 +165,7 @@ module.exports = function() {
         });
       }
 
-      const resolvedRegion = (region && REGION_HOSTS[region]) ? region : 'default';
+      const resolvedRegion = (region && REGION_HOSTS[region]) ? region : 'europe';
       const host = REGION_HOSTS[resolvedRegion] || REGION_HOSTS.default;
 
       const params = new URLSearchParams(other || {});

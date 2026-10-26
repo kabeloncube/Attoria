@@ -106,9 +106,9 @@
         <div class="search-group">
           <label for="region">Region</label>
           <select id="region">
-            <option value="west">West</option>
-            <option value="europe">Europe</option>
-            <option value="east">East</option>
+            <option value="west">Americas (West)</option>
+            <option value="europe" selected>Europe</option>
+            <option value="east">Asia (East)</option>
           </select>
         </div>
 
@@ -360,6 +360,18 @@
     document.addEventListener('DOMContentLoaded', function () {
       (function () {
         const $ = id => document.getElementById(id);
+        const marketRegion = $('region');
+        const regionToMarketValue = { americas: 'west', west: 'west', europe: 'europe', asia: 'east', east: 'east' };
+        const regionToSharedValue = { west: 'americas', europe: 'europe', east: 'asia' };
+        try {
+          const savedRegion = localStorage.getItem('attoria-albion-region');
+          marketRegion.value = regionToMarketValue[savedRegion] || 'europe';
+        } catch (_) {
+          marketRegion.value = 'europe';
+        }
+        marketRegion.addEventListener('change', () => {
+          try { localStorage.setItem('attoria-albion-region', regionToSharedValue[marketRegion.value] || 'europe'); } catch (_) {}
+        });
         const statusEl = $('market-status');
         const marketGrid = $('market-grid');
         const itemPreviewCard = $('item-preview-card');
@@ -712,7 +724,7 @@
           // Combine tier and item type
           const itemId = `${tier}_${itemType}`;
 
-          const region = $('region').value || 'west';
+          const region = $('region').value || 'europe';
           fetchPrices(itemId, region);
         });
 

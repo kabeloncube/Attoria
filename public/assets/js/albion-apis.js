@@ -4,13 +4,13 @@
   window.ALBION_APIS = window.ALBION_APIS || {};
   window.ALBION_APIS.official_gameinfo = {
     name: 'Official Albion GameInfo API',
-    base: 'https://gameinfo.albiononline.com/api/gameinfo/',
+    base: 'https://gameinfo-ams.albiononline.com/api/gameinfo/',
     notes: 'Official game info endpoints (may change or be intermittently unavailable).'
   };
 
   window.ALBION_APIS.albion_data_project = {
     name: 'Albion Data Project (Market API)',
-    base: 'https://www.albion-online-data.com/api/v2/',
+    base: 'https://europe.albion-online-data.com/api/v2/',
     hosts: {
       west: 'https://west.albion-online-data.com',
       east: 'https://east.albion-online-data.com',

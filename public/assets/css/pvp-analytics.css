@@ -630,3 +630,40 @@ tbody td { padding:11px 12px; vertical-align:middle; font-size:13px; }
   .hero-stats{grid-template-columns:repeat(2,1fr);}
   .battle-stats{grid-template-columns:repeat(2,1fr);}
 }
+
+/* World kill feed */
+.world-feed-panel { overflow: hidden; }
+.world-feed-toolbar { display:flex; align-items:center; justify-content:space-between; gap:16px; padding-bottom:16px; border-bottom:1px solid rgba(200,134,10,.12); }
+.world-feed-toolbar .ptitle { margin-bottom:4px; }
+.world-feed-status { color:var(--mist); font-size:12px; }
+.world-feed-controls { display:flex; align-items:center; gap:8px; color:var(--mist); font-family:var(--font-d); font-size:9px; letter-spacing:1px; text-transform:uppercase; }
+.world-feed-controls select { min-height:36px; padding:6px 28px 6px 10px; border:1px solid var(--dust); background:var(--void); color:var(--parchment); font:13px var(--font-b); }
+.world-feed-refresh { min-height:36px; padding:7px 12px; }
+.world-feed-refresh:disabled { opacity:.55; cursor:wait; }
+.world-kill-feed { display:grid; gap:10px; padding-top:14px; }
+.world-kill-card { padding:14px; border:1px solid rgba(200,134,10,.13); background:linear-gradient(145deg,var(--ash),var(--charcoal)); }
+.world-kill-time { margin-bottom:10px; color:var(--mist); font-size:11px; }
+.world-kill-time span { color:var(--gold-dim); }
+.world-kill-match { display:grid; grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr); align-items:center; gap:12px; }
+.world-kill-side { display:grid; gap:3px; min-width:0; }
+.world-kill-victim { text-align:right; }
+.world-kill-label { color:var(--success); font:9px var(--font-d); letter-spacing:1.5px; text-transform:uppercase; }
+.world-kill-victim .world-kill-label { color:var(--crimson); }
+.world-kill-side strong { overflow-wrap:anywhere; color:var(--parchment); font-family:var(--font-d); font-size:14px; }
+.world-kill-side small { overflow-wrap:anywhere; color:var(--mist); font-size:12px; }
+.world-kill-versus { color:var(--ember); text-align:center; }
+.world-kill-meta { display:flex; flex-wrap:wrap; align-items:center; gap:8px 18px; margin-top:12px; padding-top:10px; border-top:1px solid rgba(200,134,10,.08); color:var(--silver); font-size:12px; }
+.world-kill-meta span:nth-child(2) { color:var(--gold); }
+.world-kill-meta a { margin-left:auto; color:var(--gold); text-decoration:none; }
+.world-kill-meta a:hover { color:var(--pale-gold); }
+@media(max-width:600px) {
+  .world-feed-toolbar { align-items:flex-start; flex-direction:column; }
+  .world-feed-controls { width:100%; }
+  .world-feed-controls select { flex:1; }
+  .world-kill-card { padding:11px; }
+  .world-kill-match { grid-template-columns:minmax(0,1fr) 24px minmax(0,1fr); gap:7px; }
+  .world-kill-side strong { font-size:12px; }
+  .world-kill-side small { font-size:10px; }
+  .world-kill-meta { gap:7px 12px; }
+  .world-kill-meta a { margin-left:0; }
+}

@@ -1,5 +1,11 @@
 (function () {
   const endpoint = '/api/proxy/albion-pvp';
+  let activeKillboardMode = 'world';
+  let feedController = null;
+
+  function selectedRegion() {
+    return document.getElementById('world-feed-region')?.value || 'europe';
+  }
 
   function escapeHtml(value) {
     return String(value ?? '')
@@ -92,7 +98,7 @@
   }
 
   async function fetchHistory(playerId, kind) {
-    const response = await fetch(`${endpoint}/players/${encodeURIComponent(playerId)}/${kind}`);
+    const response = await fetch(`${endpoint}/players/${encodeURIComponent(playerId)}/${kind}?region=${encodeURIComponent(selectedRegion())}`);
     const payload = await response.json();
     if (!response.ok) throw new Error(payload.error || `Could not load ${kind}`);
     return getEvents(payload, kind);
@@ -107,7 +113,7 @@
     if (historyList) historyList.innerHTML = '<div class="live-empty">Searching official Albion data...</div>';
 
     try {
-      const searchResponse = await fetch(`${endpoint}/search?q=${encodeURIComponent(query)}`);
+      const searchResponse = await fetch(`${endpoint}/search?q=${encodeURIComponent(query)}&region=${encodeURIComponent(selectedRegion())}`);
       const searchPayload = await searchResponse.json();
       if (!searchResponse.ok) throw new Error(searchPayload.error || 'Player search failed');
 
@@ -126,6 +132,92 @@
       if (historyList) historyList.innerHTML = `<div class="live-empty live-error">${escapeHtml(error.message)}</div>`;
     }
   }
+
+
+  function eventPlayer(event, key) {
+    const player = event[key] || event[key.toLowerCase()] || {};
+    if (typeof player === 'string') return { name: player, guild: '', alliance: '' };
+    return {
+      name: player.Name || player.name || 'Unknown player',
+      guild: player.GuildName || player.guildName || '',
+      alliance: player.AllianceName || player.allianceName || ''
+    };
+  }
+
+  function renderWorldEvent(event) {
+    const killer = eventPlayer(event, 'Killer');
+    const victim = eventPlayer(event, 'Victim');
+    const fame = event.TotalVictimKillFame || event.totalVictimKillFame || event.KillFame || event.killFame || 0;
+    const location = event.Location || event.location || event.KillArea || event.killArea || 'Location unavailable';
+    const participants = event.NumberOfParticipants || event.numberOfParticipants;
+    const rawTime = event.TimeStamp || event.EventTime || event.timestamp;
+    const date = rawTime ? new Date(rawTime) : null;
+    const time = date && !Number.isNaN(date.getTime()) ? date.toLocaleString() : 'Time unavailable';
+    const eventId = event.EventId || event.eventId || '';
+    const killUrl = /^\d+$/.test(String(eventId)) ? `https://albiononline.com/killboard/kill/${encodeURIComponent(eventId)}` : '';
+    const guildLine = [killer.guild, killer.alliance].filter(Boolean).join(' · ') || 'Guild unavailable';
+    const victimGuild = [victim.guild, victim.alliance].filter(Boolean).join(' · ');
+
+    return `<article class="world-kill-card">
+      <div class="world-kill-time">${escapeHtml(time)}${eventId ? ` <span>· #${escapeHtml(eventId)}</span>` : ''}</div>
+      <div class="world-kill-match">
+        <div class="world-kill-side"><span class="world-kill-label">Killer</span><strong>${escapeHtml(killer.name)}</strong><small>${escapeHtml(guildLine)}</small></div>
+        <span class="world-kill-versus">⚔</span>
+        <div class="world-kill-side world-kill-victim"><span class="world-kill-label">Victim</span><strong>${escapeHtml(victim.name)}</strong><small>${escapeHtml(victimGuild || 'Guild unavailable')}</small></div>
+      </div>
+      <div class="world-kill-meta"><span>${escapeHtml(location)}</span><span>${formatFame(fame)} fame</span><span>${participants ? `${escapeHtml(participants)} participants` : 'Participants unavailable'}</span>${killUrl ? `<a href="${killUrl}" target="_blank" rel="noopener noreferrer">View kill</a>` : ''}</div>
+    </article>`;
+  }
+
+  async function loadWorldFeed() {
+    const feed = document.getElementById('world-kill-feed');
+    const status = document.getElementById('world-feed-status');
+    const refresh = document.getElementById('world-feed-refresh');
+    if (!feed || activeKillboardMode !== 'world') return;
+
+    if (feedController) feedController.abort();
+    feedController = new AbortController();
+    const controller = feedController;
+    const region = selectedRegion();
+    if (status) status.textContent = `Loading recent events · ${regionLabel(region)}…`;
+    if (refresh) refresh.disabled = true;
+    if (!feed.dataset.hasEvents) feed.innerHTML = '<div class="live-empty">Loading recent Albion kill events…</div>';
+
+    try {
+      const response = await fetch(`${endpoint}/events?region=${encodeURIComponent(region)}&limit=20&offset=0`, { signal: controller.signal });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error || 'Could not load kill events');
+      if (controller.signal.aborted) return;
+      const events = Array.isArray(payload) ? payload : (payload.events || []);
+      feed.innerHTML = events.length ? events.map(renderWorldEvent).join('') : '<div class="live-empty">No recent kill events were returned for this server.</div>';
+      feed.dataset.hasEvents = events.length ? 'true' : '';
+      if (status) status.textContent = `Updated ${new Date().toLocaleTimeString()} · ${regionLabel(region)} · refreshes every minute`;
+    } catch (error) {
+      if (error.name === 'AbortError') return;
+      if (status) status.textContent = `Could not reach the ${regionLabel(region)} kill feed`;
+      feed.innerHTML = `<div class="live-empty live-error">${escapeHtml(error.message)}. Use Refresh to try again.</div>`;
+      feed.dataset.hasEvents = '';
+    } finally {
+      if (controller === feedController && refresh) refresh.disabled = false;
+    }
+  }
+
+  function regionLabel(region) {
+    return ({ americas: 'Americas', europe: 'Europe', asia: 'Asia' })[region] || region;
+  }
+
+  window.loadWorldFeed = loadWorldFeed;
+  window.setKillboardMode = function (mode) {
+    activeKillboardMode = mode;
+    const feed = document.getElementById('world-kill-feed');
+    const status = document.getElementById('world-feed-status');
+    if (mode === 'world') {
+      loadWorldFeed();
+    } else {
+      if (feed) feed.innerHTML = '<div class="live-empty">The live feed is currently connected for World events. This selected mode is not connected yet.</div>';
+      if (status) status.textContent = 'World feed only';
+    }
+  };
 
   function bindPageInteractions() {
     const tabIds = ['killboards', 'search', 'guild', 'battles', 'meta', 'stats'];
@@ -153,10 +245,29 @@
       button.onclick = () => window.switchMeta(ids[index], button);
     });
 
-    const searchButton = document.querySelector('.search-btn');
+    const searchButton = document.querySelector('#tab-search .search-btn');
     if (searchButton) searchButton.onclick = doLiveSearch;
+
+    const refreshButton = document.getElementById('world-feed-refresh');
+    if (refreshButton) refreshButton.onclick = loadWorldFeed;
+    const regionSelect = document.getElementById('world-feed-region');
+    if (regionSelect) {
+      try {
+        const savedRegion = localStorage.getItem('attoria-albion-region');
+        if (['americas', 'europe', 'asia'].includes(savedRegion)) regionSelect.value = savedRegion;
+      } catch (_) {}
+      regionSelect.onchange = function () {
+        try { localStorage.setItem('attoria-albion-region', regionSelect.value); } catch (_) {}
+        loadWorldFeed();
+      };
+    }
   }
 
   window.doSearch = doLiveSearch;
   bindPageInteractions();
+  loadWorldFeed();
+  window.setInterval(() => {
+    const killboardsOpen = document.getElementById('tab-killboards')?.classList.contains('active');
+    if (document.visibilityState === 'visible' && killboardsOpen && activeKillboardMode === 'world') loadWorldFeed();
+  }, 60000);
 })();

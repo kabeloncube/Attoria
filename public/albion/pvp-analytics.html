@@ -30,7 +30,7 @@
       <h1>PvP Analytics</h1>
       <p>Killboards · Battle Logs · Meta Reports · Guild Intelligence</p>
     </div>
-    <div class="live-badge"><div class="live-dot"></div>Live Data</div>
+    <div class="live-badge"><div class="live-dot"></div>World Kill Feed</div>
   </div>
 
   <!-- HERO STATS -->
@@ -66,35 +66,24 @@
       <button class="stab" onclick="switchKB('crystal',this)">💎 Crystal Arena</button>
     </div>
 
-    <div class="two-col sg">
-      <div class="g-panel">
-        <div class="ptitle">Recent Kills</div>
-        <div id="kb-kills-list"></div>
+    <div class="g-panel sg world-feed-panel">
+      <div class="world-feed-toolbar">
+        <div>
+          <div class="ptitle">Latest World Kill Events</div>
+          <div class="world-feed-status" id="world-feed-status" aria-live="polite">Loading live events…</div>
+        </div>
+        <div class="world-feed-controls">
+          <label for="world-feed-region">Server</label>
+          <select id="world-feed-region">
+            <option value="americas">Americas</option>
+            <option value="europe" selected>Europe</option>
+            <option value="asia">Asia</option>
+          </select>
+          <button class="search-btn world-feed-refresh" id="world-feed-refresh" type="button">Refresh</button>
+        </div>
       </div>
-      <div class="g-panel">
-        <div class="ptitle">Recent Deaths</div>
-        <div id="kb-deaths-list"></div>
-      </div>
-    </div>
-
-    <div class="g-panel sg">
-      <div class="ptitle">Top Killers — Last 24h</div>
-      <div class="tbl-wrap">
-        <table id="top-killers-tbl">
-          <thead><tr>
-            <th style="width:40px">#</th>
-            <th>Player</th>
-            <th>Guild</th>
-            <th>Kills</th>
-            <th>Deaths</th>
-            <th>K/D</th>
-            <th>Assists</th>
-            <th>Kill Fame</th>
-            <th>Avg IP</th>
-            <th>Main Weapon</th>
-          </tr></thead>
-          <tbody id="top-killers-body"></tbody>
-        </table>
+      <div id="world-kill-feed" class="world-kill-feed" aria-live="polite">
+        <div class="live-empty">Loading recent Albion kill events…</div>
       </div>
     </div>
   </div>
@@ -424,6 +413,7 @@ function switchTab(id, btn){
 function switchKB(id, btn){
   document.querySelectorAll('#kb-subtabs .stab').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
+  if (window.setKillboardMode) window.setKillboardMode(id);
 }
 function switchSearchView(id, btn){
   btn.parentElement.querySelectorAll('.stab').forEach(b=>b.classList.remove('active'));
@@ -462,6 +452,7 @@ function renderKBEntry(e, isKill){
 }
 
 function renderKillboards(){
+  if (!document.getElementById('kb-kills-list')) return;
   document.getElementById('kb-kills-list').innerHTML  = KB_ENTRIES.map(e=>renderKBEntry(e,true)).join('');
   document.getElementById('kb-deaths-list').innerHTML = KB_DEATHS.map(e=>renderKBEntry(e,false)).join('');
 
