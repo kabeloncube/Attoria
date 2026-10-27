@@ -262,6 +262,119 @@ module.exports = function() {
     }
   });
 
+  // Backend batch lookup for scheduled scans. The user-facing market lookup
+  // remains single-item; this endpoint batches IDs into AODP calls internally.
+  router.get('/prices/batch', proxyLimiter, async (req, res) => {
+    try {
+      const { region = 'europe', items: rawItems, ttl } = req.query;
+      if (typeof rawItems !== 'string' || !rawItems.trim()) {
+        return res.status(400).json({ error: 'Missing required query parameter: items', code: 'MISSING_ITEMS_PARAM' });
+      }
+
+      const items = [...new Set(rawItems.split(',').map((item) => item.trim()).filter(Boolean))];
+      if (!items.length || items.length > 500 || items.some((item) => !ITEM_ID_RE.test(item))) {
+        return res.status(400).json({
+          error: 'Provide 1–500 valid comma-separated item IDs.',
+          code: 'INVALID_ITEMS',
+          maxItems: 500
+        });
+      }
+      if (!REGION_HOSTS[region]) {
+        return res.status(400).json({ error: 'Invalid region. Supported: west, europe, east, default', code: 'INVALID_REGION' });
+      }
+
+      const resolvedRegion = region;
+      const host = REGION_HOSTS[resolvedRegion];
+      const other = { ...req.query };
+      delete other.region; delete other.items; delete other.ttl;
+      const params = new URLSearchParams(other);
+      const ttlSeconds = Number(ttl) > 0 ? Math.min(Math.max(Number(ttl), 5), 3600) : DEFAULT_TTL_SECONDS;
+      const cacheKeys = new Map(items.map((item) => [item, makeCacheKey(resolvedRegion, item, other)]));
+      const recordsByItem = new Map();
+      const missing = [];
+      let cachedItems = 0;
+
+      for (const item of items) {
+        const cached = await getCached(cacheKeys.get(item));
+        if (cached !== null) {
+          recordsByItem.set(item, cached);
+          cachedItems += 1;
+        } else {
+          missing.push(item);
+        }
+      }
+
+      // Keep every upstream URL below AODP's 4,096-character limit.
+      const groups = [];
+      let group = [];
+      for (const item of missing) {
+        const candidate = [...group, item];
+        const pathItems = candidate.map(encodeURIComponent).join(',');
+        const query = params.toString();
+        const url = `${host}/api/v2/stats/prices/${pathItems}.json${query ? `?${query}` : ''}`;
+        if (url.length > 4000 && group.length) {
+          groups.push(group);
+          group = [item];
+        } else if (url.length > 4000) {
+          return res.status(400).json({ error: 'Query parameters make a single-item request too long.', code: 'URL_TOO_LONG' });
+        } else {
+          group = candidate;
+        }
+      }
+      if (group.length) groups.push(group);
+
+      for (const itemGroup of groups) {
+        const pathItems = itemGroup.map(encodeURIComponent).join(',');
+        const query = params.toString();
+        const url = `${host}/api/v2/stats/prices/${pathItems}.json${query ? `?${query}` : ''}`;
+        const resp = await fetchWithRetry(url, {
+          method: 'GET',
+          headers: { 'Accept-Encoding': 'gzip, deflate, br' }
+        });
+        if (!resp.ok) {
+          const body = await resp.text();
+          if (resp.status === 429) {
+            return res.status(429).json({
+              error: 'Rate limit exceeded. Please try again later.',
+              code: 'RATE_LIMITED',
+              retryAfter: resp.headers.get('retry-after') || '60'
+            });
+          }
+          return res.status(resp.status).json({ error: 'Albion API error', code: 'API_ERROR', status: resp.status, message: body.slice(0, 200) });
+        }
+
+        const data = await resp.json();
+        if (!Array.isArray(data)) {
+          return res.status(502).json({ error: 'Invalid response from Albion API', code: 'INVALID_RESPONSE_FORMAT' });
+        }
+        for (const item of itemGroup) recordsByItem.set(item, []);
+        for (const record of data) {
+          const itemId = record.item_id || record.item_type_id;
+          if (recordsByItem.has(itemId)) recordsByItem.get(itemId).push(record);
+        }
+        for (const item of itemGroup) {
+          await setCached(cacheKeys.get(item), recordsByItem.get(item), ttlSeconds);
+        }
+      }
+
+      const data = items.flatMap((item) => recordsByItem.get(item) || []);
+      const results = items.map((item) => ({ item, count: (recordsByItem.get(item) || []).length }));
+      return res.json({
+        cached: missing.length === 0,
+        region: resolvedRegion,
+        requested: items.length,
+        cachedItems,
+        batches: groups.length,
+        count: data.length,
+        results,
+        data
+      });
+    } catch (err) {
+      logger.error('Albion batch price proxy error: %O', err);
+      return res.status(500).json({ error: 'Internal server error', code: 'INTERNAL_ERROR', message: err.message });
+    }
+  });
+
   // GET /items/search?q=fiber&limit=10&tier=4 - Search for items by name (tier-aware)
   router.get('/items/search', proxyLimiter, async (req, res) => {
     try {
