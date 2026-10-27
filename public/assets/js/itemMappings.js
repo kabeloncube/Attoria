@@ -235,7 +235,7 @@ const ITEM_MAPPINGS = {
             'MISTWALKER_JACKET': 'ARMOR_LEATHER_FEY',
             'ROYAL_JACKET': 'ARMOR_LEATHER_ROYAL',
 
-            //cloth armor mappings
+            //cloth robe mappings
             'SCHOLAR_ROBE': 'ARMOR_CLOTH_SET1',
             'CLERIC_ROBE': 'ARMOR_CLOTH_SET2',
             'MAGE_ROBE': 'ARMOR_CLOTH_SET3',
@@ -339,6 +339,7 @@ const ITEM_MAPPINGS = {
             'UNBREAKABLE_WARD': 'OFF_SHIELD_CRYSTAL',
 
             //capes
+            'CAPE':'CAPE',
             'BRIDGEWATCH_CAPE':'CAPEITEM_FW_BRIDGEWATCH',
             'FORTSTERLING_CAPE':'CAPEITEM_FW_FORTSTERLING',
             'MARTLOCK_CAPE':'CAPEITEM_FW_MARTLOCK',
@@ -779,6 +780,8 @@ const ITEM_MAPPINGS = {
             'TRACKING_TOOLKIT': '2H_TOOL_TRACKING',
 
             'ARENA_SIGIL': 'QUESTITEM_TOKEN_ARENA_UNRANKED',
+            'ROYAL_SIGIL': 'QUESTITEM_TOKEN_ROYAL',
+            'TOME_OF_INSIGHT': 'SKILLBOOK_STANDARD',
 
             //ENERGY
             'AVALONIAN_ENERGY': 'QUESTITEM_TOKEN_AVALON',
@@ -792,6 +795,8 @@ const ITEM_MAPPINGS = {
             'ROCKHEART': 'FACTION_HIGHLAND_TOKEN_1',
             'VINE_HEART': 'FACTION_SWAMP_TOKEN_1',
             'VINEHEART': 'FACTION_SWAMP_TOKEN_1',
+            'MOUNTAIN_HEART': 'FACTION_MOUNTAIN_TOKEN_1',
+            'MOUNTAINHEART': 'FACTION_MOUNTAIN_TOKEN_1',
             'BEAST_HEART': 'FACTION_STEPPE_TOKEN_1',
             'BEASTHEART': 'FACTION_STEPPE_TOKEN_1',
             'SHADOW_HEART': 'FACTION_CAERLEON_TOKEN_1',
@@ -1286,7 +1291,7 @@ const ITEM_MAPPINGS = {
             
             'LEATHER': 'LEATHER',
             'CLOTH': 'CLOTH',
-            'METAL_BAR': 'METALBAR',
+            'STEEL_BAR': 'METALBAR',
             'STONE_BLOCK': 'STONEBLOCK',
             'PLANKS': 'PLANKS',
 

@@ -2,6 +2,7 @@ const express = require('express');
 const rateLimit = require('express-rate-limit');
 const Redis = require('ioredis');
 const logger = require('../logger');
+const { loadCraftingCatalog, getRecipe, ingredientIds } = require('../services/craftingCatalog');
 
 module.exports = function() {
   const router = express.Router();
@@ -13,6 +14,21 @@ module.exports = function() {
     east: 'https://east.albion-online-data.com',
     default: 'https://europe.albion-online-data.com'
   };
+
+  const EXCLUDED_PROFITABILITY_ITEMS = new Set([
+    'FISTSOFAVALON',
+    'DREADSTORMMONARCH',
+    'FORCEPULSEBRACERS',
+    'BEDROCKMACE',
+    'MYSTICOWL'
+  ]);
+
+  function profitabilityItemName(item) {
+    return item.name
+      .replace(/^(Adept|Expert|Master|Grandmaster|Elder)'s\s+/i, '')
+      .replace(/[^a-z0-9]/gi, '')
+      .toUpperCase();
+  }
 
   // Basic in-memory cache (Map) with TTL handling (fallback)
   const cache = new Map(); // key -> { expires: timestamp, data }
@@ -130,6 +146,142 @@ module.exports = function() {
 
   // validate simple item id format (uppercase, numbers, underscores, dashes, colons, @)
   const ITEM_ID_RE = /^[A-Z0-9_:\-@]{2,120}$/;
+
+  // Category-based lookup for the Profitability tab. The browser sends only
+  // category/tier choices; the server derives and batches enchanted item IDs.
+  router.get('/profitability/category', proxyLimiter, async (req, res) => {
+    try {
+      const { category, region = 'europe', tiers: rawTiers = 'T4,T5,T6,T7,T8' } = req.query;
+      if (!REGION_HOSTS[region]) {
+        return res.status(400).json({ error: 'Invalid region. Supported: west, europe, east', code: 'INVALID_REGION' });
+      }
+      if (typeof category !== 'string' || !category.trim()) {
+        return res.status(400).json({ error: 'Choose a category.', code: 'MISSING_CATEGORY' });
+      }
+
+      const tiers = [...new Set(String(rawTiers).split(',').map((tier) => tier.trim().toUpperCase()))];
+      if (!tiers.length || tiers.some((tier) => !/^T[4-8]$/.test(tier))) {
+        return res.status(400).json({ error: 'Tiers must be selected from T4 to T8.', code: 'INVALID_TIERS' });
+      }
+
+      const { gearItems, recipes, mappings } = loadCraftingCatalog();
+      const categoryItems = gearItems.filter((item) => item.category === category && tiers.includes(item.tier));
+      if (!categoryItems.length) {
+        return res.status(404).json({ error: 'No craftable items found for this category and tier selection.', code: 'NO_ITEMS' });
+      }
+
+      const itemsWithRecipes = categoryItems
+        .map((item) => ({ ...item, recipe: getRecipe(item.id, recipes) }))
+        .filter((item) => item.recipe);
+      const excludedMounts = itemsWithRecipes.filter((item) => item.category === 'Mount' && item.recipe.ingredients.some((ingredient) =>
+        /\b(horse|ox)\b/i.test(ingredient.name) && !ingredientIds(ingredient.name, item.tier.slice(1), mappings).length
+      ));
+      const excludedItems = itemsWithRecipes.filter((item) =>
+        EXCLUDED_PROFITABILITY_ITEMS.has(profitabilityItemName(item))
+      );
+      const products = itemsWithRecipes
+        // Dragonslayer gear is newly added and its market ingredient IDs are
+        // not available yet, so keep those products out of profitability scans.
+        // Mount recipes that depend on unmapped horse/ox components are also excluded.
+        .filter((item) => !/dragonslayer/i.test(item.name) && !excludedMounts.includes(item) && !excludedItems.includes(item))
+        .flatMap((item) => [1, 2, 3].map((enchantment) => ({
+          ...item,
+          enchantment,
+          marketId: `${item.id}@${enchantment}`,
+          ingredients: item.recipe.ingredients.map((ingredient) => ({
+            name: ingredient.name,
+            quantity: ingredient.qty,
+            ids: ingredientIds(ingredient.name, item.tier.slice(1), mappings)
+          }))
+        })));
+      const host = REGION_HOSTS[region];
+      async function fetchPriceMap(itemIds, qualities) {
+        const ids = [...new Set(itemIds.filter((id) => id && ITEM_ID_RE.test(id)))];
+        const params = { qualities };
+        const cacheKeys = new Map(ids.map((id) => [id, makeCacheKey(region, id, params)]));
+        const result = new Map();
+        const missing = [];
+        let cachedItems = 0;
+        for (const id of ids) {
+          const cached = await getCached(cacheKeys.get(id));
+          if (cached !== null) {
+            result.set(id, cached);
+            cachedItems += 1;
+          } else missing.push(id);
+        }
+
+        const groups = [];
+        let group = [];
+        for (const id of missing) {
+          const candidate = [...group, id];
+          const query = new URLSearchParams(params).toString();
+          const url = `${host}/api/v2/stats/prices/${candidate.map(encodeURIComponent).join(',')}.json?${query}`;
+          if (url.length > 4000 && group.length) {
+            groups.push(group);
+            group = [id];
+          } else if (url.length > 4000) throw Object.assign(new Error('A single item request exceeds the upstream URL limit.'), { status: 400, code: 'URL_TOO_LONG' });
+          else group = candidate;
+        }
+        if (group.length) groups.push(group);
+
+        for (const idGroup of groups) {
+          const query = new URLSearchParams(params).toString();
+          const url = `${host}/api/v2/stats/prices/${idGroup.map(encodeURIComponent).join(',')}.json?${query}`;
+          const response = await fetchWithRetry(url, { method: 'GET', headers: { 'Accept-Encoding': 'gzip, deflate, br' } });
+          if (!response.ok) {
+            const body = await response.text();
+            throw Object.assign(new Error(body.slice(0, 200)), {
+              status: response.status,
+              code: response.status === 429 ? 'RATE_LIMITED' : 'API_ERROR',
+              retryAfter: response.headers.get('retry-after') || '60'
+            });
+          }
+          const records = await response.json();
+          if (!Array.isArray(records)) throw Object.assign(new Error('Invalid response from Albion API'), { status: 502, code: 'INVALID_RESPONSE_FORMAT' });
+          for (const id of idGroup) result.set(id, []);
+          for (const record of records) {
+            const id = record.item_id || record.item_type_id;
+            if (result.has(id)) result.get(id).push(record);
+          }
+          for (const id of idGroup) await setCached(cacheKeys.get(id), result.get(id), 14400);
+        }
+        return { records: result, cachedItems, batches: groups.length };
+      }
+
+      const productPrices = await fetchPriceMap(products.map((item) => item.marketId), '2,3');
+      const materialIds = products.flatMap((item) => item.ingredients.flatMap((ingredient) => ingredient.ids));
+      const ingredientPrices = await fetchPriceMap(materialIds, '1');
+
+      return res.json({
+        region,
+        category,
+        tiers,
+        enchantments: [1, 2, 3],
+        qualities: [2, 3],
+        cachedItems: productPrices.cachedItems + ingredientPrices.cachedItems,
+        requested: products.length + [...new Set(materialIds)].length,
+        batches: productPrices.batches + ingredientPrices.batches,
+        items: products.map((item) => ({
+          ...item,
+          recipe: undefined,
+          records: productPrices.records.get(item.marketId) || [],
+          ingredients: item.ingredients.map((ingredient) => ({
+            ...ingredient,
+            priceOptions: ingredient.ids.map((id) => ({ id, records: ingredientPrices.records.get(id) || [] }))
+          }))
+        })),
+        excludedMounts: excludedMounts.map((item) => item.name),
+        excludedItems: excludedItems.map((item) => item.name),
+        unmappedIngredients: [...new Set(products.flatMap((item) => item.ingredients.filter((ingredient) => !ingredient.ids.length).map((ingredient) => ingredient.name)))]
+      });
+    } catch (err) {
+      logger.error('Albion profitability category lookup error: %O', err);
+      if (err.status) {
+        return res.status(err.status).json({ error: err.code === 'RATE_LIMITED' ? 'Albion data is rate-limiting requests. Please retry later.' : err.message, code: err.code, retryAfter: err.retryAfter });
+      }
+      return res.status(500).json({ error: 'Could not load profitability market data.', code: 'PROFITABILITY_LOOKUP_FAILED' });
+    }
+  });
 
   // GET /prices?region=europe&item=T4_BAG&locations=Caerleon&qualities=1
   router.get('/prices', proxyLimiter, async (req, res) => {
