@@ -646,11 +646,15 @@ tbody td { padding:11px 12px; vertical-align:middle; font-size:13px; }
 .world-kill-time span { color:var(--gold-dim); }
 .world-kill-match { display:grid; grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr); align-items:center; gap:12px; }
 .world-kill-side { display:grid; gap:3px; min-width:0; }
+.world-kill-player { display:flex; align-items:center; gap:6px; min-width:0; }
+.world-kill-player-victim { justify-content:flex-end; }
 .world-kill-victim { text-align:right; }
 .world-kill-label { color:var(--success); font:9px var(--font-d); letter-spacing:1.5px; text-transform:uppercase; }
 .world-kill-victim .world-kill-label { color:var(--crimson); }
 .world-kill-side strong { overflow-wrap:anywhere; color:var(--parchment); font-family:var(--font-d); font-size:14px; }
 .world-kill-side small { overflow-wrap:anywhere; color:var(--mist); font-size:12px; }
+.world-kill-weapon-icon { width:20px; height:20px; object-fit:contain; border-radius:4px; background:rgba(255,255,255,.02); box-shadow:0 0 0 1px rgba(200,134,10,.15); flex-shrink:0; }
+.world-kill-player-victim .world-kill-weapon-icon { order:-1; }
 .world-kill-versus { color:var(--ember); text-align:center; }
 .world-kill-meta { display:flex; flex-wrap:wrap; align-items:center; gap:8px 18px; margin-top:12px; padding-top:10px; border-top:1px solid rgba(200,134,10,.08); color:var(--silver); font-size:12px; }
 .world-kill-meta span:nth-child(2) { color:var(--gold); }

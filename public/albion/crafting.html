@@ -118,7 +118,6 @@
         <tbody id="profitabilityRows"><tr><td colspan="6">Choose a category to load market prices.</td></tr></tbody>
       </table>
     </div>
-    <p class="profitability-note">Prices older than 24 hours or unusually far from the same item's prices in other cities are excluded. Market tax is not included.</p>
   </section>
 </main>
 <script>
@@ -2102,6 +2101,7 @@ buildDropdown();
   const searchInput = document.getElementById('profitSearch');
   const sortKeys = { margin: 'margin', profit: 'profit', cost: 'cost' };
   const maxPriceAgeMs = 24 * 60 * 60 * 1000;
+  const activeDemandWindowMs = 6 * 60 * 60 * 1000;
   const priceOutlierRatio = 10;
   const minCitiesForOutlierCheck = 3;
   let profitRows = [];
@@ -2115,6 +2115,42 @@ buildDropdown();
     return String(value).replace(/[&<>"']/g, char => ({
       '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
     })[char]);
+  }
+
+  function parseMarketTimestamp(value) {
+    if (value === null || value === undefined || value === '') return null;
+    if (typeof value === 'number' && Number.isFinite(value)) return value;
+    const text = String(value).trim();
+    if (!text || text === '0001-01-01T00:00:00' || text === '0001-01-01T00:00:00Z') return null;
+    const normalized = /(?:Z|[+-]\d{2}:?\d{2})$/i.test(text) ? text : `${text}Z`;
+    const parsed = Date.parse(normalized);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  function getRecentBuySummary(records) {
+    const now = Date.now();
+    const buyEvents = (records || [])
+      .map((record) => {
+        const buyTimestamp = parseMarketTimestamp(record.buy_price_max_date);
+        const buyPrice = Number(record.buy_price_max);
+        if (!Number.isFinite(buyTimestamp) || !Number.isFinite(buyPrice) || buyPrice <= 0) return null;
+        return { buyTimestamp, buyPrice };
+      })
+      .filter(Boolean);
+
+    if (!buyEvents.length) {
+      return { recentCount: 0, newestBuyAgeHours: null, isActive: false };
+    }
+
+    const newestBuyTimestamp = Math.max(...buyEvents.map((entry) => entry.buyTimestamp));
+    const newestBuyAgeHours = (now - newestBuyTimestamp) / (60 * 60 * 1000);
+    const recentEvents = buyEvents.filter((entry) => now - entry.buyTimestamp <= activeDemandWindowMs);
+    const recentCount = recentEvents.length;
+    return {
+      recentCount,
+      newestBuyAgeHours,
+      isActive: recentCount >= 2 || newestBuyAgeHours <= 2
+    };
   }
 
   function showProfitMessage(message) {
@@ -2204,7 +2240,12 @@ buildDropdown();
   function updateProfitabilityRows() {
     const sortKey = sortKeys[sortSelect.value] || 'margin';
     const searchTerm = searchInput.value.trim().toLowerCase();
-    const rows = profitRows.filter(row => !searchTerm || row.label.toLowerCase().includes(searchTerm));
+    const activeOnly = true;
+    const rows = profitRows.filter(row => {
+      if (searchTerm && !row.label.toLowerCase().includes(searchTerm)) return false;
+      if (activeOnly && !row.activeDemand) return false;
+      return true;
+    });
     rows.sort((a, b) => {
       const difference = a[sortKey] - b[sortKey];
       return sortKey === 'cost' ? difference : -difference;
@@ -2221,7 +2262,7 @@ buildDropdown();
         <td class="profit-value ${mood}">${row.profit >= 0 ? '+' : ''}${silver(row.profit)}</td>
         <td><span class="profit-margin ${mood}"><span class="profit-margin-bar"><i style="width:${marginWidth}%"></i></span>${row.margin.toFixed(1)}%</span></td>
       </tr>`;
-    }).join('') || '<tr><td colspan="6">No items match this search.</td></tr>';
+    }).join('') || '<tr><td colspan="6"></td></tr>';
   }
 
   async function loadProfitabilityCategory() {
@@ -2272,6 +2313,7 @@ buildDropdown();
           const profit = sellPrice - cost;
           const quality = Number(output.quality);
           const qualityName = quality === 2 ? 'Good' : quality === 3 ? 'Outstanding' : `Quality ${quality}`;
+          const buySummary = getRecentBuySummary(item.records);
           rows.push({
             variantKey: `${item.id}@${item.enchantment}:Q${quality}`,
             tier: item.tier,
@@ -2284,7 +2326,10 @@ buildDropdown();
             cost,
             sellPrice,
             profit,
-            margin: cost ? (profit / cost) * 100 : 0
+            margin: cost ? (profit / cost) * 100 : 0,
+            activeDemand: buySummary.isActive,
+            recentBuyCount: buySummary.recentCount,
+            newestBuyAgeHours: buySummary.newestBuyAgeHours
           });
         }
       }
@@ -2308,17 +2353,7 @@ buildDropdown();
 
       const note = document.querySelector('.profitability-note');
       if (note) {
-        const unmapped = payload.unmappedIngredients || [];
-        const missingText = incomplete ? `${incomplete} item and city combinations were skipped because one or more ingredient prices were missing. ` : '';
-        const mappingText = unmapped.length ? `No item mapping for: ${unmapped.join(', ')}. ` : '';
-        const excludedText = payload.excludedMounts?.length ? `${payload.excludedMounts.length} horse/ox mount items were excluded because their component IDs are unavailable. ` : '';
-        const staleText = priceAssessment.staleRecords
-          ? `${priceAssessment.staleRecords} price record${priceAssessment.staleRecords === 1 ? '' : 's'} older than 24 hours or with invalid timestamps ${priceAssessment.staleRecords === 1 ? 'was' : 'were'} excluded. `
-          : '';
-        const suspiciousText = priceAssessment.suspiciousRecords
-          ? `${priceAssessment.suspiciousRecords} price${priceAssessment.suspiciousRecords === 1 ? '' : 's'} more than 10× the same item's median across at least 3 cities ${priceAssessment.suspiciousRecords === 1 ? 'was' : 'were'} excluded as outliers. `
-          : '';
-        note.textContent = `${missingText}${mappingText}${excludedText}${staleText}${suspiciousText}No fixed price cap is used. Estimates exclude market tax.`;
+        note.textContent = '';
       }
     } catch (error) {
       if (currentRequest !== requestNumber) return;

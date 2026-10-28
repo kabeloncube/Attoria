@@ -155,7 +155,7 @@
         </div>
       </div>
 
-      <!-- Market Grid - All 5 Cities -->
+      <!-- Market Grid - All 7 Cities -->
       <div id="market-grid" class="market-grid" style="display: none;">
         <div class="city-card" data-city="Caerleon">
           <div class="city-header">
@@ -276,6 +276,26 @@
             <span class="updated" data-updated="thetford">Updated: ---</span>
           </div>
         </div>
+
+        <div class="city-card" data-city="Brecilien">
+          <div class="city-header">
+            <h3>Brecilien</h3>
+            <span class="city-label">Mists</span>
+          </div>
+          <div class="price-display">
+            <div class="sell-price">
+              <label>Sell Orders</label>
+              <div class="price" data-price="sell-brecilien">---</div>
+            </div>
+            <div class="buy-price">
+              <label>Buy Orders</label>
+              <div class="price" data-price="buy-brecilien">---</div>
+            </div>
+          </div>
+          <div class="market-meta">
+            <span class="updated" data-updated="brecilien">Updated: ---</span>
+          </div>
+        </div>
       </div>
     </section>
   </main>
@@ -386,7 +406,8 @@
           'Fort Sterling': 'fortsterling',
           'Lymhurst': 'lymhurst',
           'Martlock': 'martlock',
-          'Thetford': 'thetford'
+          'Thetford': 'thetford',
+          'Brecilien': 'brecilien'
         };
 
         function setStatus(msg, type = 'info') {
@@ -455,7 +476,7 @@
 
         async function fetchPrices(itemId, region) {
           // Fetch prices for ALL cities at once
-          const cities = 'Caerleon,Bridgewatch,Fort Sterling,Lymhurst,Martlock,Thetford';
+          const cities = 'Caerleon,Bridgewatch,Fort Sterling,Lymhurst,Martlock,Thetford,Brecilien';
           const enchantment = $('enchantment-select').value; // Read from UI
 
           const quality = '1';

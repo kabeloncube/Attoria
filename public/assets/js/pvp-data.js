@@ -144,9 +144,24 @@
     };
   }
 
+  function getWeaponType(player) {
+    const equipment = player?.Equipment || player?.equipment || {};
+    const mainHand = equipment.MainHand || equipment.mainHand || equipment.Mainhand || equipment.mainhand || {};
+    return mainHand.Type || mainHand.type || '';
+  }
+
+  function renderWeaponBadge(itemType) {
+    if (!itemType) return '';
+    const cleanType = escapeHtml(itemType);
+    const url = `https://render.albiononline.com/v1/item/${encodeURIComponent(itemType)}.png?size=32`;
+    return `<img class="world-kill-weapon-icon" src="${url}" alt="${cleanType}" title="${cleanType}" loading="lazy" />`;
+  }
+
   function renderWorldEvent(event) {
     const killer = eventPlayer(event, 'Killer');
     const victim = eventPlayer(event, 'Victim');
+    const killerWeapon = getWeaponType(event.Killer || event.killer);
+    const victimWeapon = getWeaponType(event.Victim || event.victim);
     const fame = event.TotalVictimKillFame || event.totalVictimKillFame || event.KillFame || event.killFame || 0;
     const location = event.Location || event.location || event.KillArea || event.killArea || 'Location unavailable';
     const participants = event.NumberOfParticipants || event.numberOfParticipants;
@@ -161,9 +176,21 @@
     return `<article class="world-kill-card">
       <div class="world-kill-time">${escapeHtml(time)}${eventId ? ` <span>· #${escapeHtml(eventId)}</span>` : ''}</div>
       <div class="world-kill-match">
-        <div class="world-kill-side"><span class="world-kill-label">Killer</span><strong>${escapeHtml(killer.name)}</strong><small>${escapeHtml(guildLine)}</small></div>
+        <div class="world-kill-side">
+          <span class="world-kill-label">Killer</span>
+          <div class="world-kill-player">
+            <strong>${escapeHtml(killer.name)}</strong>${renderWeaponBadge(killerWeapon)}
+          </div>
+          <small>${escapeHtml(guildLine)}</small>
+        </div>
         <span class="world-kill-versus">⚔</span>
-        <div class="world-kill-side world-kill-victim"><span class="world-kill-label">Victim</span><strong>${escapeHtml(victim.name)}</strong><small>${escapeHtml(victimGuild || 'Guild unavailable')}</small></div>
+        <div class="world-kill-side world-kill-victim">
+          <span class="world-kill-label">Victim</span>
+          <div class="world-kill-player world-kill-player-victim">
+            ${renderWeaponBadge(victimWeapon)}<strong>${escapeHtml(victim.name)}</strong>
+          </div>
+          <small>${escapeHtml(victimGuild || 'Guild unavailable')}</small>
+        </div>
       </div>
       <div class="world-kill-meta"><span>${escapeHtml(location)}</span><span>${formatFame(fame)} fame</span><span>${participants ? `${escapeHtml(participants)} participants` : 'Participants unavailable'}</span>${killUrl ? `<a href="${killUrl}" target="_blank" rel="noopener noreferrer">View kill</a>` : ''}</div>
     </article>`;
