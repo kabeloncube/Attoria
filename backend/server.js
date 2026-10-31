@@ -17,11 +17,10 @@ const path = require('path');                 // Path utilities - helps work wit
 const bcrypt = require('bcryptjs');           // Password hashing - keeps user passwords secure
 const jwt = require('jsonwebtoken');          // JSON Web Tokens - manages user login sessions
 const session = require('express-session');   // Session management - keeps track of user sessions
-const sqlite3 = require('sqlite3').verbose(); // SQLite database - stores user account data
 const rateLimit = require('express-rate-limit'); // Rate limiting - prevents brute force attacks
 const helmet = require('helmet');             // Security headers - protects against common vulnerabilities
 const { body, validationResult } = require('express-validator'); // Input validation
-require('dotenv').config();                   // Load environment variables from .env file (API keys, secrets)
+require('dotenv').config({ path: path.resolve(__dirname, '..', '.env'), quiet: true }); // Load env vars from project root .env without noisy tips
 const Redis = require('ioredis');
 const logger = require('./logger');           // Production logging
 
@@ -40,22 +39,21 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-this'; // S
 
 /*
 =============================================================================
-DATABASE SETUP (SQLite) - For storing user accounts
+DATABASE SETUP (Neon/Postgres compatible)
 =============================================================================
 */
 
-// CREATE OR CONNECT TO THE DATABASE FILE
-const db = new sqlite3.Database('./users.db');  // Creates 'users.db' file in project folder
+const db = require('./db');
 
 // CREATE USERS TABLE if it doesn't already exist
 // This table stores user account information
 db.run(`CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,    -- Unique user ID (auto-generated)
-    username TEXT UNIQUE NOT NULL,           -- Username (must be unique)
-    email TEXT UNIQUE NOT NULL,              -- Email address (must be unique)
-    password TEXT NOT NULL,                  -- Encrypted password
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,  -- When account was created
-    last_coc_activity DATETIME                -- Last time user accessed CoC features
+    id SERIAL PRIMARY KEY,
+    username TEXT UNIQUE NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_coc_activity TIMESTAMP
 )`);
 
 // CREATE EVENTS TABLE for news and events
@@ -148,7 +146,7 @@ db.serialize(() => {
         });
     });
     
-    logger.info('Smart database enhancements applied');
+    logger.debug('Smart database enhancements applied');
 });
 
 /*
@@ -410,6 +408,21 @@ async function fetchCoCAPIWithPlayerToken(endpoint, playerToken) {
 // Routes
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'welcome.html'));
+});
+
+app.get('/api/health', async (req, res) => {
+    try {
+        const result = await db.query('SELECT 1 AS ok');
+        res.json({
+            status: 'ok',
+            database: 'postgres',
+            neonBranch: process.env.NEON_BRANCH || null,
+            row: result.rows[0],
+        });
+    } catch (error) {
+        logger.error('Health check failed: %O', error);
+        res.status(500).json({ status: 'error', error: error.message });
+    }
 });
 
 /* Authentication routes were extracted into `routes/auth.js` to keep server.js lean.
@@ -1048,7 +1061,7 @@ class SmartRefreshScheduler {
     start(intervalMinutes = 15) {
         // Only log if in development mode
         if (process.env.NODE_ENV !== 'production') {
-            logger.info(`Starting smart auto-refresh scheduler (every ${intervalMinutes} minutes)`);
+            logger.debug(`Starting smart auto-refresh scheduler (every ${intervalMinutes} minutes)`);
         }
 
         // Clear any existing interval
@@ -1063,7 +1076,7 @@ class SmartRefreshScheduler {
         this.refreshStats.nextRefreshAt = new Date(Date.now() + (intervalMinutes * 60 * 1000));
 
         if (process.env.NODE_ENV !== 'production') {
-            logger.info(`Auto-refresh scheduler started. Next refresh: ${this.refreshStats.nextRefreshAt.toISOString()}`);
+            logger.debug(`Auto-refresh scheduler started. Next refresh: ${this.refreshStats.nextRefreshAt.toISOString()}`);
         }
     }
     
@@ -1625,12 +1638,7 @@ app.get('/health', (req, res) => {
 // Graceful shutdown handler
 const server = app.listen(PORT, '0.0.0.0', () => {
     const localIP = getLocalNetworkIP();
-    logger.info(`Server running on http://localhost:${PORT}`);
-    logger.info(`Also accessible on local network at http://${localIP}:${PORT}`);
-    logger.info(`API key configured: ${!!COC_API_KEY}`);
-    logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
-    logger.info(`Database: ${process.env.NODE_ENV === 'production' ? 'PostgreSQL' : 'SQLite'}`);
-    logger.info(`Health check available at http://localhost:${PORT}/health`);
+    logger.info(`Server listening on http://localhost:${PORT}${localIP !== 'localhost' ? ` (LAN: http://${localIP}:${PORT})` : ''}`);
 });
 
 // Graceful shutdown on SIGTERM

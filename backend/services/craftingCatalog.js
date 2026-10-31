@@ -3,7 +3,8 @@ const path = require('path');
 const vm = require('vm');
 
 const projectRoot = path.resolve(__dirname, '../..');
-const craftingPath = path.join(projectRoot, 'public/albion/crafting.html');
+const craftingScriptPath = path.join(projectRoot, 'public/assets/js/crafting-page.js');
+const recipesPath = path.join(projectRoot, 'public/assets/js/craftingRecipes.js');
 const mappingsPath = path.join(projectRoot, 'public/assets/js/itemMappings.js');
 
 function extractObjectLiteral(source, declaration) {
@@ -85,12 +86,13 @@ const INGREDIENT_ITEM_ID_OVERRIDES = {
 };
 
 function loadCraftingCatalog() {
-  const craftingSource = fs.readFileSync(craftingPath, 'utf8');
+  const craftingSource = fs.readFileSync(craftingScriptPath, 'utf8');
+  const recipesSource = fs.readFileSync(recipesPath, 'utf8');
   const mappingSource = fs.readFileSync(mappingsPath, 'utf8');
   const sandbox = {};
   vm.runInNewContext(
     `globalThis.GEAR = ${extractObjectLiteral(craftingSource, 'GEAR')};\n` +
-    `globalThis.RECIPES = ${extractObjectLiteral(craftingSource, 'RECIPES')};`,
+    `globalThis.RECIPES = ${extractObjectLiteral(recipesSource, 'RECIPES')};`,
     sandbox,
     { timeout: 1000 }
   );
