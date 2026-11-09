@@ -42,6 +42,33 @@ module.exports = function() {
     return region;
   }
 
+  router.get('/battles', proxyLimiter, async (req, res) => {
+    const region = getRegion(req, res);
+    if (!region) return;
+
+    const limit = Number.parseInt(req.query.limit, 10) || 20;
+    const offset = Number.parseInt(req.query.offset, 10) || 0;
+    if (limit < 1 || limit > 51 || offset < 0 || offset > 1000) {
+      return res.status(400).json({ error: 'Limit must be 1–51 and offset 0–1000' });
+    }
+
+    const params = new URLSearchParams({
+      limit: String(limit),
+      offset: String(offset),
+      sort: 'recent'
+    });
+
+    try {
+      return res.json(await request(region, `/battles?${params.toString()}`));
+    } catch (error) {
+      logger.warn('Albion PvP battle feed failed (%s): %s', region, error.message);
+      return res.status(error.status || 502).json({
+        error: 'Live Albion battles are temporarily unavailable',
+        code: 'GAMEINFO_UNAVAILABLE'
+      });
+    }
+  });
+
   router.get('/events', proxyLimiter, async (req, res) => {
     const region = getRegion(req, res);
     if (!region) return;
