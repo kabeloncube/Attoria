@@ -548,6 +548,10 @@
 
     try {
       const response = await fetch(`${endpoint}/battles?region=${encodeURIComponent(region)}&limit=20&offset=${offset}`);
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        throw new Error(`Battles API returned a non-JSON response (HTTP ${response.status}). The backend may need a restart or update.`);
+      }
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.error || 'Could not load battles');
       const battles = Array.isArray(payload) ? payload : (payload.battles || []);
@@ -555,12 +559,12 @@
       if (append) feed.insertAdjacentHTML('beforeend', markup);
       else feed.innerHTML = markup || '<div class="live-empty">No recent battles were returned for this server.</div>';
       battleOffset = offset + battles.length;
-      if (more) more.hidden = battles.length < 20;
+      if (more) more.hidden = battles.length < 20 || battleOffset >= 1000;
       if (status) status.textContent = `Updated ${new Date().toLocaleTimeString()} · ${regionLabel(region)} · all fight sizes`;
     } catch (error) {
       if (!append) feed.innerHTML = `<div class="live-empty live-error">${escapeHtml(error.message)}. Use Refresh to try again.</div>`;
       else if (status) status.textContent = `${escapeHtml(error.message)}. Try loading more again.`;
-      if (!append && status) status.textContent = `Could not load ${regionLabel(region)} battles`;
+      if (!append && status) status.textContent = error.message;
     } finally {
       battleRequestInProgress = false;
       if (refresh) refresh.disabled = false;
@@ -623,6 +627,22 @@
       regionSelect.onchange = function () {
         try { localStorage.setItem('attoria-albion-region', regionSelect.value); } catch (_) {}
         loadWorldFeed();
+      };
+    }
+
+    const battleRefreshButton = document.getElementById('battles-feed-refresh');
+    if (battleRefreshButton) battleRefreshButton.onclick = () => loadBattlesFeed();
+    const battleMoreButton = document.getElementById('battles-feed-more');
+    if (battleMoreButton) battleMoreButton.onclick = () => loadBattlesFeed({ append: true });
+    const battleRegionSelect = document.getElementById('battles-feed-region');
+    if (battleRegionSelect) {
+      try {
+        const savedRegion = localStorage.getItem('attoria-albion-battles-region');
+        if (['americas', 'europe', 'asia'].includes(savedRegion)) battleRegionSelect.value = savedRegion;
+      } catch (_) {}
+      battleRegionSelect.onchange = function () {
+        try { localStorage.setItem('attoria-albion-battles-region', battleRegionSelect.value); } catch (_) {}
+        loadBattlesFeed();
       };
     }
 
@@ -692,6 +712,9 @@
   loadWorldFeed();
   window.setInterval(() => {
     const killboardsOpen = document.getElementById('tab-killboards')?.classList.contains('active');
-    if (document.visibilityState === 'visible' && killboardsOpen && activeKillboardMode === 'world' && !refreshIsPaused()) loadWorldFeed();
+    const battlesOpen = document.getElementById('tab-battles')?.classList.contains('active');
+    if (document.visibilityState !== 'visible' || refreshIsPaused()) return;
+    if (killboardsOpen && activeKillboardMode === 'world') loadWorldFeed();
+    else if (battlesOpen && battleOffset <= 20) loadBattlesFeed();
   }, 180000);
 })();

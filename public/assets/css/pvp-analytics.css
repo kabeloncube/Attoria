@@ -529,6 +529,31 @@ tbody td { padding:11px 12px; vertical-align:middle; font-size:13px; }
 .bstat-val.red   { color:var(--crimson); }
 .bstat-label { font-size:9px; font-family:var(--font-d); letter-spacing:1.5px; color:var(--mist); }
 
+.battles-feed-more-wrap { display:flex; justify-content:center; padding-top:14px; }
+.battle-card .battle-stats { grid-template-columns:repeat(4,minmax(0,1fr)); }
+.battle-detail-link {
+  color:var(--gold); font-family:var(--font-d); font-size:10px;
+  letter-spacing:1px; text-transform:uppercase; text-decoration:none;
+  border:1px solid rgba(200,134,10,0.25); padding:7px 10px; border-radius:4px;
+}
+.battle-detail-link:hover,.battle-detail-link:focus-visible {
+  color:var(--pale-gold); border-color:var(--gold); background:rgba(200,134,10,0.1);
+}
+.battle-guilds { margin-top:14px; border-top:1px solid rgba(200,134,10,0.1); padding-top:10px; }
+.battle-guilds-title {
+  font-family:var(--font-d); font-size:9px; letter-spacing:1.5px;
+  text-transform:uppercase; color:var(--ember); margin-bottom:6px;
+}
+.battle-guild {
+  display:flex; justify-content:space-between; gap:12px;
+  padding:6px 0; border-bottom:1px solid rgba(200,134,10,0.06);
+  color:var(--parchment); font-size:12px;
+}
+.battle-guild small { color:var(--mist); }
+.battle-guild > span:last-child { white-space:nowrap; color:var(--mist); }
+.battle-guild strong { color:var(--gold); }
+.battle-more-guilds { padding-top:7px; color:var(--mist); font-size:11px; }
+
 /* Crystal league */
 .crystal-card {
   display:grid; grid-template-columns:auto 1fr auto;
@@ -966,6 +991,9 @@ tbody td { padding:11px 12px; vertical-align:middle; font-size:13px; }
 .ev-profile-error { color: var(--crimson); }
 
 @media (max-width: 600px) {
+  .battle-card .battle-stats { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .battle-header { grid-template-columns:auto minmax(0,1fr) auto; gap:10px; }
+  .battle-guild { font-size:11px; }
   .ev-profile-panel { width: 94vw; margin: 16px; max-height: 92vh; }
   .ev-history-item {
     grid-template-columns: 1fr 130px 70px;
