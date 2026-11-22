@@ -144,8 +144,24 @@ body::after {
   gap: 24px;
 }
 
-@media (max-width: 560px) {
-  .portals { grid-template-columns: 1fr; }
+@media (max-width: 760px) {
+  body {
+    justify-content: flex-start;
+  }
+  .welcome-wrap {
+    width: 100%;
+    padding: 20px 16px 0;
+  }
+  .welcome-header {
+    margin-bottom: 32px;
+  }
+  .portals {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .portal-card {
+    width: 100%;
+  }
 }
 
 /* ============================================================
@@ -367,7 +383,12 @@ body::after {
   white-space: nowrap;
 }
 @media (max-width: 600px) {
-  .welcome-wrap > .site-footer { padding: 0 18px 14px; }
+  .welcome-wrap > .site-footer {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    padding: 0 18px 14px;
+  }
   .welcome-wrap > .site-footer .footer-grid {
     grid-template-columns: 1fr 1fr;
     gap: 24px;
