@@ -12,7 +12,7 @@ function getRecipe(itemId) {
 
 let selectedItems = [];
 let craftData = {};  // itemId -> { ing_0: price, ing_1: price, ..., sellPrice }
-let settings = {runs:1, rrr:15.2, fee:300, focus:false, premium:false, saleMethod:"order"};
+let settings = {runs:1, rrr:15.2, stationRate:300, focus:false, premium:false, saleMethod:"order"};
 
 function escH(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 function fmt(n){ return Math.round(n).toLocaleString(); }
@@ -32,6 +32,16 @@ function getLeafGroups(node, prefix=""){
 function getNodeAtPath(cat,path){
   return path.split(" > ").reduce((node,key)=>node&&node[key],GEAR[cat]||{});
 }
+
+// Tiers share an item-value family. Entered values act as anchors; any tier
+// above the nearest anchor doubles for each tier, with explicit overrides.
+const itemValueFamilies = new Map();
+getLeafGroups(GEAR).forEach(group=>group.items.forEach(item=>{
+  const family=item.id.replace(/^T\d+/,"");
+  if(!itemValueFamilies.has(family))itemValueFamilies.set(family,[]);
+  itemValueFamilies.get(family).push(item);
+}));
+itemValueFamilies.forEach(items=>items.sort((a,b)=>Number(a.tier.slice(1))-Number(b.tier.slice(1))));
 
 function buildDropdown(){
   const dd=document.getElementById("catDropdown");
@@ -181,6 +191,25 @@ function isReturnableMaterial(name){
   return /^T[3-8] (?:Planks?|Cloth|Leather|Steel Bars?)$/i.test(name.trim());
 }
 
+function getItemValue(itemId,enchantment=0){
+  const tier=Number((itemId.match(/^T(\d+)/)||[])[1]);
+  const family=itemValueFamilies.get(itemId.replace(/^T\d+/,""))||[];
+  const anchors=family.filter(item=>Number(item.tier.slice(1))<=tier&&ITEM_VALUES[item.id]!==undefined&&ITEM_VALUES[item.id]!==null&&ITEM_VALUES[item.id]!=="");
+  const anchor=anchors[anchors.length-1];
+  let value;
+  if(anchor)value=Number(ITEM_VALUES[anchor.id])*Math.pow(2,tier-Number(anchor.tier.slice(1)));
+  else if(ITEM_VALUES[itemId]!==undefined&&ITEM_VALUES[itemId]!==null&&ITEM_VALUES[itemId]!=="")value=Number(ITEM_VALUES[itemId]);
+  else return null;
+  if(!Number.isFinite(value))return null;
+  return value*Math.pow(2,Number(enchantment)||0);
+}
+
+function calcStationFee(item,enchantment=0){
+  const itemValue=getItemValue(item.id,enchantment);
+  if(itemValue===null||!Number.isFinite(itemValue))return 0;
+  return itemValue*0.1125*(settings.stationRate||0)/100;
+}
+
 function calcItemCost(item) {
   const recipe = getRecipe(item.id);
   const d = craftData[item.id] || {};
@@ -196,7 +225,7 @@ function calcItemCost(item) {
     // Unknown ingredients are not given a return unless their recipe marks them.
     otherCost = (d.matPrice || 0) * (d.qty || 1);
   }
-  return returnableCost*(1-rr)+otherCost+(settings.fee||0);
+  return returnableCost*(1-rr)+otherCost+calcStationFee(item);
 }
 
 function calcTotals(items) {
@@ -211,7 +240,7 @@ function calcTotals(items) {
     const allPriced = recipe
       ? recipe.ingredients.every((_, i) => d['ing_' + i] > 0)
       : (d.matPrice || 0) > 0;
-    if (!allPriced || !sell) missing++;
+    if (!allPriced || !sell || getItemValue(item.id)===null) missing++;
     expenses += cost * runs;
     income   += sell * runs * (1 - getMarketFeeRate() / 100);
   });
@@ -265,7 +294,7 @@ function refreshCalculatedValues(){
   if(roiEl)roiEl.className="res-card-val "+profCls;
   const warning=document.querySelector("#main .warning");
   if(totals.missing>0){
-    const message="Missing prices: "+totals.missing+" item"+(totals.missing>1?"s are":" is")+" incomplete";
+    const message="Missing prices or item values: "+totals.missing+" item"+(totals.missing>1?"s are":" is")+" incomplete";
     if(warning)warning.textContent=message;
     else {const bar=document.querySelector("#main .results-bar");if(bar)bar.insertAdjacentHTML("afterend",'<div class="warning">'+message+'</div>');}
   }else if(warning)warning.remove();
@@ -278,9 +307,12 @@ function refreshCalculatedValues(){
     const income=Math.round(sell*runs*(1-getMarketFeeRate()/100));
     const breakEven=(1-getMarketFeeRate()/100)>0?Math.round(cost/(1-getMarketFeeRate()/100)):0;
     const allPriced=recipe?recipe.ingredients.every((_,i)=>d['ing_'+i]>0):(d.matPrice||0)>0;
-    const known=!!sell&&allPriced;
+    const known=!!sell&&allPriced&&getItemValue(item.id)!==null;
     const profitPerItem=Math.round(sell*(1-getMarketFeeRate()/100)-cost);
     setText("cost-"+item.id,fmt(cost*runs));
+    const itemValue=getItemValue(item.id);
+    setText("item-value-"+item.id,itemValue===null?"Not entered":fmt(itemValue));
+    setText("station-fee-"+item.id,itemValue===null?"Unavailable":fmt(calcStationFee(item)));
     setText("income-"+item.id,fmt(income));
     setText("breakeven-"+item.id,fmt(breakEven));
     const card=document.getElementById("output-card-"+item.id);
@@ -293,7 +325,7 @@ function refreshCalculatedValues(){
     }
     if(status&&amount){
       status.className="item-profit-status "+(!known?"neutral":profitPerItem>=0?"pos":"neg");
-      status.firstChild.textContent=!known?(sell?"Enter all prices":"Enter sell price"):(profitPerItem>=0?"Profit per item: ":"Loss per item: ");
+      status.firstChild.textContent=!known?(getItemValue(item.id)===null?"Enter item value":sell?"Enter all prices":"Enter sell price"):(profitPerItem>=0?"Profit per item: ":"Loss per item: ");
       amount.textContent=known?fmtSigned(profitPerItem):"";
     }
   });
@@ -318,7 +350,7 @@ function renderMain(){
   let h = '<div class="section"><div class="section-title">Craft Settings</div><div class="settings-grid">';
   h += '<div class="sf"><label>Number of Items</label><input type="number" id="s-runs" value="'+settings.runs+'" min="1"></div>';
   h += '<div class="sf"><label id="rrrLabel">'+(settings.focus?'Effective Return Rate (%)':'Base Return Rate (%)')+'</label><input type="number" id="s-rrr" value="'+(settings.focus?(getEffectiveRrr()*100).toFixed(1):settings.rrr)+'" min="0" max="100" step="0.1"'+(settings.focus?' readonly':'')+'></div>';
-  h += '<div class="sf"><label>Crafting Station Fee</label><input type="number" id="s-fee" value="'+settings.fee+'" min="0"></div>';
+  h += '<div class="sf"><label>Station Rate (silver per 100 nutrition)</label><input type="number" id="s-station-rate" value="'+settings.stationRate+'" min="0"><span class="station-note">Item fee = item value × 0.1125 × rate ÷ 100</span></div>';
   h += '<div class="sf"><label>Selling Method</label><select id="s-sale-method"><option value="order"'+(settings.saleMethod==="order"?" selected":"")+'>Sell Order</option><option value="instant"'+(settings.saleMethod==="instant"?" selected":"")+'>Instant Sale</option></select></div>';
   h += '<div class="sf"><label>Total Selling Fees</label><div class="fee-rate" id="marketFeeRate">'+getMarketFeeRate().toFixed(1)+'%</div></div>';
   h += '<div class="sf"><label class="setting-label-spacer" aria-hidden="true">Options</label>';
@@ -333,7 +365,7 @@ function renderMain(){
   h += '<div class="res-card"><div class="res-card-label">ROI (Profit / Expenses)</div><div class="res-card-val '+profCls+'" id="r-roi">'+t.roi.toFixed(2)+'%</div></div>';
   h += '<div class="res-card"><div class="res-card-label">Break-even Sell Price<br><span class="break-even-note">Min price per item after tax</span></div><div class="res-card-val" id="r-breakeven">'+fmt(t.breakEven)+'</div></div>';
   h += '</div>';
-  if(t.missing>0) h += '<div class="warning">Missing prices: '+t.missing+' item'+(t.missing>1?"s are":" is")+' incomplete</div>';
+  if(t.missing>0) h += '<div class="warning">Missing prices or item values: '+t.missing+' item'+(t.missing>1?"s are":" is")+' incomplete</div>';
   h += '</div>';
 
   // Combined recipe cards
@@ -378,14 +410,16 @@ function renderMain(){
     const profitPerItem = Math.round(sell * (1 - getMarketFeeRate()/100) - calcItemCost(item));
     const recipe=getRecipe(item.id);
     const allPriced=recipe?recipe.ingredients.every((_,i)=>(d['ing_'+i]||0)>0):(d.matPrice||0)>0;
-    const known=!!sell&&allPriced;
+    const known=!!sell&&allPriced&&getItemValue(item.id)!==null;
     const resultClass=!known?"unpriced-card":profitPerItem>=0?"profit-card":"loss-card";
-    const resultText=!known?(sell?"Enter all prices":"Enter sell price"):(profitPerItem>=0?"Profit per item: ":"Loss per item: ");
+    const resultText=!known?(getItemValue(item.id)===null?"Enter item value":sell?"Enter all prices":"Enter sell price"):(profitPerItem>=0?"Profit per item: ":"Loss per item: ");
     const resultAmount=known?fmtSigned(profitPerItem):"";
     const resultTone=!known?"neutral":profitPerItem>=0?"pos":"neg";
     h += '<div class="item-card output-card '+resultClass+'" id="output-card-'+item.id+'">';
     h += '<div class="item-card-name">'+escH(item.name)+'</div>';
     h += '<div class="item-card-sub">'+(TIER_LABELS[item.tier]||item.tier)+' &middot; '+runs+' run'+(runs>1?'s':'')+'</div>';
+    const itemValue=getItemValue(item.id);
+    h += '<div class="item-value-note">Item value: <strong id="item-value-'+item.id+'">'+(itemValue===null?'Not entered':fmt(itemValue))+'</strong> &middot; Station fee per item: <strong id="station-fee-'+item.id+'">'+(itemValue===null?'Unavailable':fmt(calcStationFee(item)))+'</strong></div>';
     h += '<div class="item-profit-status '+resultTone+'" id="profit-status-'+item.id+'"><span>'+resultText+'</span> <strong id="profit-amount-'+item.id+'">'+resultAmount+'</strong></div>';
     h += '<div class="item-field"><label>Sell price per item</label><input type="number" id="sell-'+item.id+'" value="'+(sell||'')+'" placeholder="Market price"></div>';
     h += '<div class="break-even-row">';
@@ -406,7 +440,7 @@ function renderMain(){
   // Attach settings events
   document.getElementById("s-runs").oninput    = function(){ updSetting("runs",this.value); };
   document.getElementById("s-rrr").oninput     = function(){ updSetting("rrr",this.value); };
-  document.getElementById("s-fee").oninput     = function(){ updSetting("fee",this.value); };
+  document.getElementById("s-station-rate").oninput = function(){ updSetting("stationRate",this.value); };
   document.getElementById("s-sale-method").onchange=function(){ updSetting("saleMethod",this.value); };
   document.getElementById("s-premium").onchange=function(){ updSetting("premium",this.checked); };
   document.getElementById("s-focus").onchange  = function(){ updSetting("focus",this.checked); };

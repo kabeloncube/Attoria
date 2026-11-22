@@ -366,3 +366,7 @@
   .profitability-toolbar select { flex: 1 1 140px; }
   .profitability-toolbar input { flex: 1 1 100%; }
 }
+
+.station-note, .item-value-note { display: block; color: var(--mist); font-size: 12px; margin-top: 5px; }
+.item-value-note { margin: 7px 0 11px; }
+.item-value-note strong { color: var(--text, #eee); }

@@ -233,6 +233,7 @@ const ITEM_MAPPINGS = {
             'SPECTER_JACKET': 'ARMOR_LEATHER_UNDEAD',
             'JACKET_OF_TENACITY': 'ARMOR_LEATHER_AVALON',
             'MISTWALKER_JACKET': 'ARMOR_LEATHER_FEY',
+            'DRAGONSLAYER_JACKET': 'ARMOR_LEATHER_DRAGON',
             'ROYAL_JACKET': 'ARMOR_LEATHER_ROYAL',
 
             //cloth robe mappings
@@ -255,6 +256,7 @@ const ITEM_MAPPINGS = {
             'SPECTER_HOOD': 'HEAD_LEATHER_UNDEAD',
             'HOOD_OF_TENACITY': 'HEAD_LEATHER_AVALON',
             'MISTWALKER_HOOD': 'HEAD_LEATHER_FEY',
+            'DRAGONSLAYER_HOOD': 'HEAD_LEATHER_DRAGON',
             'ROYAL_HOOD': 'HEAD_LEATHER_ROYAL',
 
             //cloth helmet mappings
@@ -277,6 +279,7 @@ const ITEM_MAPPINGS = {
             'JUDICATOR_HELMET': 'HEAD_PLATE_KEEPER_ARTIFACT',
             'HELMET_OF_VALOR': 'HEAD_PLATE_AVALON',
             'DUSKWEAVER_HELMET': 'HEAD_PLATE_FEY',
+            
             'ROYAL_HELMET': 'HEAD_PLATE_ROYAL',
 
             //cloth shoes mappings
@@ -299,6 +302,7 @@ const ITEM_MAPPINGS = {
             'SPECTER_BOOTS': 'SHOES_LEATHER_UNDEAD',
             'BOOTS_OF_TENACITY': 'SHOES_LEATHER_AVALON',
             'MISTWALKER_BOOTS': 'SHOES_LEATHER_FEY',
+            'DRAGONSLAYER_SHOES': 'SHOES_LEATHER_DRAGON',
             'ROYAL_BOOTS': 'SHOES_LEATHER_ROYAL',
 
             //plate shoes mappings
@@ -408,6 +412,8 @@ const ITEM_MAPPINGS = {
             'MORGANA_RAVEN': 'UNIQUE_MOUNT_MORGANA_RAVEN_ADC',             // T6
             'HELLSPINNER': 'MOUNT_SPIDER_HELL',                            // T5
             'SOULSPINNER': 'MOUNT_SPIDER_HELL',                            // T8
+            'FIREWING_DRAKE': 'MOUNT_DRAKE_FIRE', 
+            'DRAKE': 'MOUNT_DRAKE_FIRE',                                // T8
 
             //Faction mounts
             'SADDLED_WILD_BOAR': 'MOUNT_DIREBOAR_FW_LYMHURST',
@@ -527,6 +533,9 @@ const ITEM_MAPPINGS = {
             'AVALONIAN_GOAT_SANDWICH': 'MEAL_SANDWICH_AVALON',        // T4
             'AVALONIAN_MUTTON_SANDWICH': 'MEAL_SANDWICH_AVALON',      // T6
             'AVALONIAN_BEEF_SANDWICH': 'MEAL_SANDWICH_AVALON',        // T8
+
+            //Biscuits
+            'DRAKE_EGG_BISCUIT': 'MEAL_SPECIAL_FOOD_DRAKE_EGG',          // T8
 
             //grilled fish
             'GRILLED_FISH': 'MEAL_GRILLEDFISH',
@@ -1229,7 +1238,10 @@ const ITEM_MAPPINGS = {
             'BIGHORN_RAM_LAMB': 'FARM_RAM_FW_MARTLOCK_BABY',
             'ELITE_BIGHORN_RAM_LAMB': 'FARM_RAM_FW_MARTLOCK_BABY',
             'HELLSPINNER_BABY': 'FARM_SPIDER_HELL_BABY',
+            'FIREWING_DRAKE_EGG': 'FARM_DRAKE_BABY',
+            'DRAKE_EGG': 'FARM_DRAKE_BABY',
             'SOULSPINNER_BABY': 'FARM_SPIDER_HELL_BABY',
+
             //ADULT ANIMALS
              'TAME_SWIFTCLAW': 'FARM_COUGAR_GROWN',
              'TAME_GREYWOLF': 'FARM_GREYWOLF_FW_CAERLEON_GROWN',
@@ -1251,6 +1263,8 @@ const ITEM_MAPPINGS = {
               'TAME_BIGHORN_RAM': 'FARM_RAM_FW_MARTLOCK_GROWN',
               'TAME_ELITE_BIGHORN_RAM': 'FARM_RAM_FW_MARTLOCK_GROWN',
               'TAME_HELLSPINNER': 'FARM_SPIDER_HELL_GROWN',
+              'TAME_FIREWING_DRAKE': 'FARM_DRAKE_GROWN',
+              'TAME_DRAKE': 'FARM_DRAKE_GROWN',
               'TAME_SOULSPINNER': 'FARM_SPIDER_HELL_GROWN',
 
               //FARMING PRODUCTS
