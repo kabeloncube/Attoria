@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="assets/css/welcome.css">
   <script src="/assets/js/api-base.js"></script>
 </head>
-<body>
+<body id="top">
   <div class="welcome-wrap">
 
     <header class="welcome-header">
@@ -39,16 +39,6 @@
     <!-- Portal Cards -->
     <div class="portals">
 
-      <a class="portal-card" href="coc/index.html">
-        <div class="portal-accent"></div>
-        <div class="portal-icon">⚔️</div>
-        <div class="portal-name">Clash of Clans</div>
-        <p class="portal-desc">
-          Track clan wars, player stats, league standings and upcoming events for your clan.
-        </p>
-        <span class="portal-btn">Enter</span>
-      </a>
-
       <a class="portal-card" href="albion/index.html">
         <div class="portal-accent"></div>
         <div class="portal-icon">⚒️</div>
@@ -59,10 +49,43 @@
         <span class="portal-btn">Enter</span>
       </a>
 
+      <a class="portal-card" href="coc/index.html">
+        <div class="portal-accent"></div>
+        <div class="portal-icon">⚔️</div>
+        <div class="portal-name">Clash of Clans</div>
+        <p class="portal-desc">
+          Track clan wars, player stats, league standings and upcoming events for your clan.
+        </p>
+        <span class="portal-btn">Enter</span>
+      </a>
+
     </div>
 
-    <footer class="welcome-footer">
-      Ættoria · All realms, one forge.
+    <footer class="site-footer">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="footer-logo" href="/">ÆTTORIA</a>
+          <p>All realms, one forge. Market tools,<br>calculators and clan analytics for the<br>games we play.</p>
+        </div>
+        <div class="footer-column">
+          <h2>Realms</h2>
+          <a href="/">Game hub</a>
+          <a href="/albion/index.html">Albion Online</a>
+          <a href="/coc/index.html">Clash of Clans</a>
+        </div>
+        <div class="footer-column">
+          <h2>Albion Tools</h2>
+          <a href="/albion/index.html">Market tools</a>
+          <a href="/albion/refining.html">Refining</a>
+          <a href="/albion/crafting.html">Crafting</a>
+          <a href="/albion/calculators.html">Calculators</a>
+          <a href="/albion/pvp-analytics.html">PvP analytics</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Ættoria. A fan-made project, not affiliated with Sandbox<br class="footer-break"> Interactive, Supercell, Albion Online or Clash of Clans.</p>
+        <a class="back-to-top" href="#top">Back to top ↑</a>
+      </div>
     </footer>
   </div>
 </body>
