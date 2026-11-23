@@ -35,26 +35,12 @@
     <div class="live-badge"><div class="live-dot"></div>World Kill Feed</div>
   </div>
 
-  <!-- HERO STATS -->
-  <div class="hero-stats">
-    <div class="hs-block"><span class="hs-val green">2,847</span><span class="hs-label">Kills (24h)</span></div>
-    <div class="hs-block"><span class="hs-val red">2,391</span><span class="hs-label">Deaths (24h)</span></div>
-    <div class="hs-block"><span class="hs-val">1.19</span><span class="hs-label">K/D Ratio</span></div>
-    <div class="hs-block"><span class="hs-val purple">4,820</span><span class="hs-label">Assists</span></div>
-    <div class="hs-block"><span class="hs-val">8.4B</span><span class="hs-label">Kill Fame</span></div>
-    <div class="hs-block"><span class="hs-val red">6.2B</span><span class="hs-label">Death Fame</span></div>
-    <div class="hs-block"><span class="hs-val teal">1,240</span><span class="hs-label">Avg IP</span></div>
-    <div class="hs-block"><span class="hs-val">58%</span><span class="hs-label">Win Rate</span></div>
-  </div>
-
   <!-- MAIN TABS -->
   <div class="main-tabs">
     <button class="mtab active" onclick="switchTab('killboards',this)">⚔ Killboards</button>
     <button class="mtab" onclick="switchTab('search',this)">🔍 Search</button>
     <button class="mtab" onclick="switchTab('guild',this)">🛡 Guild Intel</button>
-    <button class="mtab" onclick="switchTab('battles',this)">⚡ Battles</button>
     <button class="mtab" onclick="switchTab('meta',this)">📊 Meta</button>
-    <button class="mtab" onclick="switchTab('stats',this)">📈 My Stats</button>
   </div>
 
   <!-- ═══════ KILLBOARDS ═══════ -->
@@ -63,9 +49,22 @@
       <button class="stab active" onclick="switchKB('world',this)">🌍 World</button>
       <button class="stab" onclick="switchKB('depths',this)">🕳 Depths</button>
       <button class="stab" onclick="switchKB('battles',this)">⚡ Battles</button>
-      <button class="stab" onclick="switchKB('hellgate',this)">🔥 Hellgate</button>
       <button class="stab" onclick="switchKB('corrupted',this)">💀 Corrupted</button>
-      <button class="stab" onclick="switchKB('crystal',this)">💎 Crystal Arena</button>
+      <button class="stab" onclick="switchKB('hellgate',this)">🔥 Hellgate</button>
+    </div>
+
+    <div class="depths-rules-note" id="depths-rules-note" hidden>
+      Abyssal Depths uses Orange PvP rules: equipped gear is retained on death while inventory items are lost.
+    </div>
+
+    <div class="depths-rules-note" id="corrupted-rules-note" hidden>
+      <blockquote>
+        <strong>Corrupted Dungeons</strong> are solo, high-stakes 1v1 dungeons. Clear mobs to summon the final boss and claim loot, or activate the Demonic Shrine to invade other players. If invaded, you must fight to the death or destroy 3 crystals to banish your opponent. Available in safe (Hunter) and full-loot PvP (Stalker/Slayer) tiers.
+      </blockquote>
+    </div>
+
+    <div class="depths-rules-note" id="battles-rules-note" hidden>
+      Large-scale, open-world PvP clashes where guilds and alliances fight over territories, castles, and objective timers in full-loot warfare.
     </div>
 
     <div class="g-panel sg world-feed-panel">
@@ -86,6 +85,30 @@
       </div>
       <div id="world-kill-feed" class="world-kill-feed" aria-live="polite">
         <div class="live-empty">Loading recent Albion kill events…</div>
+      </div>
+    </div>
+
+    <div class="g-panel sg" id="battles-feed-panel" hidden>
+      <div class="world-feed-toolbar">
+        <div>
+          <div class="ptitle">Recent Battles</div>
+          <div class="world-feed-status" id="battles-feed-status" aria-live="polite">Select a server and load live battles.</div>
+        </div>
+        <div class="world-feed-controls">
+          <label for="battles-feed-region">Server</label>
+          <select id="battles-feed-region">
+            <option value="americas">Americas</option>
+            <option value="europe" selected>Europe</option>
+            <option value="asia">Asia</option>
+          </select>
+          <button class="search-btn world-feed-refresh" id="battles-feed-refresh" type="button">Refresh</button>
+        </div>
+      </div>
+      <div id="battles-feed" class="battles-feed" aria-live="polite">
+        <div class="live-empty">Open Battles to load recent fights.</div>
+      </div>
+      <div class="battles-feed-more-wrap">
+        <button class="search-btn" id="battles-feed-more" type="button" hidden>Load more battles</button>
       </div>
     </div>
   </div>
@@ -189,33 +212,6 @@
     </div>
   </div>
 
-  <!-- ═══════ BATTLES ═══════ -->
-  <div class="tab-panel" id="tab-battles">
-    <div class="g-panel sg">
-      <div class="world-feed-toolbar">
-        <div>
-          <div class="ptitle">Recent Battles</div>
-          <div class="world-feed-status" id="battles-feed-status" aria-live="polite">Select a server and load live battles.</div>
-        </div>
-        <div class="world-feed-controls">
-          <label for="battles-feed-region">Server</label>
-          <select id="battles-feed-region">
-            <option value="americas">Americas</option>
-            <option value="europe" selected>Europe</option>
-            <option value="asia">Asia</option>
-          </select>
-          <button class="search-btn world-feed-refresh" id="battles-feed-refresh" type="button">Refresh</button>
-        </div>
-      </div>
-      <div id="battles-feed" class="battles-feed" aria-live="polite">
-        <div class="live-empty">Open Battles to load recent fights.</div>
-      </div>
-      <div class="battles-feed-more-wrap">
-        <button class="search-btn" id="battles-feed-more" type="button" hidden>Load more battles</button>
-      </div>
-    </div>
-  </div>
-
   <!-- ═══════ META ═══════ -->
   <div class="tab-panel" id="tab-meta">
     <div class="two-col sg">
@@ -236,36 +232,6 @@
     <div class="g-panel sg">
       <div class="ptitle">🏆 Most Used Builds (Top 8)</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px" id="builds-grid"></div>
-    </div>
-  </div>
-
-  <!-- ═══════ MY STATS ═══════ -->
-  <div class="tab-panel" id="tab-stats">
-    <div class="four-col sg">
-      <div class="mini-card"><div class="mc-icon">⚔</div><div><div class="mc-val green">847</div><div class="mc-label">Total Kills</div></div></div>
-      <div class="mini-card"><div class="mc-icon">💀</div><div><div class="mc-val red">142</div><div class="mc-label">Total Deaths</div></div></div>
-      <div class="mini-card"><div class="mc-icon">📊</div><div><div class="mc-val">5.96</div><div class="mc-label">K/D Ratio</div></div></div>
-      <div class="mini-card"><div class="mc-icon">🤝</div><div><div class="mc-val purple">1,240</div><div class="mc-label">Assists</div></div></div>
-      <div class="mini-card"><div class="mc-icon">🌟</div><div><div class="mc-val">12.4B</div><div class="mc-label">Kill Fame</div></div></div>
-      <div class="mini-card"><div class="mc-icon">💔</div><div><div class="mc-val red">1.8B</div><div class="mc-label">Death Fame</div></div></div>
-      <div class="mini-card"><div class="mc-icon">⚡</div><div><div class="mc-val teal" style="color:#60c8b8">1,348</div><div class="mc-label">Avg IP</div></div></div>
-      <div class="mini-card"><div class="mc-icon">🏆</div><div><div class="mc-val">58%</div><div class="mc-label">Win Rate</div></div></div>
-    </div>
-
-    <div class="two-col sg">
-      <div class="g-panel">
-        <div class="ptitle">Performance by Zone</div>
-        <div id="zone-stats-list"></div>
-      </div>
-      <div class="g-panel">
-        <div class="ptitle">Best Performing Weapons</div>
-        <div id="my-weapons-list"></div>
-      </div>
-    </div>
-
-    <div class="g-panel sg">
-      <div class="ptitle">Recent Activity — Kill / Death Feed</div>
-      <div id="my-feed-list"></div>
     </div>
   </div>
 
@@ -400,19 +366,6 @@ const PARTICIPATION = [
   {name:'NullReaper',   pct:43,  kills:34},
 ];
 
-const ZONE_STATS = [
-  {zone:'Black Zone', kills:480, deaths:62, kd:'7.74', fame:'8.2B', zoneClass:'zone-black'},
-  {zone:'Red Zone',   kills:218, deaths:44, kd:'4.95', fame:'2.8B', zoneClass:'zone-red'},
-  {zone:'Mist',       kills:104, deaths:24, kd:'4.33', fame:'1.1B', zoneClass:'zone-mist'},
-  {zone:'Corrupted',  kills:45,  deaths:12, kd:'3.75', fame:'0.3B', zoneClass:'zone-mist'},
-];
-
-const MY_WEAPONS = [
-  {name:'Claymore',   kills:420, kd:'7.2', fame:'6.2B', pct:100},
-  {name:'Halberd',    kills:280, kd:'5.8', fame:'3.8B', pct:67},
-  {name:'Daggers',    kills:147, kd:'4.1', fame:'2.4B', pct:35},
-];
-
 // ═══════════════════════════════
 //  UTILS
 // ═══════════════════════════════
@@ -430,16 +383,15 @@ function switchTab(id, btn){
   document.querySelectorAll('.mtab').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+id).classList.add('active');
   btn.classList.add('active');
-  if(id==='battles' && window.loadBattlesFeed) window.loadBattlesFeed();
+  if(id === 'killboards' && !document.getElementById('battles-feed-panel').hidden && window.loadBattlesFeed) {
+    window.loadBattlesFeed();
+  }
 }
 function switchKB(id, btn){
   document.querySelectorAll('#kb-subtabs .stab').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  if(id==='battles'){
-    const battlesTab=Array.from(document.querySelectorAll('.mtab')).find(b=>b.textContent.includes('Battles'));
-    if(battlesTab) switchTab('battles',battlesTab);
-    return;
-  }
+  document.querySelector('.world-feed-panel').hidden = id === 'battles';
+  document.getElementById('battles-feed-panel').hidden = id !== 'battles';
   if (window.setKillboardMode) window.setKillboardMode(id);
 }
 function switchSearchView(id, btn){
@@ -576,44 +528,12 @@ function renderMeta(){
 }
 
 // ═══════════════════════════════
-//  RENDER: MY STATS
-// ═══════════════════════════════
-function renderMyStats(){
-  const zoneColors = {
-    'zone-black':'color:#b090f8',
-    'zone-red':'color:var(--crimson)',
-    'zone-mist':'color:#60c8b8',
-  };
-  document.getElementById('zone-stats-list').innerHTML = ZONE_STATS.map(z=>`
-    <div class="vs-row">
-      <span style="font-size:13px;${zoneColors[z.zoneClass]||''};">${z.zone}</span>
-      <span class="vs-label">K/D</span>
-      <span style="font-family:var(--font-d);font-size:13px;color:var(--success)">+${z.kills}K / ${z.deaths}D · ${z.kd}</span>
-    </div>`).join('');
-
-  document.getElementById('my-weapons-list').innerHTML = MY_WEAPONS.map((w,i)=>`
-    <div class="weapon-bar-row">
-      <span class="wb-rank ${i<3?'rank-'+(i+1):''}">${i+1}</span>
-      <span class="wb-name">${w.name}</span>
-      <div class="wb-bar-track"><div class="wb-bar-fill" style="width:${w.pct}%"></div></div>
-      <span class="wb-pct">${w.kd}</span>
-      <span class="wb-kills">${w.kills}K</span>
-    </div>`).join('');
-
-  document.getElementById('my-feed-list').innerHTML =
-    [...KB_ENTRIES.map(e=>({...e,isKill:true})), ...KB_DEATHS.map(e=>({...e,isKill:false}))]
-    .sort(()=>Math.random()-0.5)
-    .map(e=>renderKBEntry(e,e.isKill)).join('');
-}
-
-// ═══════════════════════════════
 //  INIT
 // ═══════════════════════════════
 renderKillboards();
 renderSearchHistory();
 renderGuild();
 renderMeta();
-renderMyStats();
 </script>
 <script src="../assets/js/pvp-icons.js"></script>
 <script src="../assets/js/pvp-data.js"></script>

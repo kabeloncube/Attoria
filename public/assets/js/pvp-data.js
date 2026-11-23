@@ -64,12 +64,20 @@
       .replace(/\b\w/g, (c) => c.toUpperCase());
   }
 
-  const EQUIP_SLOTS = ['MainHand', 'OffHand', 'Head', 'Chest', 'Feet', 'Cape', 'Bag', 'Mount'];
+  const EQUIP_SLOTS = ['MainHand', 'OffHand', 'Head', 'Chest', 'Feet', 'Cape', 'Bag', 'Mount', 'Potion', 'Food'];
+  const EQUIP_SLOT_ALIASES = {
+    Chest: ['Chest', 'Armor'],
+    Feet: ['Feet', 'Shoes']
+  };
 
   function getEquipSlot(player, slot) {
     if (!player || typeof player !== 'object') return null;
     const equip = player.Equipment || player.equipment || {};
-    return equip[slot] || equip[slot.toLowerCase()] || null;
+    for (const key of EQUIP_SLOT_ALIASES[slot] || [slot]) {
+      const item = equip[key] || equip[key.toLowerCase()];
+      if (item) return item;
+    }
+    return null;
   }
 
   function qualityLabel(quality) {
@@ -119,10 +127,10 @@
 
   function renderInventory(player, label) {
     if (!player || typeof player !== 'object') return '';
-    const inventory = player.Inventory || player.inventory || [];
-    if (!Array.isArray(inventory) || !inventory.length) return '';
+    const inventory = player.Inventory ?? player.inventory;
+    if (!Array.isArray(inventory)) return '';
     const items = inventory.map((item) => renderItemLine(item, 40, true)).filter(Boolean).join('');
-    if (!items) return '';
+    if (!items) return `<div class="ev-section"><h3 class="ev-section-title">${escapeHtml(label)}</h3><div class="ev-inventory-empty" role="status"><strong>INVENTORY EMPTY</strong><span>No items were recorded in the victim’s inventory.</span></div></div>`;
     return `<div class="ev-section"><h3 class="ev-section-title">${escapeHtml(label)}</h3><div class="ev-items">${items}</div></div>`;
   }
 
@@ -326,6 +334,67 @@
     </article>`;
   }
 
+  function hasDepthsArea(event) {
+    const area = [
+      event.Location, event.location, event.KillArea, event.killArea
+    ].filter(Boolean).join(' ');
+    return /(?:abyssal[\s_-]*)?depths?/i.test(area);
+  }
+
+  function hasOrangePvpSignature(event) {
+    const victim = event.Victim || event.victim;
+    if (!victim || typeof victim !== 'object') return false;
+    const inventory = victim.Inventory ?? victim.inventory;
+    if (!Array.isArray(inventory) || inventory.some((item) => item && (item.Type || item.type || item.ItemType || item.itemType))) return false;
+
+    return ['MainHand', 'Head', 'Chest', 'Feet'].every((slot) => {
+      const item = getEquipSlot(victim, slot);
+      return Boolean(item && (item.Type || item.type || item.ItemType || item.itemType));
+    });
+  }
+
+  function depthsEventKind(event) {
+    if (hasDepthsArea(event)) return 'area';
+    if (hasOrangePvpSignature(event)) return 'signature';
+    return '';
+  }
+
+  function getEventBattleId(event) {
+    const battleId = event.BattleId ?? event.battleId;
+    return battleId == null || String(battleId).trim() === '' ? '' : String(battleId);
+  }
+
+  function hasSingleCreditedAttacker(event) {
+    const participantCount = Number(event.NumberOfParticipants ?? event.numberOfParticipants);
+    const participants = event.Participants ?? event.participants;
+    const killer = event.Killer || event.killer;
+    if (participantCount !== 1 || !Array.isArray(participants) || participants.length !== 1 || !killer || typeof killer !== 'object') {
+      return false;
+    }
+
+    const participant = participants[0];
+    if (!participant || typeof participant !== 'object') return false;
+    const killerId = getPlayerId(killer);
+    const participantId = getPlayerId(participant);
+    if (killerId && participantId) return String(killerId) === String(participantId);
+    const killerName = getPlayerName(killer).trim().toLowerCase();
+    const participantName = getPlayerName(participant).trim().toLowerCase();
+    return Boolean(killerName && participantName && killerName === participantName);
+  }
+
+  function corruptedDungeonEvents(events) {
+    const battleCounts = new Map();
+    for (const event of events) {
+      const battleId = getEventBattleId(event);
+      if (battleId) battleCounts.set(battleId, (battleCounts.get(battleId) || 0) + 1);
+    }
+
+    return events.filter((event) => {
+      const battleId = getEventBattleId(event);
+      return battleId && battleCounts.get(battleId) === 1 && hasSingleCreditedAttacker(event);
+    });
+  }
+
   function ensureProfileModal() {
     if (document.getElementById('ev-profile-modal')) return;
     const modal = document.createElement('div');
@@ -449,29 +518,67 @@
     const feed = document.getElementById('world-kill-feed');
     const status = document.getElementById('world-feed-status');
     const refresh = document.getElementById('world-feed-refresh');
-    if (!feed || activeKillboardMode !== 'world') return;
+    const depthsMode = activeKillboardMode === 'depths';
+    const corruptedMode = activeKillboardMode === 'corrupted';
+    if (!feed || (!depthsMode && !corruptedMode && activeKillboardMode !== 'world')) return;
 
     if (feedController) feedController.abort();
     feedController = new AbortController();
     const controller = feedController;
     const region = selectedRegion();
-    if (status) status.textContent = `Loading recent events · ${regionLabel(region)}…`;
+    const title = document.querySelector('.world-feed-panel .ptitle');
+    const feedTitle = depthsMode ? 'Abyssal Depths Kill Events' : (corruptedMode ? 'Probable Corrupted Dungeon Kills' : 'Latest World Kill Events');
+    if (title) title.textContent = feedTitle;
+    if (status) status.textContent = depthsMode ? '' : `Loading recent ${corruptedMode ? 'kill reports' : 'events'} · ${regionLabel(region)}…`;
     if (refresh) refresh.disabled = true;
     if (!feed.dataset.hasEvents) feed.innerHTML = '<div class="live-empty">Loading recent Albion kill events…</div>';
 
     try {
-      const response = await fetch(`${endpoint}/events?region=${encodeURIComponent(region)}&limit=20&offset=0`, { signal: controller.signal });
+      const response = await fetch(`${endpoint}/events?region=${encodeURIComponent(region)}&limit=50&offset=0`, { signal: controller.signal });
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.error || 'Could not load kill events');
       if (controller.signal.aborted) return;
       const events = Array.isArray(payload) ? payload : (payload.events || []);
-      const currentEventIds = new Set(events.map((event, index) => String(event.EventId || event.eventId || index)));
+      const corruptedEvents = new Set(corruptedDungeonEvents(events));
+      const displayedEvents = depthsMode
+        ? events.map((event) => ({ event, kind: depthsEventKind(event) })).filter(({ kind }) => kind)
+        : corruptedMode
+          ? corruptedDungeonEvents(events).map((event) => ({ event, kind: 'probable' }))
+          : activeKillboardMode === 'world'
+            ? events
+              .map((event) => ({ event }))
+              .filter(({ event }) => !hasDepthsArea(event) && !corruptedEvents.has(event))
+              .slice(0, 20)
+              .map(({ event }) => ({ event, kind: '' }))
+            : events.map((event) => ({ event, kind: '' }));
+      const currentEventIds = new Set(displayedEvents.map(({ event }, index) => String(event.EventId ?? event.eventId ?? index)));
       for (const eventId of expandedEventIds) {
         if (!currentEventIds.has(eventId)) expandedEventIds.delete(eventId);
       }
-      feed.innerHTML = events.length ? events.map((event, i) => renderWorldEvent(event, i)).join('') : '<div class="live-empty">No recent kill events were returned for this server.</div>';
-      feed.dataset.hasEvents = events.length ? 'true' : '';
-      if (status) status.textContent = `Updated ${new Date().toLocaleTimeString()} · ${regionLabel(region)} · refreshes every 3 minutes`;
+      feed.innerHTML = displayedEvents.length
+        ? displayedEvents.map(({ event, kind }, i) => {
+          const card = renderWorldEvent(event, i);
+          if (!kind) return card;
+          const badge = kind === 'area'
+            ? '<span class="depths-match-badge">Depths area identified</span>'
+            : kind === 'probable'
+              ? '<span class="corrupted-match-badge">Probable Corrupted Dungeon</span>'
+              : '';
+          return card.replace('<div class="world-kill-meta">', `<div class="world-kill-meta">${badge}`);
+        }).join('')
+        : depthsMode
+          ? '<div class="live-empty">No recent reports match the available Depths indicators. The event feed may not identify the area or expose loot/trashed state.</div>'
+          : corruptedMode
+            ? '<div class="live-empty">No recent reports match the solo-participant and unique-BattleId criteria in the fetched report batch.</div>'
+          : '<div class="live-empty">No recent kill events were returned for this server.</div>';
+      feed.dataset.hasEvents = displayedEvents.length ? 'true' : '';
+      if (status) {
+        status.textContent = depthsMode
+          ? ''
+          : corruptedMode
+            ? `${displayedEvents.length} probable match${displayedEvents.length === 1 ? '' : 'es'} · checked ${events.length} recent reports for shared BattleIds · ${regionLabel(region)}`
+          : `Updated ${new Date().toLocaleTimeString()} · ${regionLabel(region)} · refreshes every 3 minutes`;
+      }
     } catch (error) {
       if (error.name === 'AbortError') return;
       if (status) status.textContent = `Could not reach the ${regionLabel(region)} kill feed`;
@@ -579,22 +686,37 @@
     activeKillboardMode = mode;
     const feed = document.getElementById('world-kill-feed');
     const status = document.getElementById('world-feed-status');
-    if (mode === 'world') {
+    const depthsNote = document.getElementById('depths-rules-note');
+    const corruptedNote = document.getElementById('corrupted-rules-note');
+    const battlesNote = document.getElementById('battles-rules-note');
+    if (mode !== 'world' && mode !== 'depths' && mode !== 'corrupted' && feedController) {
+      feedController.abort();
+      feedController = null;
+    }
+    if (depthsNote) depthsNote.hidden = mode !== 'depths';
+    if (corruptedNote) corruptedNote.hidden = mode !== 'corrupted';
+    if (battlesNote) battlesNote.hidden = mode !== 'battles';
+    if (mode === 'world' || mode === 'depths' || mode === 'corrupted') {
+      if (feed) feed.dataset.hasEvents = '';
       loadWorldFeed();
+    } else if (mode === 'battles') {
+      loadBattlesFeed();
     } else {
       if (feed) feed.innerHTML = '<div class="live-empty">The live feed is currently connected for World events. This selected mode is not connected yet.</div>';
       if (status) status.textContent = 'World feed only';
+      const title = document.querySelector('.world-feed-panel .ptitle');
+      if (title) title.textContent = 'Latest World Kill Events';
     }
   };
 
   function bindPageInteractions() {
-    const tabIds = ['killboards', 'search', 'guild', 'battles', 'meta', 'stats'];
+    const tabIds = ['killboards', 'search', 'guild', 'meta'];
     document.querySelectorAll('.mtab').forEach((button, index) => {
       button.onclick = () => window.switchTab(tabIds[index], button);
     });
 
     document.querySelectorAll('#kb-subtabs .stab').forEach((button, index) => {
-      const ids = ['world', 'depths', 'battles', 'hellgate', 'corrupted', 'crystal'];
+      const ids = ['world', 'depths', 'battles', 'corrupted', 'hellgate'];
       button.onclick = () => window.switchKB(ids[index], button);
     });
 
@@ -712,9 +834,9 @@
   loadWorldFeed();
   window.setInterval(() => {
     const killboardsOpen = document.getElementById('tab-killboards')?.classList.contains('active');
-    const battlesOpen = document.getElementById('tab-battles')?.classList.contains('active');
+    const battlesOpen = killboardsOpen && activeKillboardMode === 'battles';
     if (document.visibilityState !== 'visible' || refreshIsPaused()) return;
-    if (killboardsOpen && activeKillboardMode === 'world') loadWorldFeed();
+    if (killboardsOpen && ['world', 'depths', 'corrupted'].includes(activeKillboardMode)) loadWorldFeed();
     else if (battlesOpen && battleOffset <= 20) loadBattlesFeed();
   }, 180000);
 })();
