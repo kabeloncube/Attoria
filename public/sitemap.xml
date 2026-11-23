@@ -21,6 +21,16 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://attoria.pages.dev/albion/calculators.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://attoria.pages.dev/albion/pvp-analytics.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://attoria.pages.dev/coc/index.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
